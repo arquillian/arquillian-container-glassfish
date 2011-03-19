@@ -19,10 +19,13 @@ package org.jboss.arquillian.container.glassfish.embedded_3_1;
 import java.io.File;
 import java.net.URL;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletRegistration;
 
 import org.glassfish.embeddable.BootstrapProperties;
+import org.glassfish.embeddable.CommandResult;
+import org.glassfish.embeddable.CommandRunner;
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.GlassFishProperties;
@@ -50,6 +53,10 @@ import com.sun.enterprise.web.WebModule;
  */
 public class GlassFishContainer implements DeployableContainer<GlassFishConfiguration>
 {
+   private static final Logger log = Logger.getLogger(GlassFishContainer.class.getName());
+
+   private static final String COMMAND_ADD_RESOURCES = "add-resources";
+   
    // TODO: open configuration up for bind address
    private static final String ADDRESS = "localhost";
    
@@ -110,7 +117,6 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       }
       serverProps.setConfigFileReadOnly(configuration.isConfigurationReadOnly());
       serverProps.setPort("http-listener", configuration.getBindHttpPort());
-      
       try
       {
          glassfish = glassfishRuntime.newGlassFish(serverProps);
@@ -134,7 +140,18 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       {
          throw new LifecycleException("Could not start GlassFish Embedded", e);
       }
-      
+      // Server needs to be started before we can deploy resources
+      if(configuration.getSunResourcesXml() != null)
+      {
+         try
+         {
+            executeCommand(COMMAND_ADD_RESOURCES, this.configuration.getSunResourcesXml());
+         }
+         catch (Throwable e) 
+         {
+            throw new RuntimeException("Could not deploy sun-reosurces file: " + configuration.getSunResourcesXml(), e);
+         }
+      }
    }
 
    /* (non-Javadoc)
@@ -241,6 +258,22 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
                httpContext.add(new Servlet(servletRegistration.getKey(), context.getContextPath()));
             }
          }
+      }
+   }
+   
+   private void executeCommand(String command, String... parameterList) throws Throwable
+   {
+      CommandRunner runner = glassfish.getCommandRunner();
+      CommandResult result = runner.run(command, parameterList);
+
+      switch(result.getExitStatus())
+      {
+         case FAILURE:
+         case WARNING:
+            throw result.getFailureCause();
+         case SUCCESS:
+            log.info("command " + command + " result: " + result.getOutput());
+            break;
       }
    }
 }
