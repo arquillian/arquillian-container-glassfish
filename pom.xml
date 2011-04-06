@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+   <!-- Parent --> 
+        <parent>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-build</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+        </parent>
+   
+   <!-- Model Version -->
+   <modelVersion>4.0.0</modelVersion>
+
+   <!-- Artifact Configuration -->
+   <groupId>org.jboss.arquillian.container</groupId>
+   <artifactId>arquillian-parent-glassfish</artifactId>
+   <version>1.0.0-SNAPSHOT</version>
+   <packaging>pom</packaging>
+   <name>Arquillian Container Parent GlassFish</name>
+   <description>GlassFish Container integrations for the Arquillian Project</description>
+
+
+   <!-- Properties -->
+   <properties>
+   </properties>
+
+   <modules>
+      <module>glassfish-remote-3.1</module>
+      <module>glassfish-embedded-3.1</module>
+   </modules>
+
+</project>
+
