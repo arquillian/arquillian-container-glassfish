@@ -15,14 +15,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<arquillian xmlns="http://jboss.com/arquillian"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:glassfish="urn:arq:org.jboss.arquillian.container.glasssfish.remote_3_1">
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian-1.0.xsd">
 
-   <!-- Uncomment to have test archives exported to the file system for inspection -->
-   <!--
-   <engine>
-      <deploymentExportPath>target/test-archives</deploymentExportPath>
-   </engine>
-   -->
+	<engine>
+		<property name="deploymentExportPath">target/</property>
+	</engine>
 </arquillian>

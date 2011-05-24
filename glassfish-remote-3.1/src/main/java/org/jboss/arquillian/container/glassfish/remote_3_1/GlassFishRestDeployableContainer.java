@@ -23,6 +23,7 @@ package org.jboss.arquillian.container.glassfish.remote_3_1;
 
 import java.io.File;
 import java.io.StringReader;
+import java.net.URL;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.xpath.XPath;
@@ -30,22 +31,22 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
+import org.jboss.arquillian.container.spi.client.container.DeploymentException;
+import org.jboss.arquillian.container.spi.client.container.LifecycleException;
+import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.descriptor.api.Descriptor;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.multipart.file.FileDataBodyPart;
-import org.jboss.arquillian.spi.client.container.DeployableContainer;
-import org.jboss.arquillian.spi.client.container.DeploymentException;
-import org.jboss.arquillian.spi.client.container.LifecycleException;
-import org.jboss.arquillian.spi.client.protocol.ProtocolDescription;
-import org.jboss.arquillian.spi.client.protocol.metadata.HTTPContext;
-import org.jboss.arquillian.spi.client.protocol.metadata.ProtocolMetaData;
-import org.jboss.arquillian.spi.client.protocol.metadata.Servlet;
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
-import org.jboss.shrinkwrap.descriptor.api.Descriptor;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 /**
  * Glassfish v3.1 remote container using REST deployment.
@@ -135,12 +136,11 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
 
         try {
             // Export to a file so we can send it over the wire
-            final File archiveFile = new File(new File(System.getProperty("java.io.tmpdir")), archiveName);
-            archive.as(ZipExporter.class).exportZip(archiveFile, true);
-
+            URL archiveFile = ShrinkWrapUtil.toURL(archive);
+            
             // Build up the POST form to send to Glassfish
             final FormDataMultiPart form = new FormDataMultiPart();
-            form.getBodyParts().add(new FileDataBodyPart("id", archiveFile));
+            form.getBodyParts().add(new FileDataBodyPart("id", new File(archiveFile.toExternalForm())));
             form.field("contextroot", archiveName.substring(0, archiveName.lastIndexOf(".")), MediaType.TEXT_PLAIN_TYPE);
             deploymentName = archiveName.substring(0, archiveName.lastIndexOf("."));
             form.field("name", deploymentName, MediaType.TEXT_PLAIN_TYPE);

@@ -30,13 +30,13 @@ import org.glassfish.embeddable.GlassFishRuntime;
 import org.glassfish.embeddable.web.Context;
 import org.glassfish.embeddable.web.VirtualServer;
 import org.glassfish.embeddable.web.WebContainer;
-import org.jboss.arquillian.spi.client.container.DeployableContainer;
-import org.jboss.arquillian.spi.client.container.DeploymentException;
-import org.jboss.arquillian.spi.client.container.LifecycleException;
-import org.jboss.arquillian.spi.client.protocol.ProtocolDescription;
-import org.jboss.arquillian.spi.client.protocol.metadata.HTTPContext;
-import org.jboss.arquillian.spi.client.protocol.metadata.ProtocolMetaData;
-import org.jboss.arquillian.spi.client.protocol.metadata.Servlet;
+import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
+import org.jboss.arquillian.container.spi.client.container.DeploymentException;
+import org.jboss.arquillian.container.spi.client.container.LifecycleException;
+import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
@@ -94,6 +94,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       }
 
       GlassFishProperties serverProps = new GlassFishProperties();
+      
       if(configuration.getInstanceRoot() != null)
       {
          File instanceRoot = new File(configuration.getInstanceRoot());

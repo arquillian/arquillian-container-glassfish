@@ -21,9 +21,9 @@
  */
 package org.jboss.arquillian.container.glassfish.remote_3_1;
 
-import org.jboss.arquillian.spi.ConfigurationException;
-import org.jboss.arquillian.spi.ContainerProfile;
-import org.jboss.arquillian.spi.client.container.ContainerConfiguration;
+import org.jboss.arquillian.container.spi.ConfigurationException;
+import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
+import org.jboss.arquillian.test.spi.ContainerProfile;
 
 public class GlassFishRestConfiguration implements ContainerConfiguration
 {
