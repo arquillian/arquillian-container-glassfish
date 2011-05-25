@@ -23,6 +23,7 @@ package org.jboss.arquillian.container.glassfish.remote_3_1;
 
 import java.io.File;
 import java.io.StringReader;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.ws.rs.core.MediaType;
@@ -140,7 +141,14 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
             
             // Build up the POST form to send to Glassfish
             final FormDataMultiPart form = new FormDataMultiPart();
-            form.getBodyParts().add(new FileDataBodyPart("id", new File(archiveFile.toExternalForm())));
+            try
+            {
+               form.getBodyParts().add(new FileDataBodyPart("id", new File(archiveFile.toURI())));
+            }
+            catch (URISyntaxException e1)
+            {
+               throw new DeploymentException("Could not convert exported deployment URL to URI?", e1);
+            }
             form.field("contextroot", archiveName.substring(0, archiveName.lastIndexOf(".")), MediaType.TEXT_PLAIN_TYPE);
             deploymentName = archiveName.substring(0, archiveName.lastIndexOf("."));
             form.field("name", deploymentName, MediaType.TEXT_PLAIN_TYPE);
