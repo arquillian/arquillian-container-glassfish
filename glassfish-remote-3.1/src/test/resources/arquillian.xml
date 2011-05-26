@@ -25,4 +25,16 @@
       <deploymentExportPath>target/test-archives</deploymentExportPath>
    </engine>
    -->
+   
+    <container qualifier="glassfish" default="true">
+        <configuration>
+            <property name="remoteServerAddress">localhost</property>
+            <property name="remoteServerHttpPort">8080</property>
+            <property name="remoteServerAdminPort">4848</property> 
+            <property name="remoteServerAdminUser">admin</property> 
+            <property name="remoteServerAdminPassword">password</property> 
+        </configuration>
+    </container>
+    
+    
 </arquillian>

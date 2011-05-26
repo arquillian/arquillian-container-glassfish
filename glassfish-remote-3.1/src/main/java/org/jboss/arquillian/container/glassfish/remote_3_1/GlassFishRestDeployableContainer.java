@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  *
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
@@ -32,6 +31,7 @@ import javax.xml.xpath.XPathFactory;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.multipart.file.FileDataBodyPart;
 import org.jboss.arquillian.spi.client.container.DeployableContainer;
@@ -54,18 +54,13 @@ import org.xml.sax.InputSource;
  */
 @SuppressWarnings({"HardcodedFileSeparator"})
 public class GlassFishRestDeployableContainer implements DeployableContainer<GlassFishRestConfiguration> {
+
     private static final String APPLICATION = "/applications/application";
-
     private static final String LIST_SUB_COMPONENTS = "/applications/application/list-sub-components?id=";
-
     private static final String SUCCESS = "SUCCESS";
-
     private String adminBaseUrl;
-
     private String applicationBaseUrl;
-
     private String deploymentName;
-
     private GlassFishRestConfiguration configuration;
 
     public Class<GlassFishRestConfiguration> getConfigurationClass() {
@@ -87,8 +82,7 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
             adminUrlBuilder.append("http://");
         }
 
-        adminUrlBuilder.append(this.configuration.getRemoteServerAddress()).append(":")
-                .append(this.configuration.getRemoteServerAdminPort()).append("/management/domain");
+        adminUrlBuilder.append(this.configuration.getRemoteServerAddress()).append(":").append(this.configuration.getRemoteServerAdminPort()).append("/management/domain");
 
         this.adminBaseUrl = adminUrlBuilder.toString();
 
@@ -100,8 +94,7 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
             applicationUrlBuilder.append("http://");
         }
 
-        applicationUrlBuilder.append(this.configuration.getRemoteServerAddress()).append(":")
-                .append(this.configuration.getRemoteServerHttpPort()).append("/");
+        applicationUrlBuilder.append(this.configuration.getRemoteServerAddress()).append(":").append(this.configuration.getRemoteServerHttpPort()).append("/");
 
         this.applicationBaseUrl = applicationUrlBuilder.toString();
     }
@@ -144,8 +137,7 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
             form.field("contextroot", archiveName.substring(0, archiveName.lastIndexOf(".")), MediaType.TEXT_PLAIN_TYPE);
             deploymentName = archiveName.substring(0, archiveName.lastIndexOf("."));
             form.field("name", deploymentName, MediaType.TEXT_PLAIN_TYPE);
-            final String xmlResponse = prepareClient(APPLICATION).type(MediaType.MULTIPART_FORM_DATA_TYPE)
-                    .post(String.class, form);
+            final String xmlResponse = prepareClient(APPLICATION).type(MediaType.MULTIPART_FORM_DATA_TYPE).post(String.class, form);
 
             try {
                 if (!isCallSuccessful(xmlResponse)) {
@@ -201,6 +193,11 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
      */
     private WebResource.Builder prepareClient(String additionalResourceUrl) {
         final Client client = Client.create();
+        if (configuration.isRemoteServerAuthorisation()) {
+            client.addFilter(new HTTPBasicAuthFilter(
+                    configuration.getRemoteServerAdminUser(),
+                    configuration.getRemoteServerAdminPassword()));
+        }
         return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_XML_TYPE);
     }
 

@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  *
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
@@ -25,96 +24,118 @@ import org.jboss.arquillian.spi.ConfigurationException;
 import org.jboss.arquillian.spi.ContainerProfile;
 import org.jboss.arquillian.spi.client.container.ContainerConfiguration;
 
-public class GlassFishRestConfiguration implements ContainerConfiguration
-{
-   /**
-    * Glassfish Admin Console port.
-    * Used to build the URL for the REST request.
-    */
-   private int remoteServerAdminPort = 4848;
+public class GlassFishRestConfiguration implements ContainerConfiguration {
 
-   /**
-    * Glassfish address.
-    * Used to build the URL for the REST request.
-    */
-   private String remoteServerAddress = "localhost";
+    /**
+     * Glassfish Admin Console port.
+     * Used to build the URL for the REST request.
+     */
+    private int remoteServerAdminPort = 4848;
+    /**
+     * Glassfish address.
+     * Used to build the URL for the REST request.
+     */
+    private String remoteServerAddress = "localhost";
+    /**
+     * Flag indicating the administration url uses a secure connection.
+     * Used to build the URL for the REST request.
+     */
+    private boolean remoteServerAdminHttps = false;
+    /**
+     * Flag indicating application urls use secure connections.
+     * Used to build the URL for the REST request.
+     */
+    private boolean remoteServerHttps = false;
+    /**
+     * Http port for application urls.
+     * Used to build the URL for the REST request.
+     */
+    private int remoteServerHttpPort = 8080;
+    /**
+     * Flag indicating the remote server requires an admin user and password. 
+     */
+    private boolean remoteServerAuthorisation = false;
+    /**
+     * Authorised admin user in the remote glassfish admin realm
+     */
+    private String remoteServerAdminUser;
+    /**
+     * Authorised admin user password
+     */
+    private String remoteServerAdminPassword;
 
-   /**
-    * Flag indicating the administration url uses a secure connection.
-    * Used to build the URL for the REST request.
-    */
-   private boolean remoteServerAdminHttps = false;
+    /**
+     * Type of container this is.
+     * @return CLIENT
+     */
+    public ContainerProfile getContainerProfile() {
+        return ContainerProfile.CLIENT;
+    }
 
-   /**
-    * Flag indicating application urls use secure connections.
-    * Used to build the URL for the REST request.
-    */
-   private boolean remoteServerHttps = false;
+    public String getRemoteServerAddress() {
+        return remoteServerAddress;
+    }
 
-   /**
-    * Http port for application urls.
-    * Used to build the URL for the REST request.
-    */
-   private int remoteServerHttpPort = 8080;
+    public void setRemoteServerAddress(String remoteServerAddress) {
+        this.remoteServerAddress = remoteServerAddress;
+    }
 
-   /**
-    * Type of container this is.
-    * @return CLIENT
-    */
-   public ContainerProfile getContainerProfile()
-   {
-      return ContainerProfile.CLIENT;
-   }
+    public int getRemoteServerAdminPort() {
+        return remoteServerAdminPort;
+    }
 
-   public String getRemoteServerAddress()
-   {
-      return remoteServerAddress;
-   }
+    public void setRemoteServerAdminPort(int remoteServerAdminPort) {
+        this.remoteServerAdminPort = remoteServerAdminPort;
+    }
 
-   public void setRemoteServerAddress(String remoteServerAddress)
-   {
-      this.remoteServerAddress = remoteServerAddress;
-   }
+    public boolean isRemoteServerAdminHttps() {
+        return remoteServerAdminHttps;
+    }
 
-   public int getRemoteServerAdminPort()
-   {
-      return remoteServerAdminPort;
-   }
+    public void setRemoteServerAdminHttps(boolean remoteServerAdminHttps) {
+        this.remoteServerAdminHttps = remoteServerAdminHttps;
+    }
 
-   public void setRemoteServerAdminPort(int remoteServerAdminPort)
-   {
-      this.remoteServerAdminPort = remoteServerAdminPort;
-   }
+    public int getRemoteServerHttpPort() {
+        return remoteServerHttpPort;
+    }
 
-   public boolean isRemoteServerAdminHttps()
-   {
-      return remoteServerAdminHttps;
-   }
+    public void setRemoteServerHttpPort(int remoteServerHttpPort) {
+        this.remoteServerHttpPort = remoteServerHttpPort;
+    }
 
-   public void setRemoteServerAdminHttps(boolean remoteServerAdminHttps)
-   {
-      this.remoteServerAdminHttps = remoteServerAdminHttps;
-   }
+    public boolean isRemoteServerHttps() {
+        return remoteServerHttps;
+    }
 
-   public int getRemoteServerHttpPort()
-   {
-      return remoteServerHttpPort;
-   }
+    public void setRemoteServerHttps(boolean remoteServerHttps) {
+        this.remoteServerHttps = remoteServerHttps;
+    }
 
-   public void setRemoteServerHttpPort(int remoteServerHttpPort)
-   {
-      this.remoteServerHttpPort = remoteServerHttpPort;
-   }
+    public boolean isRemoteServerAuthorisation() {
+        return remoteServerAuthorisation;
+    }
 
-   public boolean isRemoteServerHttps()
-   {
-      return remoteServerHttps;
-   }
+    public void setRemoteServerAuthorisation(boolean remoteServerAuthorisation) {
+        this.remoteServerAuthorisation = remoteServerAuthorisation;
+    }
 
-   public void setRemoteServerHttps(boolean remoteServerHttps)
-   {
-      this.remoteServerHttps = remoteServerHttps;
-   }
+    public String getRemoteServerAdminUser() {
+        return remoteServerAdminUser;
+    }
+
+    public void setRemoteServerAdminUser(String remoteServerAdminUser) {
+        this.setRemoteServerAuthorisation(true);
+        this.remoteServerAdminUser = remoteServerAdminUser;
+    }
+
+    public String getRemoteServerAdminPassword() {
+        return remoteServerAdminPassword;
+    }
+
+    public void setRemoteServerAdminPassword(String remoteServerAdminPassword) {
+        this.remoteServerAdminPassword = remoteServerAdminPassword;
+    }
 
     /**
      * Validates if current configuration is valid, that is if all required
