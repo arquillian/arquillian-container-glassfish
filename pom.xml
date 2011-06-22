@@ -29,6 +29,11 @@
         <version.shrinkwrap_glassfish_31>1.0.0-beta-1</version.shrinkwrap_glassfish_31>
         <version.jersey>1.5</version.jersey>
         <version.jboss.javaee-6_api>1.0.0.Final</version.jboss.javaee-6_api>
+
+        <!-- override from parent -->
+        <maven.compiler.target>1.5</maven.compiler.target>
+        <maven.compiler.source>1.5</maven.compiler.source>
+
     </properties>
 
     <dependencyManagement>
@@ -66,6 +71,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-build</artifactId>
+                <version>${version.arquillian_core}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -74,23 +86,5 @@
         <module>glassfish-embedded-3.1</module>
     </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <inherited>true</inherited>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <showDeprecation>false</showDeprecation>
-                    <showWarnings>true</showWarnings>
-                    <optimize>true</optimize>
-                    <compilerVersion>1.6</compilerVersion>
-                    <fork>true</fork>
-                    <argLine>-Xmx512M</argLine>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
 
