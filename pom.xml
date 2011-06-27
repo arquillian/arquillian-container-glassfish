@@ -16,21 +16,26 @@
     <!-- Artifact Configuration -->
     <groupId>org.jboss.arquillian.container</groupId>
     <artifactId>arquillian-parent-glassfish</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0.CR1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Arquillian Container Parent GlassFish</name>
     <description>GlassFish Container integrations for the Arquillian Project</description>
 
+    <scm>
+        <connection>scm:git:git://git@github.com:arquillian/arquillian-container-glassfish.git</connection>
+        <developerConnection>scm:git:ssh://github.com/arquillian/arquillian-container-glassfish.git</developerConnection>
+        <url>git://github.com/arquillian/arquillian-container-glassfish.git</url>
+    </scm>
 
     <!-- Properties -->
     <properties>
 
-        <version.arquillian_core>1.0.0.CR1-SNAPSHOT</version.arquillian_core>
-        <version.shrinkwrap_glassfish_31>1.0.0-beta-1</version.shrinkwrap_glassfish_31>
+        <version.arquillian_core>1.0.0.CR1</version.arquillian_core>
         <version.jersey>1.5</version.jersey>
         <version.jboss.javaee-6_api>1.0.0.Final</version.jboss.javaee-6_api>
 
         <!-- override from parent -->
+        <version.release.plugin>2.1</version.release.plugin>
         <maven.compiler.target>1.5</maven.compiler.target>
         <maven.compiler.source>1.5</maven.compiler.source>
 
@@ -38,12 +43,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.jboss.shrinkwrap.container</groupId>
-                <artifactId>shrinkwrap-container-glassfish-31</artifactId>
-                <version>${version.shrinkwrap_glassfish_31}</version>
-            </dependency>
-
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-bundle</artifactId>
@@ -63,7 +62,6 @@
                 <scope>test</scope>
             </dependency>
 
-
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
@@ -81,10 +79,22 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <pushChanges>false</pushChanges>
+                    <localCheckout>true</localCheckout>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <modules>
         <module>glassfish-remote-3.1</module>
         <module>glassfish-embedded-3.1</module>
     </modules>
 
 </project>
-
