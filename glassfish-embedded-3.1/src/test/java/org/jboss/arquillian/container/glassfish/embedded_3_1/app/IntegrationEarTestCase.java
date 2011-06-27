@@ -26,7 +26,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Ignore;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -36,7 +36,6 @@ import org.junit.runner.RunWith;
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @version $Revision: $
  */
-@Ignore // GlassFish bug, can't Inject @EJB from a ejb module in a war ? 
 @RunWith(Arquillian.class)
 public class IntegrationEarTestCase
 {
@@ -49,7 +48,11 @@ public class IntegrationEarTestCase
                            .addClasses(
                                  NoInterfaceEJB.class,
                                  NameProvider.class)
-                           .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
+                           .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"))
+                  .addAsModule(
+                        ShrinkWrap.create(WebArchive.class)
+                           .addClass(IntegrationEarTestCase.class)
+                           .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml"));
    }
    
    @EJB
