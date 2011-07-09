@@ -110,11 +110,11 @@ public class GlassFishClientUtil {
     private WebResource.Builder prepareClient(String additionalResourceUrl) 
     {
     	final Client client = Client.create();
-//        if (configuration.isRemoteServerAuthorisation()) {
-//            client.addFilter(new HTTPBasicAuthFilter(
-//                    configuration.getRemoteServerAdminUser(),
-//                    configuration.getRemoteServerAdminPassword()));
-//        }
+        if (configuration.isAuthorisation()) {
+            client.addFilter(new HTTPBasicAuthFilter(
+                    configuration.getAdminUser(),
+                    configuration.getAdminPassword()));
+        }
         
         return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_JSON_TYPE);
     }
