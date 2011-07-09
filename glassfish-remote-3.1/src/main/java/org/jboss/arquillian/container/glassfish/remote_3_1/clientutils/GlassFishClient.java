@@ -35,16 +35,16 @@ public interface GlassFishClient {
 	public static final String ADMINSERVER = "server";
 
 	/**
-	 * Get the the list node addresses list associated with the target
+	 * Get the node address list associated with the target
 	 * 
 	 * @param none
-	 * @return list of node addresses objects
+	 * @return list of node address objects
 	 */    
     public List<NodeAddress> getNodeAddressList();
     	
     /**
 	 * Do deploy an application defined by a multipart form's data
-	 * to the target server or cluster of GlassFish 3.1 appserver
+	 * to the target server or cluster of GlassFish 3.1
 	 * 
 	 * @param name		- name of the appliacation
 	 * 		  form		- a form of MediaType.MULTIPART_FORM_DATA_TYPE
@@ -53,7 +53,7 @@ public interface GlassFishClient {
     public Map<String, String> doDeploy(String name, FormDataMultiPart form) throws DeploymentException; 
 
     /**
-	 * Get the the context root associated by the application 
+	 * Do undeploy the application 
 	 * 
 	 * @param name 			- application name
 	 * @return responseMap

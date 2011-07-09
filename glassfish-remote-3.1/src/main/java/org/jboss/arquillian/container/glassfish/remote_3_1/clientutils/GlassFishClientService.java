@@ -165,7 +165,7 @@ public class GlassFishClientService implements GlassFishClient {
 	}
     
     /**
-	 * Get the list of cluster
+	 * Get the list of clusters
 	 * 
 	 * @param none
 	 * @return map of clusters
@@ -178,7 +178,7 @@ public class GlassFishClientService implements GlassFishClient {
 	}
     
     /**
-	 * Get the the context root associated with the application 
+	 * Get the contextroot associated with the application 
 	 * 
 	 * @param name 			- application name
 	 * @return contextRoot
@@ -190,7 +190,7 @@ public class GlassFishClientService implements GlassFishClient {
 	}
 
     /**
-	 * Get the the list of server instances of the cluster
+	 * Get the list of server instances of the cluster
 	 * 
 	 * @param target
 	 * @return server instances map
