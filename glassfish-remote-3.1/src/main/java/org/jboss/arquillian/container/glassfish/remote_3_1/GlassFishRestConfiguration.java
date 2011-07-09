@@ -49,7 +49,7 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 	 * Flag indicating application urls use secure connections.
 	 * Used to build the URL for the REST request.
 	 */
-	private boolean remoteServerHttps = false;
+	private boolean serverHttps = false;
 		
     /**
      * Flag indicating the remote server requires an admin user and password. 
@@ -161,14 +161,14 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 		this.adminHttps = adminHttps;
 	}
 	
-	public boolean isRemoteServerHttps()
+	public boolean isServerHttps()
 	{
-		return remoteServerHttps;
+		return serverHttps;
 	}
 	
-	public void setRemoteServerHttps(boolean remoteServerHttps)
+	public void setServerHttps(boolean serverHttps)
 	{
-		this.remoteServerHttps = remoteServerHttps;
+		this.serverHttps = serverHttps;
 	}	
 	
     public boolean isAuthorisation() {

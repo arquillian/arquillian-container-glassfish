@@ -132,7 +132,7 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
 			
             // Build up the HTTPContext object using the nodeAddress information
             NodeAddress nodeAddress = nodeAddressList.get(0); 
-            int port = ( !this.configuration.isRemoteServerHttps() ) ? nodeAddress.getHttpPort() : nodeAddress.getHttpsPort();
+            int port = ( !this.configuration.isServerHttps() ) ? nodeAddress.getHttpPort() : nodeAddress.getHttpsPort();
             HTTPContext httpContext = new HTTPContext( nodeAddress.getHost(), port );
 			
             // Add the servlets to the HTTPContext

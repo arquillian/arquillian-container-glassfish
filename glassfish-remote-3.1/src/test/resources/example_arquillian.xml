@@ -15,7 +15,7 @@
                 <property name="adminHttps">false</property>
                 <property name="adminHost">localhost</property>
                 <property name="adminPort">4848</property>
-                <property name="remoteServerHttps">false</property>
+                <property name="serverHttps">false</property>
                 <property name="adminUser">admin</property>
                 <property name="adminPassword">yourPassword</property>
                 <property name="name">myTestWar03</property>
