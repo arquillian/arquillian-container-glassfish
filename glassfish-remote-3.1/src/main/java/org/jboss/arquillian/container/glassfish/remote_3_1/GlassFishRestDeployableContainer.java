@@ -21,15 +21,8 @@
 package org.jboss.arquillian.container.glassfish.remote_3_1;
 
 import java.io.File;
-import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.net.URL;
-
-import javax.ws.rs.core.MediaType;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
@@ -37,99 +30,77 @@ import org.jboss.arquillian.container.spi.client.container.LifecycleException;
 import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
-import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
+import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClient;
+import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClientException;
+import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClientService;
+
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import javax.ws.rs.core.MediaType;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.multipart.file.FileDataBodyPart;
+
+import java.util.logging.Logger;
 
 /**
  * Glassfish v3.1 remote container using REST deployment.
  *
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
-@SuppressWarnings({"HardcodedFileSeparator"})
 public class GlassFishRestDeployableContainer implements DeployableContainer<GlassFishRestConfiguration> {
-
-    private static final String APPLICATION = "/applications/application";
-    private static final String LIST_SUB_COMPONENTS = "/applications/application/list-sub-components?id=";
-    private static final String SUCCESS = "SUCCESS";
-    private String adminBaseUrl;
-    private String applicationBaseUrl;
-    private String deploymentName;
+	
+	public static final String DELETE_OPERATION = "__deleteoperation";
+	
+	private String deploymentName;
+	
     private GlassFishRestConfiguration configuration;
-
+	
+    private GlassFishClient glassFishClient;
+	
+	private static final Logger log = Logger.getLogger(GlassFishRestDeployableContainer.class.getName());
+	
     public Class<GlassFishRestConfiguration> getConfigurationClass() {
         return GlassFishRestConfiguration.class;
     }
-
+	
     public void setup(GlassFishRestConfiguration configuration) {
         if (configuration == null) {
             throw new IllegalArgumentException("configuration must not be null");
         }
-
         this.configuration = configuration;
-
-        final StringBuilder adminUrlBuilder = new StringBuilder();
-
-        if (this.configuration.isRemoteServerAdminHttps()) {
-            adminUrlBuilder.append("https://");
-        } else {
-            adminUrlBuilder.append("http://");
-        }
-
-        adminUrlBuilder.append(this.configuration.getRemoteServerAddress()).append(":")
-                       .append(this.configuration.getRemoteServerAdminPort()).append("/management/domain");
-
-        this.adminBaseUrl = adminUrlBuilder.toString();
-
-        final StringBuilder applicationUrlBuilder = new StringBuilder();
-
-        if (this.configuration.isRemoteServerHttps()) {
-            applicationUrlBuilder.append("https://");
-        } else {
-            applicationUrlBuilder.append("http://");
-        }
-
-        applicationUrlBuilder.append(this.configuration.getRemoteServerAddress()).append(":")
-                             .append(this.configuration.getRemoteServerHttpPort()).append("/");
-
-        this.applicationBaseUrl = applicationUrlBuilder.toString();
+        
+        // Start up the GlassFishClient service layer
+        this.glassFishClient = new GlassFishClientService(configuration);        
     }
+	
+    public void start() throws LifecycleException {   	
+		
+    	try {			
 
-    public void start() throws LifecycleException {
-        final String xmlResponse = prepareClient().get(String.class);
-
-        try {
-            if (!isCallSuccessful(xmlResponse)) {
-                throw new LifecycleException("Server is not running");
-            }
-        } catch (XPathExpressionException e) {
-            throw new LifecycleException("Error verifying the sever is running", e);
+    		glassFishClient.startUp();
+			
+    	} catch (GlassFishClientException e) {
+    		log.severe( e.getMessage() );
+    		throw new LifecycleException( e.getMessage() );
         }
     }
-
+	
     public void stop() throws LifecycleException {
-       // NO-OP
+        //To change body of implemented methods use File | Settings | File Templates.
     }
-
+	
     public ProtocolDescription getDefaultProtocol() {
         return new ProtocolDescription("Servlet 3.0");
     }
-
+	
     public ProtocolMetaData deploy(Archive<?> archive) throws DeploymentException {
         if (archive == null) {
             throw new IllegalArgumentException("archive must not be null");
         }
-
-        final String archiveName = archive.getName();
-
+		
+        final ProtocolMetaData protocolMetaData = new ProtocolMetaData();
+		
         try {
             // Export to a file so we can send it over the wire
             URL archiveFile = ShrinkWrapUtil.toURL(archive);
@@ -138,123 +109,90 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
             final FormDataMultiPart form = new FormDataMultiPart();
             try
             {
-               form.getBodyParts().add(new FileDataBodyPart("id", new File(archiveFile.toURI())));
+				form.getBodyParts().add(new FileDataBodyPart("id", new File(archiveFile.toURI())));
             }
             catch (URISyntaxException e1)
             {
-               throw new DeploymentException("Could not convert exported deployment URL to URI?", e1);
+				throw new DeploymentException("Could not convert exported deployment URL to URI?", e1);
             }
-            form.field("contextroot", archiveName.substring(0, archiveName.lastIndexOf(".")), MediaType.TEXT_PLAIN_TYPE);
-            deploymentName = archiveName.substring(0, archiveName.lastIndexOf("."));
-            form.field("name", deploymentName, MediaType.TEXT_PLAIN_TYPE);
-            final String xmlResponse = prepareClient(APPLICATION).type(MediaType.MULTIPART_FORM_DATA_TYPE).post(String.class, form);
-
-            try {
-                if (!isCallSuccessful(xmlResponse)) {
-                    throw new DeploymentException(getMessage(xmlResponse));
-                }
-            } catch (XPathExpressionException e) {
-                throw new DeploymentException("Error finding exit code or message", e);
-            }
-
-            // Call has been successful, now we need another call to get the list of servlets
-            final String subComponentsResponse = prepareClient(LIST_SUB_COMPONENTS + this.deploymentName).get(String.class);
-
-            return this.parseForProtocolMetaData(subComponentsResponse);
-        } catch (XPathExpressionException e) {
-            throw new DeploymentException("Error in creating / deploying archive", e);
+            
+            deploymentName = createDeploymentName(archive.getName());
+            addDeployFormFields(deploymentName, form);
+            
+            // Do Deploy the application on the remote GlassFish
+            HTTPContext httpContext = glassFishClient.doDeploy(deploymentName, form);			
+            protocolMetaData.addContext(httpContext);
+            
+        } catch (GlassFishClientException e) {
+            throw new DeploymentException("Could not deploy " + archive.getName(), e);
         }
-    }
-
-    public void undeploy(Archive<?> archive) throws DeploymentException {
-        final String xmlResponse = prepareClient(APPLICATION + "/" + this.deploymentName).delete(String.class);
-
-        try {
-            if (!isCallSuccessful(xmlResponse)) {
-                throw new DeploymentException(getMessage(xmlResponse));
-            }
-        } catch (XPathExpressionException e) {
-            throw new DeploymentException("Error finding exit code or message", e);
-        }
-    }
-
-    public void deploy(Descriptor descriptor) throws DeploymentException {
-        throw new UnsupportedOperationException("Not implemented");
-    }
-
-    public void undeploy(Descriptor descriptor) throws DeploymentException {
-        throw new UnsupportedOperationException("Not implemented");
-    }
-
-    /**
-     * Basic REST call preparation
-     *
-     * @return the resource builder to execute
-     */
-    private WebResource.Builder prepareClient() {
-        return prepareClient("");
-    }
-
-    /**
-     * Basic REST call preparation, with the additional resource url appended
-     *
-     * @param additionalResourceUrl url portion past the base to use
-     * @return the resource builder to execute
-     */
-    private WebResource.Builder prepareClient(String additionalResourceUrl) {
-        final Client client = Client.create();
-        if (configuration.isRemoteServerAuthorisation()) {
-            client.addFilter(new HTTPBasicAuthFilter(
-                    configuration.getRemoteServerAdminUser(),
-                    configuration.getRemoteServerAdminPassword()));
-        }
-        return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Looks for a successful exit code given the response of the call
-     *
-     * @param xmlResponse XML response from the REST call
-     * @return true if call was successful, false otherwise
-     * @throws XPathExpressionException if the xpath query could not be executed
-     */
-    private boolean isCallSuccessful(String xmlResponse) throws XPathExpressionException {
-        final XPath xpath = XPathFactory.newInstance().newXPath();
-
-        final String exitCode = xpath.evaluate("/map/entry[@key = 'exit_code']/@value",
-                new InputSource(new StringReader(xmlResponse)));
-
-        return !(exitCode == null || !SUCCESS.equals(exitCode));
-
-    }
-
-    /**
-     * Finds the message from the response.
-     *
-     * @param xmlResponse XML response from the REST call
-     * @return true if call was successful, false otherwise
-     * @throws XPathExpressionException if the xpath query could not be executed
-     */
-    private String getMessage(String xmlResponse) throws XPathExpressionException {
-        final XPath xpath = XPathFactory.newInstance().newXPath();
-        return xpath.evaluate("/map/entry[@key = 'message']/@value", new InputSource(new StringReader(xmlResponse)));
-    }
-
-    private ProtocolMetaData parseForProtocolMetaData(String xmlResponse) throws XPathExpressionException {
-        final ProtocolMetaData protocolMetaData = new ProtocolMetaData();
-        final HTTPContext httpContext = new HTTPContext(this.configuration.getRemoteServerAddress(),
-                this.configuration.getRemoteServerHttpPort());
-
-        final XPath xpath = XPathFactory.newInstance().newXPath();
-
-        NodeList servlets = (NodeList) xpath.evaluate("/map/entry[@key = 'properties']/map/entry[@value = 'Servlet']",
-                new InputSource(new StringReader(xmlResponse)), XPathConstants.NODESET);
-
-        for (int i = 0; i < servlets.getLength(); i++) {
-            httpContext.add(new Servlet(servlets.item(i).getAttributes().getNamedItem("key").getNodeValue(), this.deploymentName));
-        }
-
-        protocolMetaData.addContext(httpContext);
         return protocolMetaData;
     }
+	
+    public void undeploy(Archive<?> archive) throws DeploymentException {
+		
+    	if (archive == null) {
+            throw new IllegalArgumentException("archive must not be null");
+        } else {
+			
+        	deploymentName = createDeploymentName(archive.getName());
+        	try {
+	            // Build up the POST form to send to Glassfish
+	            final FormDataMultiPart form = new FormDataMultiPart();
+	            form.field("target", this.configuration.getTarget(), MediaType.TEXT_PLAIN_TYPE);        	        	
+	            form.field("operation", DELETE_OPERATION, MediaType.TEXT_PLAIN_TYPE);
+	        	glassFishClient.doUndeploy(this.deploymentName, form);
+	        } catch (GlassFishClientException e) {
+	            throw new DeploymentException("Could not undeploy " + archive.getName(), e);
+	        }
+        }
+		
+    }
+	
+    public void deploy(Descriptor descriptor) throws DeploymentException {
+		throw new UnsupportedOperationException("Not implemented");
+    }
+	
+    public void undeploy(Descriptor descriptor) throws DeploymentException {
+		throw new UnsupportedOperationException("Not implemented");
+    }
+	
+    private String createDeploymentName(String archiveName)
+    {
+		String correctedName = archiveName;
+		if(correctedName.startsWith("/"))
+		{
+			correctedName = correctedName.substring(1);
+		}
+		if(correctedName.indexOf(".") != -1)
+		{
+			correctedName = correctedName.substring(0, correctedName.lastIndexOf("."));
+		}
+		return correctedName;
+    }
+	
+    private void addDeployFormFields(String name, FormDataMultiPart deployform) {
+		
+        // add the name field, the name is the archive filename without extension 
+        deployform.field("name", name, MediaType.TEXT_PLAIN_TYPE);
+		
+        // add the target field (the default is "server" - Admin Server)
+        deployform.field("target", this.configuration.getTarget(), MediaType.TEXT_PLAIN_TYPE);        
+		
+        // add the libraries field (optional)
+        if ( this.configuration.getLibraries() != null )  {
+        	deployform.field("libraries", this.configuration.getLibraries(), MediaType.TEXT_PLAIN_TYPE);
+        }
+		
+        // add the properties field (optional)
+        if ( this.configuration.getProperties() != null )  {
+        	deployform.field("properties", this.configuration.getProperties(), MediaType.TEXT_PLAIN_TYPE);
+        }
+		
+        // add the type field (optional, the only valid value is "osgi", other values are ommited)
+        if ( this.configuration.getType() != null && "osgi".equals(this.configuration.getType()) )  {
+        	deployform.field("type", this.configuration.getType(), MediaType.TEXT_PLAIN_TYPE);
+        }
+    }
+	
 }
