@@ -1,0 +1,157 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat Middleware LLC, and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ *
+ * @author Z.Paulovics
+ */
+package org.jboss.arquillian.container.glassfish.remote_3_1.clientutils;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.ws.rs.core.MediaType;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.api.container.ContainerException;
+import com.sun.jersey.multipart.FormDataMultiPart;
+import org.jboss.arquillian.container.glassfish.remote_3_1.GlassFishRestConfiguration;
+
+
+public class GlassFishClientUtil {
+
+	public static final String SUCCESS = "SUCCESS";
+
+	private GlassFishRestConfiguration configuration;
+
+	private String adminBaseUrl;
+	
+	private static final Logger log = Logger.getLogger(GlassFishClientUtil.class.getName());
+
+	public GlassFishClientUtil(GlassFishRestConfiguration configuration, String adminBaseUrl) 
+	{
+		this.configuration = configuration;
+		this.adminBaseUrl = adminBaseUrl;		
+	}
+	
+	public GlassFishRestConfiguration getConfiguration()
+	{
+		return configuration;
+	}	
+	
+	public Map<String, String> getAttributes(String additionalResourceUrl) 
+	{
+		Map responseMap = GETRequest(additionalResourceUrl);
+    	Map<String, String> attributes = new HashMap<String, String>();
+    
+	    Map resultExtraProperties = (Map) responseMap.get("extraProperties");
+	    if (resultExtraProperties != null) {	  
+	    	attributes = (Map<String, String>) resultExtraProperties.get("entity");
+	    }
+
+	    return attributes;
+	}
+
+    public Map<String, String> getChildResources(String additionalResourceUrl) throws ContainerException 
+    {
+    	Map responseMap = GETRequest(additionalResourceUrl);
+    	Map<String, String> childResources = new HashMap<String, String>();
+    
+	    Map resultExtraProperties = (Map) responseMap.get("extraProperties");
+	    if (resultExtraProperties != null) {	  
+	    	childResources = (Map<String, String>) resultExtraProperties.get("childResources");
+	    }
+
+	    return childResources;
+    }
+
+    public Map GETRequest(String additionalResourceUrl) 
+    {
+    	//TODO if the target server is down, we get ClientResponseException. Need to handle it
+    	ClientResponse response = prepareClient(additionalResourceUrl).get(ClientResponse.class);
+    	Map responseMap = getResponceMap(response);
+    	
+    	return responseMap;
+	}
+    
+    public Map POSTMultiPartRequest(String additionalResourceUrl, FormDataMultiPart form) 
+    {
+    	//TODO if the target server is down, we get ClientResponseException. Need to handle it
+    	ClientResponse response = prepareClient(additionalResourceUrl).type(MediaType.MULTIPART_FORM_DATA_TYPE)
+    		.post(ClientResponse.class, form);
+    	Map responseMap = getResponceMap(response);
+    	
+    	return responseMap;
+	}
+
+    /**
+     * Basic REST call preparation, with the additional resource url appended
+     *
+     * @param additionalResourceUrl url portion past the base to use
+     * @return the resource builder to execute
+     */
+    private WebResource.Builder prepareClient(String additionalResourceUrl) 
+    {
+    	final Client client = Client.create();
+//        if (configuration.isRemoteServerAuthorisation()) {
+//            client.addFilter(new HTTPBasicAuthFilter(
+//                    configuration.getRemoteServerAdminUser(),
+//                    configuration.getRemoteServerAdminPassword()));
+//        }
+        
+        return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_JSON_TYPE);
+    }
+	
+    private Map getResponceMap(ClientResponse response) throws ContainerException 
+    {
+    	Map responseMap = new HashMap(); String message = "";
+        final String jsonDoc = response.getEntity(String.class);
+        
+    	// Marshalling the JSON format responce to the respoanseMap
+        if (jsonDoc != null) {
+        	responseMap = MarshallingUtils.buildMapFromDocument(jsonDoc);
+
+        	message = "GlassFish: [command: " + responseMap.get("command") 
+				+ ", exit_code: " + responseMap.get("exit_code")
+				+ ", message: "+ responseMap.get("message") +"]";	    		        	
+        } 
+
+    	ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
+	    if ( status.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL ) {
+
+	    	// O.K. the jersey call was successful, what about the GlassFish server response?
+	    	if ( responseMap.get("exit_code") == null || !SUCCESS.equals(responseMap.get("exit_code")) ) {
+	    		throw new GlassFishClientException(message);
+	    	}
+
+	    } else if (status.getReasonPhrase() == "Not Found") {
+	    	// the REST serource can not be found (for optional resources it can be O.K.)
+	    	message += "; Jersey [satus: " + status.getFamily() + ",  reason: " + status.getReasonPhrase() +"]";
+	        log.warning(message);
+	    } else {
+	    	message += "; Jersey [satus: " + status.getFamily() + ",  reason: " + status.getReasonPhrase() +"]";
+	    	log.severe(message);
+	    	throw new ContainerException(message);
+	    }
+
+	    return responseMap;
+    }
+    
+}
