@@ -20,7 +20,8 @@
 
 Using the target we can navigate through the GlassFish REST objects
 to resolve the host address and port numbers for the testing node.
-Automatic fetch of this data, provides less also related to ARQ-450. 
+Automatic fetch of these data, provides an more easy usable solution. 
+Also related to ARQ-450: "SSL for the rest of the servers". 
 
 2. We should introduce new property keys for this new feature.
 
