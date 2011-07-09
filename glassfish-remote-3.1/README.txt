@@ -1,14 +1,12 @@
 
-
-
 1. GlassFish has a notion of TARGET, which specifies the target to which
  you are  deploying. We should use this way in relation to ARQ-269 
  solution.
  
  Valid values are:
  	server
-	   	Deploys the component to the default server instance
-	   	server. This is the default value.
+	   	Deploys the component to the default Admin Server instance.
+	   	This is the default value.
    instance_name
 	   	Deploys the component to  a  particular  stand-alone
 	   	sever instance.
@@ -22,7 +20,7 @@
 
 Using the target we can navigate through the GlassFish REST objects
 to resolve the host address and port numbers for the testing node.
-Automatic fetch of this data, provides less  
+Automatic fetch of this data, provides less also related to ARQ-450. 
 
 2. We should introduce new property keys for this new feature.
 
@@ -32,4 +30,4 @@ provides much more real life like environment for our test.
 
 The most important ones are: name, contextroot, libraries, properties
 type, etc. Using the same keys with the same semantic as GlassFish
-use them simplifies       
+use them simplifies the learning curve.      
