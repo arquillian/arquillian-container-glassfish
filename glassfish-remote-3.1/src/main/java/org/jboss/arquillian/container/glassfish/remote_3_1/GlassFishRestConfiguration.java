@@ -78,8 +78,8 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 	 * 
 	 * Valid values are:
 	 * 	server
-	 *   	Deploys the component to the default server instance
-	 *   	server. This is the default value.
+	 *   	Deploys the component to the default Admin Server instance.
+	 *   	This is the default value.
 	 *   instance_name
 	 *   	Deploys the component to  a  particular  stand-alone
 	 *   	sever instance.
@@ -256,8 +256,8 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
     public void validate() throws ConfigurationException {
        if(isAuthorisation())
        {
-          Validate.notNull(getAdminUser(), "remoteServerAdminUser must be specified to use remoteServerAuthorisation");
-          Validate.notNull(getAdminPassword(), "remoteServerAdminPassword must be specified to use remoteServerAuthorisation");
+          Validate.notNull(getAdminUser(), "adminUser must be specified to use authorisation");
+          Validate.notNull(getAdminPassword(), "adminPassword must be specified to use authorisation");
        }
     }
 }
