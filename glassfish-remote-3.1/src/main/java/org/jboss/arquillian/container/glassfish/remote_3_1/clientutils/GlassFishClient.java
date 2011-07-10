@@ -61,7 +61,7 @@ public interface GlassFishClient {
 	public Map doUndeploy(String name, FormDataMultiPart form); 
     
     /**
-	 * Get the the context root associated by the application 
+	 * Get the context root associated with the application 
 	 * 
 	 * @param name 			- application name
 	 * @return contextRoot

@@ -126,7 +126,7 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
             deploymentName = archiveName.substring(0, archiveName.lastIndexOf("."));
             addDeployFormFields(form);
             
-            // TODO validate the name & contextroot whether they have taken by another webmodule!!!
+            // TODO validate the name & contextroot whether they have been taken by another webmodule!!!
             // Do Deploy the application
             Map<String, String> subComponents = glassFishClient.doDeploy(this.deploymentName, form);
 			
