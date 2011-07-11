@@ -161,7 +161,7 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
             form.field("operation", DELETE_OPERATION, MediaType.TEXT_PLAIN_TYPE);
         	glassFishClient.doUndeploy(this.deploymentName, form);
         } catch (GlassFishClientException e) {
-            throw new DeploymentException("Error finding exit code or message", e);
+            throw new DeploymentException("Error in undeploying the archive", e);
         }
     }
 	
