@@ -274,7 +274,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       }
       if(correctedName.indexOf(".") != -1)
       {
-         correctedName = correctedName.substring(0, archiveName.lastIndexOf(".")-1);
+         correctedName = correctedName.substring(0, correctedName.lastIndexOf("."));
       }
       return correctedName;
    }
