@@ -30,7 +30,7 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 public interface GlassFishClient {
 
     /**
-     * Admin Server key for the REST response.
+     * Admin Server key for the REST request.
      */
 	public static final String ADMINSERVER = "server";
 
