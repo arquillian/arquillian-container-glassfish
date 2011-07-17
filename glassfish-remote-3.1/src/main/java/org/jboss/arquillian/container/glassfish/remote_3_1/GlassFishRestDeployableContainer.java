@@ -123,7 +123,7 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
                throw new DeploymentException("Could not convert exported deployment URL to URI?", e1);
             }
             
-            deploymentName = archiveName.substring(0, archiveName.lastIndexOf("."));
+            deploymentName = createDeploymentName(archiveName);
             addDeployFormFields(form);
             
             // TODO validate the name & contextroot whether they have been taken by another webmodule!!!
@@ -154,14 +154,25 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
     }
 
     public void undeploy(Archive<?> archive) throws DeploymentException {
-        try {
-            // Build up the POST form to send to Glassfish
-            final FormDataMultiPart form = new FormDataMultiPart();
-            form.field("target", this.configuration.getTarget(), MediaType.TEXT_PLAIN_TYPE);        	        	
-            form.field("operation", DELETE_OPERATION, MediaType.TEXT_PLAIN_TYPE);
-        	glassFishClient.doUndeploy(this.deploymentName, form);
-        } catch (GlassFishClientException e) {
-            throw new DeploymentException("Error in undeploying the archive", e);
+    	if (archive == null) {
+            throw new IllegalArgumentException("archive must not be null");
+        } else {
+			
+        	deploymentName = createDeploymentName(archive.getName());
+        	if ( this.configuration.getName() != null )  {
+                // name property from arquillian.xml overrides the deploymentName   
+        		this.deploymentName = this.configuration.getName();
+            }        
+			
+        	try {
+	            // Build up the POST form to send to Glassfish
+	            final FormDataMultiPart form = new FormDataMultiPart();
+	            form.field("target", this.configuration.getTarget(), MediaType.TEXT_PLAIN_TYPE);        	        	
+	            form.field("operation", DELETE_OPERATION, MediaType.TEXT_PLAIN_TYPE);
+	        	glassFishClient.doUndeploy(this.deploymentName, form);
+	        } catch (GlassFishClientException e) {
+	            throw new DeploymentException("Could not undeploy " + archive.getName(), e);
+	        }
         }
     }
 	
@@ -173,6 +184,20 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
         throw new UnsupportedOperationException("Not implemented");
     }
 
+    private String createDeploymentName(String archiveName)
+    {
+		String correctedName = archiveName;
+		if(correctedName.startsWith("/"))
+		{
+			correctedName = correctedName.substring(1);
+		}
+		if(correctedName.indexOf(".") != -1)
+		{
+			correctedName = correctedName.substring(0, correctedName.lastIndexOf("."));
+		}
+		return correctedName;
+    }
+	
     private void addDeployFormFields(FormDataMultiPart deployform) {
 		
         // add the name field (default is the archive filename without extension) 
