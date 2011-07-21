@@ -47,6 +47,7 @@ import com.sun.jersey.multipart.file.FileDataBodyPart;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Glassfish v3.1 remote container using REST deployment.
@@ -66,7 +67,7 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
     
     private GlassFishClient glassFishClient;
 	
-	private static final Logger log = Logger.getLogger(GlassFishClientUtil.class.getName());
+	private static final Logger log = Logger.getLogger(GlassFishRestDeployableContainer.class.getName());
 	
     public Class<GlassFishRestConfiguration> getConfigurationClass() {
         return GlassFishRestConfiguration.class;
