@@ -18,7 +18,6 @@
                 <property name="serverHttps">false</property>
                 <property name="adminUser">admin</property>
                 <property name="adminPassword">yourPassword</property>
-                <property name="name">myTestWar03</property>
                 <property name="target">ejb-i2</property>
  -->
 	       </configuration>
