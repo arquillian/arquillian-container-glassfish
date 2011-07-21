@@ -50,7 +50,14 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 	 * Used to build the URL for the REST request.
 	 */
 	private boolean serverHttps = false;
-		
+	
+	/**
+	 * @deprecated
+	 * Http port for application urls.
+	 * Used to build the URL for the REST request.
+	 */
+	private int remoteServerHttpPort = 8080;
+	
     /**
      * Flag indicating the remote server requires an admin user and password. 
      */
@@ -60,18 +67,11 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
      * Authorised admin user in the remote glassfish admin realm
      */
     private String adminUser;
-
+	
     /**
      * Authorised admin user password
      */
     private String adminPassword;
-	
-	/**
-	 * Name of the deployable component.
-	 * default: deployment to filename without extension.
-	 * Comment: No versioning should be used.
-	 */
-	private String name = null;
 	
 	/**
 	 * Specifies the target to which you are  deploying. 
@@ -92,15 +92,6 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 	 * senarion in case of testing. 
 	 */
 	private String target = GlassFishClient.ADMINSERVER;
-	
-	/**
-	 * Specifies the contextroot for the deployed application.
-	 * 
-	 * Valid only if the archive is a web module. It is ignored 
-	 * for  other  archive  types; defaults deployment to filename 
-	 * without extension.
-	 */
-	private String contextroot = null;
 	
 	/**
 	 * A comma-separated list of library JAR files. Specify the
@@ -136,6 +127,14 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 		return adminHost;
 	}
 	
+	/**
+	 * @deprecated
+	 */
+	public void setRemoteServerAddress(String adminHost)
+	{
+		this.adminHost = adminHost;
+	}
+	
 	public void setAdminHost(String adminHost)
 	{
 		this.adminHost = adminHost;
@@ -144,6 +143,14 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 	public int getAdminPort()
 	{
 		return adminPort;
+	}
+	
+	/**
+	 * @deprecated
+	 */
+	public void setRemoteServerAdminPort(int adminPort)
+	{
+		this.adminPort = adminPort;
 	}
 	
 	public void setAdminPort(int adminPort)
@@ -156,6 +163,14 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 		return adminHttps;
 	}
 	
+	/**
+	 * @deprecated
+	 */
+	public void setRemoteServerAdminHttps(boolean adminHttps)
+	{
+		this.adminHttps = adminHttps;
+	}
+	
 	public void setAdminHttps(boolean adminHttps)
 	{
 		this.adminHttps = adminHttps;
@@ -166,6 +181,28 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 		return serverHttps;
 	}
 	
+	/**
+	 * @deprecated
+	 */
+    public int getRemoteServerHttpPort() {
+    	return remoteServerHttpPort;
+    }
+	
+	/**
+	 * @deprecated
+	 */
+    public void setRemoteServerHttpPort(int remoteServerHttpPort) {
+    	this.remoteServerHttpPort = remoteServerHttpPort;
+    }
+	
+	/**
+	 * @deprecated
+	 */
+	public void setRemoteServerHttps(Boolean serverHttps)
+	{
+		this.serverHttps = serverHttps;
+	}
+	
 	public void setServerHttps(boolean serverHttps)
 	{
 		this.serverHttps = serverHttps;
@@ -174,35 +211,27 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
     public boolean isAuthorisation() {
         return authorisation;
     }
-
+	
     public void setAuthorisation(boolean authorisation) {
         this.authorisation = authorisation;
     }
-
+	
     public String getAdminUser() {
         return adminUser;
     }
-
+	
     public void setAdminUser(String adminUser) {
         this.setAuthorisation(true);
         this.adminUser = adminUser;
     }
-
+	
     public String getAdminPassword() {
         return adminPassword;
     }
-
+	
     public void setAdminPassword(String adminPassword) {
         this.adminPassword = adminPassword;
     }
-
-	public String getName() {
-		return name; 
-	}
-	
-	public void setName(String name) {
-		this.name = name; 
-	}
 	
 	public String getTarget() {
 		return target; 
@@ -210,19 +239,6 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 	
 	public void setTarget(String target) {
 		this.target = target; 
-	}
-	
-	public String getContextroot() {
-		return contextroot; 
-	}
-	
-	public void setContextroot(String contextroot) {
-		if(!contextroot.startsWith("/"))
-		{
-			this.contextroot = "/" + contextroot;
-		} else {
-			this.contextroot = contextroot;
-		}
 	}
 	
 	public String getLibraries() {
@@ -254,10 +270,10 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
      * properties are set and have correct values
      */
     public void validate() throws ConfigurationException {
-       if(isAuthorisation())
-       {
-          Validate.notNull(getAdminUser(), "adminUser must be specified to use authorisation");
-          Validate.notNull(getAdminPassword(), "adminPassword must be specified to use authorisation");
-       }
+		if(isAuthorisation())
+		{
+			Validate.notNull(getAdminUser(), "adminUser must be specified to use authorisation");
+			Validate.notNull(getAdminPassword(), "adminPassword must be specified to use authorisation");
+		}
     }
 }

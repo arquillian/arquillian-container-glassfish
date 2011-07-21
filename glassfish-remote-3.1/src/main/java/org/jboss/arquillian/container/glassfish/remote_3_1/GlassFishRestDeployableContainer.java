@@ -66,6 +66,8 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
     
     private GlassFishClient glassFishClient;
 	
+	private static final Logger log = Logger.getLogger(GlassFishClientUtil.class.getName());
+	
     public Class<GlassFishRestConfiguration> getConfigurationClass() {
         return GlassFishRestConfiguration.class;
     }
@@ -74,16 +76,15 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
         if (configuration == null) {
             throw new IllegalArgumentException("configuration must not be null");
         }
-		
         this.configuration = configuration;
         
         // Start up the GlassFishClient service layer
         this.glassFishClient = new GlassFishClientService(configuration);        
     }
 	
-    public void start() throws LifecycleException {
-    	try {
-			
+    public void start() throws LifecycleException {   	
+		
+    	try {			
     		// Resolve the remote server HOST address & port numbers
     		this.nodeAddressList = glassFishClient.getNodeAddressList();
 			
@@ -104,8 +105,7 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
         if (archive == null) {
             throw new IllegalArgumentException("archive must not be null");
         }
-
-        final String archiveName = archive.getName();
+		
         final ProtocolMetaData protocolMetaData = new ProtocolMetaData();
 		
         try {
@@ -116,54 +116,33 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
             final FormDataMultiPart form = new FormDataMultiPart();
             try
             {
-               form.getBodyParts().add(new FileDataBodyPart("id", new File(archiveFile.toURI())));
+				form.getBodyParts().add(new FileDataBodyPart("id", new File(archiveFile.toURI())));
             }
             catch (URISyntaxException e1)
             {
-               throw new DeploymentException("Could not convert exported deployment URL to URI?", e1);
+				throw new DeploymentException("Could not convert exported deployment URL to URI?", e1);
             }
             
-            deploymentName = createDeploymentName(archiveName);
-            addDeployFormFields(form);
+            deploymentName = createDeploymentName(archive.getName());
+            addDeployFormFields(deploymentName, form);
             
-            // TODO validate the name & contextroot whether they have been taken by another webmodule!!!
-            // Do Deploy the application
-            Map<String, String> subComponents = glassFishClient.doDeploy(this.deploymentName, form);
-			
-            // Build up the HTTPContext object using the nodeAddress information
-            NodeAddress nodeAddress = nodeAddressList.get(0); 
-            int port = ( !this.configuration.isServerHttps() ) ? nodeAddress.getHttpPort() : nodeAddress.getHttpsPort();
-            HTTPContext httpContext = new HTTPContext( nodeAddress.getHost(), port );
-			
-            // Add the servlets to the HTTPContext
-            String componentName;
-            String contextRoot = glassFishClient.getApplicationConterxtRoot(this.deploymentName);
-            for (Map.Entry subComponent : subComponents.entrySet()) {
-            	if ( "Servlet".equals(subComponent.getValue()) ){
-                    componentName = subComponent.getKey().toString();
-                    httpContext.add(new Servlet(componentName, contextRoot));
-            	}
-            }
-			
+            // Do Deploy the application on the remote GlassFish
+            HTTPContext httpContext = glassFishClient.doDeploy(deploymentName, form);			
             protocolMetaData.addContext(httpContext);
-			
+            
         } catch (GlassFishClientException e) {
-            throw new DeploymentException("Error in creating / deploying archive", e);
+            throw new DeploymentException("Could not deploy " + archive.getName(), e);
         }
         return protocolMetaData;
     }
-
+	
     public void undeploy(Archive<?> archive) throws DeploymentException {
+		
     	if (archive == null) {
             throw new IllegalArgumentException("archive must not be null");
         } else {
 			
         	deploymentName = createDeploymentName(archive.getName());
-        	if ( this.configuration.getName() != null )  {
-                // name property from arquillian.xml overrides the deploymentName   
-        		this.deploymentName = this.configuration.getName();
-            }        
-			
         	try {
 	            // Build up the POST form to send to Glassfish
 	            final FormDataMultiPart form = new FormDataMultiPart();
@@ -174,16 +153,17 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
 	            throw new DeploymentException("Could not undeploy " + archive.getName(), e);
 	        }
         }
+		
     }
 	
     public void deploy(Descriptor descriptor) throws DeploymentException {
-        throw new UnsupportedOperationException("Not implemented");
+		throw new UnsupportedOperationException("Not implemented");
     }
-
+	
     public void undeploy(Descriptor descriptor) throws DeploymentException {
-        throw new UnsupportedOperationException("Not implemented");
+		throw new UnsupportedOperationException("Not implemented");
     }
-
+	
     private String createDeploymentName(String archiveName)
     {
 		String correctedName = archiveName;
@@ -198,25 +178,13 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
 		return correctedName;
     }
 	
-    private void addDeployFormFields(FormDataMultiPart deployform) {
+    private void addDeployFormFields(String name, FormDataMultiPart deployform) {
 		
-        // add the name field (default is the archive filename without extension) 
-    	if ( this.configuration.getName() != null )  {
-            this.deploymentName = this.configuration.getName();
-        }        
-        deployform.field("name", this.deploymentName, MediaType.TEXT_PLAIN_TYPE);
+        // add the name field, the name is the archive filename without extension 
+        deployform.field("name", name, MediaType.TEXT_PLAIN_TYPE);
 		
         // add the target field (the default is "server" - Admin Server)
         deployform.field("target", this.configuration.getTarget(), MediaType.TEXT_PLAIN_TYPE);        
-        
-        // add the contextroot field
-        String context;
-        if ( this.configuration.getContextroot() != null )  {
-        	context = this.configuration.getContextroot();
-        } else {
-        	context = "/" + this.deploymentName;
-        }
-        deployform.field("contextRoot", context, MediaType.TEXT_PLAIN_TYPE);
 		
         // add the libraries field (optional)
         if ( this.configuration.getLibraries() != null )  {
@@ -233,5 +201,5 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
         	deployform.field("type", this.configuration.getType(), MediaType.TEXT_PLAIN_TYPE);
         }
     }
-
+	
 }

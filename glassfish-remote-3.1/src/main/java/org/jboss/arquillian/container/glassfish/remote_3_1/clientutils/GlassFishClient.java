@@ -23,17 +23,17 @@ package org.jboss.arquillian.container.glassfish.remote_3_1.clientutils;
 
 import java.util.List;
 import java.util.Map;
-import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import com.sun.jersey.multipart.FormDataMultiPart;
 
 public interface GlassFishClient {
-
+	
     /**
      * Admin Server key for the REST request.
      */
 	public static final String ADMINSERVER = "server";
-
+	
 	/**
 	 * Get the node address list associated with the target
 	 * 
@@ -41,7 +41,7 @@ public interface GlassFishClient {
 	 * @return list of node address objects
 	 */    
     public List<NodeAddress> getNodeAddressList();
-    	
+	
     /**
 	 * Do deploy an application defined by a multipart form's data
 	 * to the target server or cluster of GlassFish 3.1
@@ -50,8 +50,8 @@ public interface GlassFishClient {
 	 * 		  form		- a form of MediaType.MULTIPART_FORM_DATA_TYPE
 	 * @return subComponents - a map of SubComponents of the application
 	 */
-    public Map<String, String> doDeploy(String name, FormDataMultiPart form) throws DeploymentException; 
-
+    public HTTPContext doDeploy(String name, FormDataMultiPart form) throws DeploymentException; 
+	
     /**
 	 * Do undeploy the application 
 	 * 
@@ -60,12 +60,4 @@ public interface GlassFishClient {
 	 */
 	public Map doUndeploy(String name, FormDataMultiPart form); 
     
-    /**
-	 * Get the context root associated with the application 
-	 * 
-	 * @param name 			- application name
-	 * @return contextRoot
-	 */
-	public String getApplicationConterxtRoot(String name);
-		
 }

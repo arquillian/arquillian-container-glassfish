@@ -21,11 +21,22 @@
  */
 package org.jboss.arquillian.container.glassfish.remote_3_1.clientutils;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -36,15 +47,15 @@ import org.jboss.arquillian.container.glassfish.remote_3_1.GlassFishRestConfigur
 
 
 public class GlassFishClientUtil {
-
+	
 	public static final String SUCCESS = "SUCCESS";
-
+	
 	private GlassFishRestConfiguration configuration;
-
+	
 	private String adminBaseUrl;
 	
 	private static final Logger log = Logger.getLogger(GlassFishClientUtil.class.getName());
-
+	
 	public GlassFishClientUtil(GlassFishRestConfiguration configuration, String adminBaseUrl) 
 	{
 		this.configuration = configuration;
@@ -60,31 +71,31 @@ public class GlassFishClientUtil {
 	{
 		Map responseMap = GETRequest(additionalResourceUrl);
     	Map<String, String> attributes = new HashMap<String, String>();
-    
+		
 	    Map resultExtraProperties = (Map) responseMap.get("extraProperties");
 	    if (resultExtraProperties != null) {	  
 	    	attributes = (Map<String, String>) resultExtraProperties.get("entity");
 	    }
-
+		
 	    return attributes;
 	}
-
+	
     public Map<String, String> getChildResources(String additionalResourceUrl) throws ContainerException 
     {
     	Map responseMap = GETRequest(additionalResourceUrl);
     	Map<String, String> childResources = new HashMap<String, String>();
-    
+		
 	    Map resultExtraProperties = (Map) responseMap.get("extraProperties");
 	    if (resultExtraProperties != null) {	  
 	    	childResources = (Map<String, String>) resultExtraProperties.get("childResources");
 	    }
-
+		
 	    return childResources;
     }
-
+	
     public Map GETRequest(String additionalResourceUrl) 
     {
-    	//TODO if the target server is down, we get ClientResponseException. Need to handle it
+    	//TODO to pull the server instances status form mgm API, and handle it
     	ClientResponse response = prepareClient(additionalResourceUrl).get(ClientResponse.class);
     	Map responseMap = getResponceMap(response);
     	
@@ -93,14 +104,14 @@ public class GlassFishClientUtil {
     
     public Map POSTMultiPartRequest(String additionalResourceUrl, FormDataMultiPart form) 
     {
-    	//TODO if the target server is down, we get ClientResponseException. Need to handle it
+    	//TODO to pull the server instances status form mgm API, and handle it
     	ClientResponse response = prepareClient(additionalResourceUrl).type(MediaType.MULTIPART_FORM_DATA_TYPE)
-    		.post(ClientResponse.class, form);
+		.post(ClientResponse.class, form);
     	Map responseMap = getResponceMap(response);
     	
     	return responseMap;
 	}
-
+	
     /**
      * Basic REST call preparation, with the additional resource url appended
      *
@@ -112,37 +123,37 @@ public class GlassFishClientUtil {
     	final Client client = Client.create();
         if (configuration.isAuthorisation()) {
             client.addFilter(new HTTPBasicAuthFilter(
-                    configuration.getAdminUser(),
-                    configuration.getAdminPassword()));
+													 configuration.getAdminUser(),
+													 configuration.getAdminPassword()));
         }
         
-        return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_JSON_TYPE);
+        return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_XML_TYPE);
     }
 	
     private Map getResponceMap(ClientResponse response) throws ContainerException 
     {
     	Map responseMap = new HashMap(); String message = "";
-        final String jsonDoc = response.getEntity(String.class);
-        
-    	// Marshalling the JSON format responce to the respoanseMap
-        if (jsonDoc != null) {
-        	responseMap = MarshallingUtils.buildMapFromDocument(jsonDoc);
-
+        final String xmlDoc = response.getEntity(String.class);
+		
+    	// Marshalling the XML format response to a java Map
+        if (xmlDoc != null && !xmlDoc.isEmpty()) {
+        	responseMap = xmlToMap(xmlDoc);
+			
         	message = "GlassFish: [command: " + responseMap.get("command") 
-				+ ", exit_code: " + responseMap.get("exit_code")
-				+ ", message: "+ responseMap.get("message") +"]";	    		        	
+			+ ", exit_code: " + responseMap.get("exit_code")
+			+ ", message: "+ responseMap.get("message") +"]";	    		        	
         } 
-
+		
     	ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
 	    if ( status.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL ) {
-
+			
 	    	// O.K. the jersey call was successful, what about the GlassFish server response?
 	    	if ( responseMap.get("exit_code") == null || !SUCCESS.equals(responseMap.get("exit_code")) ) {
 	    		throw new GlassFishClientException(message);
 	    	}
-
+			
 	    } else if (status.getReasonPhrase() == "Not Found") {
-	    	// the REST serource can not be found (for optional resources it can be O.K.)
+	    	// the REST resource can not be found (for optional resources it can be O.K.)
 	    	message += "; Jersey [satus: " + status.getFamily() + ",  reason: " + status.getReasonPhrase() +"]";
 	        log.warning(message);
 	    } else {
@@ -150,8 +161,148 @@ public class GlassFishClientUtil {
 	    	log.severe(message);
 	    	throw new ContainerException(message);
 	    }
-
+		
 	    return responseMap;
     }
-    
+	
+    /**
+	 * Marshalling a Glassfish Mng API response XML document to a java Map object
+	 * 
+	 * @param XML document 
+	 * @return map containing the XML doc representation in java map format
+	 */    	
+	public Map xmlToMap(String document) {
+		
+		if (document == null) { return new HashMap();}
+		
+        InputStream input = null;
+        Map map = null;
+        try {
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            factory.setProperty(XMLInputFactory.IS_VALIDATING, false);
+            input = new ByteArrayInputStream(document.trim().getBytes("UTF-8"));
+            XMLStreamReader stream = factory.createXMLStreamReader(input);
+            while (stream.hasNext()) {
+                int currentEvent = stream.next();
+                if ( currentEvent == XMLStreamConstants.START_ELEMENT) {
+                    if ("map".equals(stream.getLocalName())) {
+                        map = resolveXmlMap(stream);
+                    }                	
+                }
+            }
+        } catch (Exception ex) {
+        	log.log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                input.close();
+            } catch (IOException ex) {
+                log.log(Level.SEVERE, null, ex);
+            }
+        }
+		
+		return map;
+    }
+	
+	private Map resolveXmlMap(XMLStreamReader stream) throws XMLStreamException {
+		
+		boolean endMapFlag = false;
+        Map<String, Object> entry = new HashMap<String, Object>();
+        String key = null;
+        String elementName = null;
+		
+        while (!endMapFlag) {
+			
+        	int currentEvent = stream.next();
+            if ( currentEvent == XMLStreamConstants.START_ELEMENT) {
+				
+            	if ("entry".equals(stream.getLocalName())) {
+                    key = stream.getAttributeValue(null, "key");
+                    String value = stream.getAttributeValue(null, "value");
+                    if (value != null) {
+                        entry.put(key, value);
+                        key = null;
+                    }
+                } else if ("map".equals(stream.getLocalName())) {
+                    Map value = resolveXmlMap(stream);
+                    entry.put(key, value);
+                } else if ("list".equals(stream.getLocalName())) {
+                    List value = resolveXmlList(stream);
+                    entry.put(key, value);
+                } else {
+                    elementName = stream.getLocalName();
+                }
+            	
+			} else if ( currentEvent == XMLStreamConstants.END_ELEMENT ) {
+				
+				if ("map".equals(stream.getLocalName())) {
+					endMapFlag = true;
+				}
+				elementName = null;
+				
+			} else {
+				
+            	String document = stream.getText();
+                if (elementName != null) {
+                    if ("number".equals(elementName)) {
+                        if (document.contains(".")) {
+                            entry.put(key, Double.parseDouble(document));
+                        } else {
+                            entry.put(key, Long.parseLong(document));
+                        }
+                    } else if ("string".equals(elementName)) {
+                        entry.put(key, document);
+                    }
+                    elementName = null;
+                }
+            } // end if
+            
+        } // end while
+        return entry;
+    }
+	
+    private List resolveXmlList(XMLStreamReader stream) throws XMLStreamException {
+		
+        boolean endListFlag = false;
+    	List list = new ArrayList();
+        String elementName = null;
+		
+        while (!endListFlag) {
+			
+        	int currentEvent = stream.next();
+            if ( currentEvent == XMLStreamConstants.START_ELEMENT) {
+                if ("map".equals(stream.getLocalName())) {
+                    list.add(resolveXmlMap(stream));
+                } else {
+                    elementName = stream.getLocalName();
+                }
+				
+            } else if ( currentEvent == XMLStreamConstants.END_ELEMENT ) {
+				
+            	if ("list".equals(stream.getLocalName())) {
+                    endListFlag = true;
+                }
+                elementName = null;
+				
+            } else {
+				
+            	String document = stream.getText();
+                if (elementName != null) {
+                    if ("number".equals(elementName)) {
+                        if (document.contains(".")) {
+                            list.add(Double.parseDouble(document));
+                        } else {
+                            list.add(Long.parseLong(document));
+                        }
+                    } else if ("string".equals(elementName)) {
+                        list.add(document);
+                    }
+					elementName = null;
+                }
+            } // end if
+            
+        } // end while
+        return list;
+    }
+	
 }
