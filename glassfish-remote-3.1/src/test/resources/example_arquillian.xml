@@ -20,7 +20,6 @@
                 <property name="adminPassword">yourPassword</property>
                 <property name="name">myTestWar03</property>
                 <property name="target">ejb-i2</property>
-                <property name="contextroot">myRoot02</property>
  -->
 	       </configuration>
 	   </container>
