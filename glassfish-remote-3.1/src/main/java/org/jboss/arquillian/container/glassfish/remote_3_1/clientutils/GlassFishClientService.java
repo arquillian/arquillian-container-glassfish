@@ -146,11 +146,14 @@ public class GlassFishClientService implements GlassFishClient {
 	}
 	
     /**
-	 * Undeploy the component 
+	 * Filtering on the status of the instances
+	 *  -	If the standalone server instance status is RUNNING, returns the nodeAddress, 
+	 *  	but throws an exception otherwise.
+	 *  -	In case of cluster, returns the first RUNNING instance from the list,
+	 *  	but throws an exception if can not find any.
 	 * 
-	 * @param name 	- application name
-	 * 		  form 	- form that include the target & operation fields
-	 * @return resultMap
+	 * @param nodeAddressList 
+	 * @return nodeAddress - if any has RUNNING status
 	 */
 	// the REST resource path template to retrieve the list of server instances
     private static final String INSTACE_LIST = "/list-instances";
