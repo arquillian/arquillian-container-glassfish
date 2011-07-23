@@ -26,6 +26,11 @@ import java.net.URI;
 public class NodeAddress {
 
 	   /**
+	    * name of the server instance
+		*/
+	   private String serverName = GlassFishClient.ADMINSERVER;
+	   
+	   /**
 	    * IP or HOST name of the node
 		*/
 	   private String host = "localhost";
@@ -47,11 +52,28 @@ public class NodeAddress {
 	      this.host = host;
 	   }
 
-	   public NodeAddress(String host, int port, int secure_port)
+	   public NodeAddress(String serverName, String host, int port, int secure_port)
 	   {
-	      this.host = host;
+	      this.serverName = serverName;
+		  this.host = host;
 	      this.httpPort = port;
 	      this.httpsPort = secure_port;
+	   }
+
+	   /**
+	    * @return the serverName
+	    */
+	   public String getServerName()
+	   {
+	      return serverName;
+	   }
+
+	   /**
+	    * @return none
+	    */
+	   public void setServerName(String serverName)
+	   {
+		   this.serverName = serverName;
 	   }
 
 	   /**
@@ -63,12 +85,13 @@ public class NodeAddress {
 	   }
 
 	   /**
-	    * @return the ip
+	    * @return none
 	    */
 	   public void setHost(String host)
 	   {
 		   this.host = host;
 	   }
+
 	   /**
 	    * @return the port
 	    */
@@ -78,7 +101,7 @@ public class NodeAddress {
 	   }
 
 	   /**
-	    * @return the port
+	    * @return none
 	    */
 	   public void setHttpPort(int httpPort)
 	   {
@@ -94,7 +117,7 @@ public class NodeAddress {
 	   }
 
 	   /**
-	    * @return the secure port
+	    * @return none
 	    */
 	   public void setHttpsPort(int secure_port)
 	   {

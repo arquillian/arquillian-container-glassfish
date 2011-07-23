@@ -21,11 +21,8 @@
 package org.jboss.arquillian.container.glassfish.remote_3_1;
 
 import java.io.File;
-import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.net.URL;
-
-import javax.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
@@ -33,20 +30,17 @@ import org.jboss.arquillian.container.spi.client.container.LifecycleException;
 import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
-import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
 import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClient;
 import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClientException;
 import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClientService;
-import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.NodeAddress;
 
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
+import javax.ws.rs.core.MediaType;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.multipart.file.FileDataBodyPart;
 
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -54,7 +48,6 @@ import java.util.logging.Logger;
  *
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
-@SuppressWarnings({"HardcodedFileSeparator"})
 public class GlassFishRestDeployableContainer implements DeployableContainer<GlassFishRestConfiguration> {
 	
 	public static final String DELETE_OPERATION = "__deleteoperation";
@@ -63,8 +56,6 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
 	
     private GlassFishRestConfiguration configuration;
 	
-    private List<NodeAddress> nodeAddressList;
-    
     private GlassFishClient glassFishClient;
 	
 	private static final Logger log = Logger.getLogger(GlassFishRestDeployableContainer.class.getName());
@@ -86,11 +77,12 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
     public void start() throws LifecycleException {   	
 		
     	try {			
-    		// Resolve the remote server HOST address & port numbers
-    		this.nodeAddressList = glassFishClient.getNodeAddressList();
+
+    		glassFishClient.startUp();
 			
     	} catch (GlassFishClientException e) {
-            throw new LifecycleException("Error verifying the sever is running", e);
+    		log.severe( e.getMessage() );
+    		throw new LifecycleException( e.getMessage() );
         }
     }
 	

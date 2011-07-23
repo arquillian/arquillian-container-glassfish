@@ -65,8 +65,8 @@ as contextroot. The same rule is applied for enterprise applications if you do n
 application.xml file. The jar test-deployments are treated as a web application. You can 
 use the above standard GlassFish xml files as normal to declare your contextroot to be 
 applied. For more detail, please refer to GlassFish Server 3.1 Administration Guide. You 
-should consider above to avoid any conflict with you already deployed web or enterprise 
-applications in your administrative domain. 
+should consider the above description to avoid any conflict with your already deployed 
+web or enterprise applications in your administrative domain. 
 
 
 libraries: A comma-separated list of library JAR files. Specify the library JAR  files 
@@ -76,6 +76,5 @@ please refer to GlassFish Server 3.1 Administration Guide.
 
 properties: Optional keyword-value pairs  that  specify  additional properties  for the 
 deployment. The available properties are determined by the implementation of the  component 
-that is being deployed or redeployed. For more detail, please refer to GlassFish Server 3.1 
-Administration Guide.
+that is being deployed. For more detail, please refer to GlassFish Server 3.1 Administration Guide.
 

@@ -95,16 +95,27 @@ public class GlassFishClientUtil {
 	
     public Map GETRequest(String additionalResourceUrl) 
     {
-    	//TODO to pull the server instances status form mgm API, and handle it
     	ClientResponse response = prepareClient(additionalResourceUrl).get(ClientResponse.class);
     	Map responseMap = getResponceMap(response);
     	
     	return responseMap;
 	}
     
+    public List<Map> getInstancesList(String additionalResourceUrl) throws ContainerException 
+    {
+    	Map responseMap = GETRequest(additionalResourceUrl);
+    	List<Map> instancesList = new ArrayList();
+    
+	    Map resultExtraProperties = (Map) responseMap.get("extraProperties");
+	    if (resultExtraProperties != null) {	  
+	    	instancesList = (List<Map>) resultExtraProperties.get("instanceList");
+	    }
+
+	    return instancesList;
+    }    
+    
     public Map POSTMultiPartRequest(String additionalResourceUrl, FormDataMultiPart form) 
     {
-    	//TODO to pull the server instances status form mgm API, and handle it
     	ClientResponse response = prepareClient(additionalResourceUrl).type(MediaType.MULTIPART_FORM_DATA_TYPE)
 		.post(ClientResponse.class, form);
     	Map responseMap = getResponceMap(response);
@@ -139,9 +150,8 @@ public class GlassFishClientUtil {
         if (xmlDoc != null && !xmlDoc.isEmpty()) {
         	responseMap = xmlToMap(xmlDoc);
 			
-        	message = "GlassFish: [command: " + responseMap.get("command") 
-			+ ", exit_code: " + responseMap.get("exit_code")
-			+ ", message: "+ responseMap.get("message") +"]";	    		        	
+        	message = "exit_code: " + responseMap.get("exit_code")
+			+ ", message: "+ responseMap.get("message");	    		        	
         } 
 		
     	ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
@@ -154,10 +164,10 @@ public class GlassFishClientUtil {
 			
 	    } else if (status.getReasonPhrase() == "Not Found") {
 	    	// the REST resource can not be found (for optional resources it can be O.K.)
-	    	message += "; Jersey [satus: " + status.getFamily() + ",  reason: " + status.getReasonPhrase() +"]";
+	    	message += " [satus: " + status.getFamily() + " reason: " + status.getReasonPhrase() +"]";
 	        log.warning(message);
 	    } else {
-	    	message += "; Jersey [satus: " + status.getFamily() + ",  reason: " + status.getReasonPhrase() +"]";
+	    	message += " [satus: " + status.getFamily() + " reason: " + status.getReasonPhrase() +"]";
 	    	log.severe(message);
 	    	throw new ContainerException(message);
 	    }

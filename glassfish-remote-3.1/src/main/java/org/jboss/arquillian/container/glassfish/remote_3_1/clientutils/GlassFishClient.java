@@ -21,7 +21,6 @@
  */
 package org.jboss.arquillian.container.glassfish.remote_3_1.clientutils;
 
-import java.util.List;
 import java.util.Map;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
@@ -34,14 +33,19 @@ public interface GlassFishClient {
      */
 	public static final String ADMINSERVER = "server";
 	
-	/**
-	 * Get the node address list associated with the target
+    /**
+	 * Start-up the server
+	 * 
+	 *  -   Get the node addresses list associated with the target
+	 *  -   Check the status of the target server instance
+	 *  -   In case of cluster tries to fund an instance which has
+	 *		RUNNING status 
 	 * 
 	 * @param none
-	 * @return list of node address objects
+	 * @return none
 	 */    
-    public List<NodeAddress> getNodeAddressList();
-	
+    public void startUp();
+    	
     /**
 	 * Do deploy an application defined by a multipart form's data
 	 * to the target server or cluster of GlassFish 3.1

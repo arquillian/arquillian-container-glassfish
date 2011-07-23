@@ -31,26 +31,29 @@ import org.jboss.arquillian.container.glassfish.remote_3_1.GlassFishRestConfigur
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
 
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.multipart.FormDataMultiPart;
 
 
 public class GlassFishClientService implements GlassFishClient {
 	
-	private static final String WEBMODULE = "WebModule";
-	
+	private static final String WEBMODULE = "WebModule";	
 	private static final String SERVLET = "Servlet";
+	private static final String RUNNING_STATUS = "RUNNING";	
 	
 	private String target = GlassFishClient.ADMINSERVER;
 	
     private String adminBaseUrl;
 	
+    private String DASUrl;
+
     GlassFishRestConfiguration configuration;
 	
     private ServerStartegy serverInstance = null; 
 	
     private GlassFishClientUtil clientUtil;
     
-    private List<NodeAddress> nodeAddressList = new ArrayList<NodeAddress>();
+    private NodeAddress nodeAddress = null;
 	
 	private static final Logger log = Logger.getLogger(GlassFishClientService.class.getName());
 	
@@ -68,8 +71,9 @@ public class GlassFishClientService implements GlassFishClient {
         }
 		
         adminUrlBuilder.append(this.configuration.getAdminHost()).append(":")
-		.append(this.configuration.getAdminPort()).append("/management/domain");
-		
+        	.append(this.configuration.getAdminPort());
+        DASUrl = adminUrlBuilder.toString();
+        adminUrlBuilder.append("/management/domain");
         this.adminBaseUrl = adminUrlBuilder.toString();
         
         // Start up the jersey client layer
@@ -77,17 +81,30 @@ public class GlassFishClientService implements GlassFishClient {
     }
 	
     /**
-	 * Get the node addresses list associated with the target
+	 * Start-up the server
+	 * 
+	 *  -   Get the node addresses list associated with the target
+	 *  -   Pull the server instances status form mgm API
+	 *  -   In case of cluster tries to fund an instance which has
+	 *		RUNNING status 
 	 * 
 	 * @param none
-	 * @return list of node addresses objects
+	 * @return none
 	 */    
-    public List<NodeAddress> getNodeAddressList() {
+    public void startUp() throws GlassFishClientException {
 		
     	Map<String, String> standaloneServers = new HashMap<String, String>();
     	Map<String, String> clusters = new HashMap<String, String>();
+		String message;
 		
-		standaloneServers = getServersList();		
+		try {
+			standaloneServers = getServersList();		
+		} catch (ClientHandlerException ch) {        	
+	    	message = "Could not connect to DAS on: " + getDASUrl() + " | " 
+	    		+ ch.getCause().getMessage();
+        	throw new GlassFishClientException(message);
+	    }
+
 		if ( GlassFishClient.ADMINSERVER.equals(getTarget()) ) {
 			
 			// The "target" is the Admin Server Instance
@@ -110,16 +127,61 @@ public class GlassFishClientService implements GlassFishClient {
 				
             } else {
             	// The "target" attribute can be a domain or misspelled, but neither can be accepted
-            	throw new GlassFishClientException("The Target should be your Admin Server, a Standalone Server Instance or a Cluster's name");
+            	message = "The target property: " + getTarget() + " is not a valid target";
+            	throw new GlassFishClientException(message);
             }
         }
 		
 		// Fetch the HOST address & HTTP port info from the DAS server
-		this.nodeAddressList = (List<NodeAddress>) serverInstance.getNodeAddressList();
-		
-		return this.nodeAddressList;
+		List<NodeAddress> nodeAddressList = (List<NodeAddress>) serverInstance.getNodeAddressList();
+
+		if ( GlassFishClient.ADMINSERVER.equals(configuration.getTarget()) ) {
+			// Admin Server must running, otherwise we can not be here
+			this.nodeAddress = nodeAddressList.get(0); 
+		} else {
+			// Returns the nodeAddress if the target instance status is RUNNING
+			// In case of cluster, returns the first RUNNING instance (if any) from the list
+			this.nodeAddress = runningInstanceFilter(nodeAddressList);
+		}
 	}
 	
+    /**
+	 * Undeploy the component 
+	 * 
+	 * @param name 	- application name
+	 * 		  form 	- form that include the target & operation fields
+	 * @return resultMap
+	 */
+	// the REST resource path template to retrieve the list of server instances
+    private static final String INSTACE_LIST = "/list-instances";
+
+    public NodeAddress runningInstanceFilter(List<NodeAddress> nodeAddressList) 
+	{
+	    List<Map> instanceList = getClientUtil().getInstancesList(INSTACE_LIST);
+	    
+	    String instanceStatus = null;
+	    for (Map instance : instanceList) {
+	    	for (NodeAddress node : nodeAddressList) {
+		    	if ( instance.get("name").equals(node.getServerName()) ){		    		
+		    		instanceStatus = (String) instance.get("status");
+		    		if (RUNNING_STATUS.equals(instanceStatus) ) {		    			
+		    			return node;
+		    		}
+		    	}
+	    	}
+	    }
+		
+    	String message;
+	    if (nodeAddressList.size() == 1) { 
+	    	message = "The " + nodeAddressList.get(0).getServerName() + " server-instance status is: " 
+	    		+ instanceStatus;
+	    	throw new GlassFishClientException(message);
+	    } else { 
+        	message = "Could not fund any instance with RUNNING status in cluster: " + getTarget();
+	    	throw new GlassFishClientException(message);	    	
+	    }
+	}    
+    
     /**
 	 * Do deploy an application defined by a multipart form's fileds
 	 * to a target server or a cluster of GlassFish 3.1
@@ -147,7 +209,6 @@ public class GlassFishClientService implements GlassFishClient {
 		Map<String, String> subComponents = (Map<String, String>) subComponentsResponce.get("properties");
 		
         // Build up the HTTPContext object using the nodeAddress information
-        NodeAddress nodeAddress = nodeAddressList.get(0); 
         int port = ( !this.configuration.isServerHttps() ) ? nodeAddress.getHttpPort() : nodeAddress.getHttpsPort();
         HTTPContext httpContext = new HTTPContext( nodeAddress.getHost(), port );
 		
@@ -403,6 +464,16 @@ public class GlassFishClientService implements GlassFishClient {
 		return clientUtil;    	
     }
 	
+    /**
+	 * Get the URL of the DAS server
+	 * 
+	 * @param none
+	 * @return URL
+	 */    
+    private String getDASUrl(){
+		return DASUrl;    	
+    }    
+    
 	/**
 	 * The GoF Strategy pattern is used to implement specific algorithm 
 	 * by server type (Admin, Standalone or Clustered server)  
@@ -474,7 +545,7 @@ public class GlassFishClientService implements GlassFishClient {
 			int httpPort  = getAdminServerHttpPort(serverAttributes, false );            
 	        int httpsPort = getAdminServerHttpPort(serverAttributes, true);
 			
-	        addNode(new NodeAddress(nodeHost, httpPort, httpsPort));
+	        addNode(new NodeAddress(GlassFishClient.ADMINSERVER, nodeHost, httpPort, httpsPort));
 			
 	        return getNodes();	        
 		}		
@@ -506,7 +577,7 @@ public class GlassFishClientService implements GlassFishClient {
 	        int httpPort = getServerInstanceHttpPort(getTarget(), httpPort_def, false);
 	        int httpsPort = getServerInstanceHttpPort(getTarget(), httpsPort_def, true);
 			
-	        addNode(new NodeAddress(nodeHost, httpPort, httpsPort));
+	        addNode(new NodeAddress(getTarget(), nodeHost, httpPort, httpsPort));
 	    	return getNodes();
 		}
 	}
@@ -530,10 +601,8 @@ public class GlassFishClientService implements GlassFishClient {
 	        for (Map.Entry serverInstance : serverInstances.entrySet()) 
 	        {
 	            String serverName = serverInstance.getKey().toString();
-	            System.out.println("Server Name: " + serverName);        	
 				
-	            serverAttributes = getServerAttributes(serverName);
-				
+	            serverAttributes = getServerAttributes(serverName);				
 	            nodeHost = getHostAddress(serverAttributes);
 				
 	            // Get the port numbers
@@ -544,7 +613,7 @@ public class GlassFishClientService implements GlassFishClient {
 	            int httpPort = getServerInstanceHttpPort(serverName, httpPort_def, false);
 	            int httpsPort = getServerInstanceHttpPort(serverName, httpsPort_def, true);
 				
-	            addNode(new NodeAddress(nodeHost, httpPort, httpsPort));
+	            addNode(new NodeAddress(serverName, nodeHost, httpPort, httpsPort));
 	        }
 			
 	        return getNodes();

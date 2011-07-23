@@ -11,15 +11,13 @@
 	   <container qualifier="glassfish" default="true">
 	       <configuration> 
 <!-- All property has its default or can be omited  -->
-<!--
                 <property name="adminHttps">false</property>
                 <property name="adminHost">localhost</property>
                 <property name="adminPort">4848</property>
                 <property name="serverHttps">false</property>
                 <property name="adminUser">admin</property>
                 <property name="adminPassword">yourPassword</property>
-                <property name="target">ejb-i2</property>
- -->
+                <property name="target">server</property>
 	       </configuration>
 	   </container>
     </group>
