@@ -10,7 +10,7 @@
    </parent>
 
    <modelVersion>4.0.0</modelVersion>
-
+   <version>${parent.version}.EAR</version>
    <groupId>org.jboss.arquillian.container</groupId>
    <artifactId>arquillian-glassfish-remote-3.1</artifactId>
    <name>Arquillian Container GlassFish Remote 3.1 (REST)</name>
@@ -39,25 +39,25 @@
       <dependency>
          <groupId>org.jboss.arquillian.protocol</groupId>
          <artifactId>arquillian-protocol-servlet</artifactId>
-         <version>${project.version}</version>
+         <version>${parent.version}</version>
       </dependency>
 
       <dependency>
          <groupId>org.jboss.arquillian.testenricher</groupId>
          <artifactId>arquillian-testenricher-cdi</artifactId>
-         <version>${project.version}</version>
+         <version>${parent.version}</version>
       </dependency>
 
       <dependency>
          <groupId>org.jboss.arquillian.testenricher</groupId>
          <artifactId>arquillian-testenricher-ejb</artifactId>
-         <version>${project.version}</version>
+         <version>${parent.version}</version>
       </dependency>
 
       <dependency>
          <groupId>org.jboss.arquillian.testenricher</groupId>
          <artifactId>arquillian-testenricher-resource</artifactId>
-         <version>${project.version}</version>
+         <version>${parent.version}</version>
       </dependency>
 
       <dependency>
@@ -77,14 +77,14 @@
       <dependency>
          <groupId>org.jboss.arquillian</groupId>
          <artifactId>arquillian-impl-base</artifactId>
-         <version>${project.version}</version>
+         <version>${parent.version}</version>
          <scope>test</scope>
       </dependency>
 
       <dependency>
         <groupId>org.jboss.arquillian</groupId>
         <artifactId>arquillian-junit</artifactId>
-        <version>${project.version}</version>
+        <version>${parent.version}</version>
         <scope>test</scope>
       </dependency>
 
