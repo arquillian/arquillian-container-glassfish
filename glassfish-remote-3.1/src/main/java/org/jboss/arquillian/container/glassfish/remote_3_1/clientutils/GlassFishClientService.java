@@ -158,7 +158,7 @@ public class GlassFishClientService implements GlassFishClient {
 	// the REST resource path template to retrieve the list of server instances
     private static final String INSTACE_LIST = "/list-instances";
 
-    public NodeAddress runningInstanceFilter(List<NodeAddress> nodeAddressList) 
+    private NodeAddress runningInstanceFilter(List<NodeAddress> nodeAddressList) 
 	{
 	    List<Map> instanceList = getClientUtil().getInstancesList(INSTACE_LIST);
 	    
@@ -314,13 +314,14 @@ public class GlassFishClientService implements GlassFishClient {
 	}
 	
     /**
-	 * Lookup the servlets of WebModule & putt hem to the httpContext associated with the application 
+	 * Lookup the servlets of WebModule & putt them to the httpContext associated with the application 
 	 * 
 	 * @param name 			- application name
 	 * @param module 		- webmodule name
 	 * @param context 		- contextRoot of the web-module
 	 * @param httpContext	- httpContext to be updated
 	 */
+	// the REST resource path template to retrieve the servlets
 	private static final String WEBMODUL_RESOURCE = "/applications/application/list-sub-components?appname={application}&id={module}&type=servlets";
 	
 	private void resolveWebModuleSubComponents(String name, String module, String context, HTTPContext httpContext) 
@@ -346,7 +347,7 @@ public class GlassFishClientService implements GlassFishClient {
 	 * @param target
 	 * @return server instances map
 	 */
-	// the REST resource path template to retrieve the list of server server instances
+	// the REST resource path template to retrieve the list of server instances
 	private static final String MEMBER_SERVERS_RESOURCE = "/clusters/cluster/{target}/server-ref";
 	
 	protected Map<String, String> getServerInstances(String target) 
@@ -375,7 +376,7 @@ public class GlassFishClientService implements GlassFishClient {
 	}
 	
 	/**
-	 * Get the HOST address (IP or name) of node associated with the server
+	 * Get the HOST address (IP or name) of the node associated with the server
 	 * 
 	 * @param node name
 	 * @return nodeAttributes map 
@@ -402,8 +403,8 @@ public class GlassFishClientService implements GlassFishClient {
 	{
 		String listenerpath = HTTP_LISTENER_A.replace("{config}", serverAttributes.get("configRef") );
 		String httpListener = (!secure) ? "http-listener-1" : "http-listener-2";
-		Map<String, String> listener = getClientUtil().getAttributes( 
-																	 listenerpath.replace("{http-listener}", httpListener) ); 
+		Map<String, String> listener = getClientUtil().getAttributes(
+				listenerpath.replace("{http-listener}", httpListener) ); 
 	    return Integer.parseInt(listener.get("port"));
 	}	
 	
@@ -422,7 +423,7 @@ public class GlassFishClientService implements GlassFishClient {
 		String listenerpath = HTTP_LISTENER.replace("{config}", serverAttributes.get("configRef") );
 		String httpListener = (!secure) ? "HTTP_LISTENER_PORT" : "HTTP_SSL_LISTENER_PORT";		
 		Map<String, String> listener = getClientUtil().getAttributes( 
-																	 listenerpath.replace("{http-listener}", httpListener) ); 
+			 listenerpath.replace("{http-listener}", httpListener) ); 
 		
 		return Integer.parseInt(listener.get("value"));
 	}		
@@ -446,7 +447,7 @@ public class GlassFishClientService implements GlassFishClient {
 		String httpListener = (!secure) ? "HTTP_LISTENER_PORT" : "HTTP_SSL_LISTENER_PORT";
 		
 		Map<String, String> listener = getClientUtil().getAttributes(
-																	 listenerpath.replace("{http-listener}", httpListener) );
+			 listenerpath.replace("{http-listener}", httpListener) );
 		
 		return ( listener.get("value") != null) ? Integer.parseInt(listener.get("value")) : default_port;
 	}			
@@ -513,7 +514,7 @@ public class GlassFishClientService implements GlassFishClient {
 	    	nodes.add(node);
 		}
 		
-	    public GlassFishClientService getGlassFishClient(){
+	    protected GlassFishClientService getGlassFishClient(){
 			return glassFishClient;    	
 	    }
 		
