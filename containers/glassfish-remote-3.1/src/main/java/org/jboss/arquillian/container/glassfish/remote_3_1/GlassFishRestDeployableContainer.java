@@ -1,24 +1,24 @@
 /*
- * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat Middleware LLC, and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* JBoss, Home of Professional Open Source
+* Copyright 2011, Red Hat Middleware LLC, and individual contributors
+* by the @authors tag. See the copyright.txt in the distribution for a
+* full listing of individual contributors.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* http://www.apache.org/licenses/LICENSE-2.0
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 /**
- *
- * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
- */
+*
+* @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
+*/
 package org.jboss.arquillian.container.glassfish.remote_3_1;
 
 import java.io.File;
@@ -43,20 +43,22 @@ import org.jboss.arquillian.spi.client.protocol.metadata.ProtocolMetaData;
 import org.jboss.arquillian.spi.client.protocol.metadata.Servlet;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
- * Glassfish v3.1 remote container using REST deployment.
- *
- * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
- */
+* Glassfish v3.1 remote container using REST deployment.
+*
+* @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
+* @author <a href="http://github.com/RCBiczok">Rudolf Biczok</a>
+*/
 @SuppressWarnings({"HardcodedFileSeparator"})
 public class GlassFishRestDeployableContainer implements DeployableContainer<GlassFishRestConfiguration> {
     private static final String APPLICATION = "/applications/application";
 
-    private static final String LIST_SUB_COMPONENTS = "/applications/application/list-sub-components?id=";
+    private static final String LIST_SUB_COMPONENTS = "/applications/application/list-sub-components";
 
     private static final String SUCCESS = "SUCCESS";
 
@@ -155,10 +157,17 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
                 throw new DeploymentException("Error finding exit code or message", e);
             }
 
-            // Call has been successful, now we need another call to get the list of servlets
-            final String subComponentsResponse = prepareClient(LIST_SUB_COMPONENTS + this.deploymentName).get(String.class);
+            // Call has been successful, now we need another call to get the list of servlets.
+            // If we are dealing with an EAR file, we have to specify the application name and the
+            // name of the web module (test.war). 
+            // Otherwise glassfish returns only a list of modules inside the EAR.
+            final String command = archive instanceof EnterpriseArchive ? LIST_SUB_COMPONENTS + "?appname=" 
+            		+ this.deploymentName + "&id=test.war" : 
+            			LIST_SUB_COMPONENTS + "?id=" + this.deploymentName;
+			final String subComponentsResponse = prepareClient(command).get(String.class);
 
-            return this.parseForProtocolMetaData(subComponentsResponse);
+			final String moduleName = archive instanceof EnterpriseArchive ? "test" : this.deploymentName;
+            return this.parseForProtocolMetaData(subComponentsResponse, moduleName);
         } catch (XPathExpressionException e) {
             throw new DeploymentException("Error in creating / deploying archive", e);
         }
@@ -233,7 +242,7 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
         return xpath.evaluate("/map/entry[@key = 'message']/@value", new InputSource(new StringReader(xmlResponse)));
     }
 
-    private ProtocolMetaData parseForProtocolMetaData(String xmlResponse) throws XPathExpressionException {
+    private ProtocolMetaData parseForProtocolMetaData(String xmlResponse, String moduleName) throws XPathExpressionException {
         final ProtocolMetaData protocolMetaData = new ProtocolMetaData();
         final HTTPContext httpContext = new HTTPContext(this.configuration.getRemoteServerAddress(),
                 this.configuration.getRemoteServerHttpPort());
@@ -244,7 +253,7 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
                 new InputSource(new StringReader(xmlResponse)), XPathConstants.NODESET);
 
         for (int i = 0; i < servlets.getLength(); i++) {
-            httpContext.add(new Servlet(servlets.item(i).getAttributes().getNamedItem("key").getNodeValue(), this.deploymentName));
+            httpContext.add(new Servlet(servlets.item(i).getAttributes().getNamedItem("key").getNodeValue(), moduleName));
         }
 
         protocolMetaData.addContext(httpContext);
