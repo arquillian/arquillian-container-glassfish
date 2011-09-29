@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 
 import javax.servlet.ServletRegistration;
 
@@ -52,6 +53,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
 import com.sun.enterprise.web.WebModule;
+import javax.naming.InitialContext;
 
 /**
  * GlassfishContainer
@@ -143,6 +145,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       try
       {
          glassfish.start();
+         bindCommandRunner();
       }
       catch (Exception e) 
       {
@@ -169,6 +172,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
    {
       try
       {
+         unbindCommandRunner();
          glassfish.stop();
       } 
       catch (Exception e) 
@@ -334,5 +338,14 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
             log.info("command " + command + " result: " + result.getOutput());
             break;
       }
+   }
+   
+   private void bindCommandRunner() throws NamingException, GlassFishException  {
+        CommandRunner runner = glassfish.getCommandRunner();
+        new InitialContext().bind("org.glassfish.embeddable.CommandRunner", runner);
+   }
+   
+   private void unbindCommandRunner() throws NamingException {
+       new InitialContext().unbind("org.glassfish.embeddable.CommandRunner");
    }
 }
