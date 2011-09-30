@@ -6,10 +6,9 @@ import java.io.FilenameFilter;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.jboss.arquillian.container.glassfish.embedded_3_1.GlassFishConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A utility class to verify the properties of a {@link GlassFishConfiguration}
@@ -219,7 +218,7 @@ class InstallRootFilter implements FilenameFilter
  */
 class InstanceRootFilter implements FileFilter
 {
-	private static final Logger logger = LoggerFactory.getLogger(InstanceRootFilter.class);
+	private static final Logger logger = Logger.getLogger(InstanceRootFilter.class.getName());
 	
 	/**
 	 * Specifies whether the test for <code>domain.xml</code> file in a
@@ -257,7 +256,7 @@ class InstanceRootFilter implements FileFilter
 				List<String> filesInConfigDir = Arrays.asList(pathname.list());
 				if(filesInConfigDir.contains("domain.xml"))
 				{
-					logger.warn("A domain.xml file was found in the instanceRoot. The file specified in the configurationXml property of arquillian.xml might be ignored.");
+					logger.warning("A domain.xml file was found in the instanceRoot. The file specified in the configurationXml property of arquillian.xml might be ignored.");
 				}
 				return true;
 			}
