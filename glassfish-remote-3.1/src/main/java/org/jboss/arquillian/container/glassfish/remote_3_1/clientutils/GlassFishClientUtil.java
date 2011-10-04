@@ -48,7 +48,15 @@ import org.jboss.arquillian.container.glassfish.remote_3_1.GlassFishRestConfigur
 
 public class GlassFishClientUtil {
 	
+   /**
+    * Status for a successful GlassFish exit code deployment.
+    */
 	public static final String SUCCESS = "SUCCESS";
+	
+	/**
+	 * Status for a GlassFish exit code deployment which ended in warning.
+	 */
+	public static final String WARNING = "WARNING";
 	
 	private GlassFishRestConfiguration configuration;
 	
@@ -157,10 +165,20 @@ public class GlassFishClientUtil {
     	ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
 	    if ( status.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL ) {
 			
-	    	// O.K. the jersey call was successful, what about the GlassFish server response?
-	    	if ( responseMap.get("exit_code") == null || !SUCCESS.equals(responseMap.get("exit_code")) ) {
-	    		throw new GlassFishClientException(message);
-	    	}
+	       // O.K. the jersey call was successful, what about the GlassFish server response?
+           if (responseMap.get("exit_code") == null) {
+              throw new GlassFishClientException(message);
+           }
+           
+           else if (WARNING.equals(responseMap.get("exit_code"))) {
+              // Warning is not a failure - some warnings in GlassFish are inevitable (i.e. persistence-related: ARQ-606)
+              log.warning("Deployment resulted in a warning: " + message);
+           }
+           
+           else if (!SUCCESS.equals(responseMap.get("exit_code"))) {
+              // Response is not a warning nor success - it's surely a failure.
+              throw new GlassFishClientException(message);
+           }
 			
 	    } else if (status.getReasonPhrase() == "Not Found") {
 	    	// the REST resource can not be found (for optional resources it can be O.K.)
