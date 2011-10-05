@@ -95,7 +95,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
     */
    public void setup(GlassFishConfiguration configuration)
    {
-      this.configuration = GlassFishConfigProcessor.processConfig(configuration);
+      this.configuration = configuration;
       BootstrapProperties bootstrapProps = new BootstrapProperties();
       if(configuration.getInstallRoot() != null)
       {
