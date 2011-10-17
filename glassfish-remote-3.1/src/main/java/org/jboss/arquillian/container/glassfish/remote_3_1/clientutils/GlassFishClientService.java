@@ -387,7 +387,24 @@ public class GlassFishClientService implements GlassFishClient {
 	protected String getHostAddress(Map<String, String> serverAttributes) 
 	{
         String path = NODE_RESOURCE.replace("{node}", serverAttributes.get("nodeRef"));
-        return getClientUtil().getAttributes(path).get("nodeHost");
+        String nodeHost = getClientUtil().getAttributes(path).get("nodeHost");
+        
+        // If the host address returned by DAS was "localhost", it could be "localhost" in the context of DAS, but not Arquillian.
+        // This would result in Arquillian connecting to localhost, even though the DAS (and it's localhost) is on a separate machine.
+        // This is the case when the Glassfish installer or asadmin creates a localhost node with node-host set to "localhost" instead of a FQDN.
+        // Variants of "localhost" like "127.0.0.1" or ::1 are not addressed, as the installer/asadmin does not appear to set the node-host to such values.
+        // In such a scenario, the adminHost (DAS) known to Arquillian (from arquillian.xml) will be used as the nodeHost.
+        // All conditions are addressed:
+        // 1. If adminHost is "localhost", and the node-host registered in DAS is "localhost", then the node-host is set to "localhost". No harm done.
+        // 2. If adminHost is not "localhost", and the node-host registered in DAS is "localhost", then the node-host value will be set to the same as adminHost.
+        // Prevents Arquillian from connecting to a wrong address (localhost) to run the tests via ArquillianTestRunner.
+        // 3. If adminHost is "localhost" and the node-host registered in DAS is not "localhost", then the value from DAS will be used.
+        // 4. If adminHost is not "localhost" and the node-host registered in DAS is not "localhost", then the value from DAS will be used.
+        if (nodeHost.equals("localhost"))
+        {
+           nodeHost = configuration.getAdminHost();
+        }
+        return nodeHost;
 	}
 	/**
 	 * Get the http/https port number of the Admin Server
