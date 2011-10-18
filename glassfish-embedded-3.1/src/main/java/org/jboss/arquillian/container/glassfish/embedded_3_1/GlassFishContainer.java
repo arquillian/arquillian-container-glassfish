@@ -152,17 +152,19 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
          throw new LifecycleException("Could not start GlassFish Embedded", e);
       }
       // Server needs to be started before we can deploy resources
-      if(configuration.getSunResourcesXml() != null)
+      for(String resource : configuration.getSunResourcesXml())
       {
-         try
-         {
-            executeCommand(COMMAND_ADD_RESOURCES, this.configuration.getSunResourcesXml());
-         }
-         catch (Throwable e) 
-         {
-            throw new RuntimeException("Could not deploy sun-reosurces file: " + configuration.getSunResourcesXml(), e);
-         }
-      }
+          try
+          {
+             executeCommand(COMMAND_ADD_RESOURCES, resource);
+          }
+          catch (Throwable e)
+          {
+            throw new RuntimeException("Could not deploy sun-reosurces file: " + resource, e);
+          }
+     }
+
+
    }
 
    /* (non-Javadoc)

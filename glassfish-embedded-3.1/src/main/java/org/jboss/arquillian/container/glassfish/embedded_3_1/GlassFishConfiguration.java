@@ -20,7 +20,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -106,9 +108,17 @@ public class GlassFishConfiguration implements ContainerConfiguration
       this.configurationXml = configurationXml;
    }
 
-   public String getSunResourcesXml()
+   public List<String> getSunResourcesXml()
    {
-      return sunResourcesXml;
+       if(sunResourcesXml == null){
+           return Collections.emptyList();
+       }
+       List<String> resources = new ArrayList<String>();
+       for(String resource : sunResourcesXml.split(","))
+       {
+           resources.add(resource.trim());
+       }
+      return resources;
    }
 
    public void setSunResourcesXml(String sunResourcesXml)
@@ -183,9 +193,14 @@ public class GlassFishConfiguration implements ContainerConfiguration
             URI configurationXmlURI = convertFilePathToURI(configurationXml);
             configurationXml = configurationXmlURI.toString();
          }
-         if (sunResourcesXml != null)
+
+         List<String> sunResourcesXml = getSunResourcesXml();
+         if (sunResourcesXml.size() > 0)
          {
-            verifySunResourcesXml(sunResourcesXml);
+            for(String sunResourceXml : sunResourcesXml)
+            {
+               verifySunResourcesXml(sunResourceXml);
+            }
          }
       }
 

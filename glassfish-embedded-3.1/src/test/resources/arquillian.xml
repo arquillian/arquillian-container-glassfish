@@ -6,7 +6,10 @@
 
        <container qualifier="glassfish" default="true">
            <configuration>
-               <property name="sunResourcesXml">src/test/resources/sun-resources.xml</property>
+               <property name="sunResourcesXml">
+                   src/test/resources/sun-resources.xml,
+                   src/test/resources/sun-resources2.xml
+               </property>
                <property name="bindHttpPort">7070</property>
            </configuration>
        </container>
