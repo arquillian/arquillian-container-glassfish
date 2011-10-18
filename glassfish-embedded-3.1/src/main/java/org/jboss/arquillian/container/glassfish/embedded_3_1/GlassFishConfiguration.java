@@ -17,6 +17,7 @@
 package org.jboss.arquillian.container.glassfish.embedded_3_1;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
@@ -101,6 +102,9 @@ public class GlassFishConfiguration implements ContainerConfiguration
 
    public List<String> getSunResourcesXml()
    {
+       if(sunResourcesXml == null){
+           return Collections.EMPTY_LIST;
+       }
        List<String> resources = new ArrayList<String>();
        for(String resource : sunResourcesXml.split(","))
        {
