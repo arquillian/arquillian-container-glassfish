@@ -42,10 +42,15 @@ public class MyServlet extends HttpServlet
    public static final String MESSAGE = "hello";
 
    @Resource(name = "jdbc/arquillian") private DataSource arquillianDS;
+   @Resource(name = "jdbc/arquillian2") private DataSource arquillianDS2;
 
    @Override
    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
-      response.getWriter().append(arquillianDS != null ? MESSAGE : "#fail");
+      response.getWriter().append(areDatasourcesSet() ? MESSAGE : "#fail");
    }
+
+    private boolean areDatasourcesSet() {
+        return arquillianDS != null && arquillianDS2 != null;
+    }
 }
