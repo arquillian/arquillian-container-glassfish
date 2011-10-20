@@ -17,3 +17,7 @@ test-output/
 
 # JBoss AS
 transaction.log
+
+# GlassFish CommandRunner Test
+derby.log
+my_database/
