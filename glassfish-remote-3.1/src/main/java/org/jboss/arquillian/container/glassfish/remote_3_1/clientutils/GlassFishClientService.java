@@ -406,6 +406,7 @@ public class GlassFishClientService implements GlassFishClient {
         }
         return nodeHost;
 	}
+	
 	/**
 	 * Get the http/https port number of the Admin Server
 	 * 
