@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-parent-glassfish</artifactId>
-        <version>1.0.0.Final-SNAPSHOT</version>
+        <version>1.0.0.CR2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
