@@ -20,28 +20,26 @@
  */
 package org.jboss.arquillian.container.glassfish.remote_3_1;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
+import java.util.logging.Logger;
 
+import javax.ws.rs.core.MediaType;
+
+import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClient;
+import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClientException;
+import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClientService;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.spi.client.container.LifecycleException;
 import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
-import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClient;
-import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClientException;
-import org.jboss.arquillian.container.glassfish.remote_3_1.clientutils.GlassFishClientService;
-
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
-import javax.ws.rs.core.MediaType;
 import com.sun.jersey.multipart.FormDataMultiPart;
-import com.sun.jersey.multipart.file.FileDataBodyPart;
-
-import java.util.logging.Logger;
+import com.sun.jersey.multipart.file.StreamDataBodyPart;
 
 /**
  * Glassfish v3.1 remote container using REST deployment.
@@ -98,33 +96,26 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
         if (archive == null) {
             throw new IllegalArgumentException("archive must not be null");
         }
+        
+        final String archiveName = archive.getName();
 		
         final ProtocolMetaData protocolMetaData = new ProtocolMetaData();
 		
         try {
-            // Export to a file so we can send it over the wire
-            URL archiveFile = ShrinkWrapUtil.toURL(archive);
+            InputStream deployment = archive.as(ZipExporter.class).exportAsInputStream();
             
             // Build up the POST form to send to Glassfish
             final FormDataMultiPart form = new FormDataMultiPart();
-            try
-            {
-				form.getBodyParts().add(new FileDataBodyPart("id", new File(archiveFile.toURI())));
-            }
-            catch (URISyntaxException e1)
-            {
-				throw new DeploymentException("Could not convert exported deployment URL to URI?", e1);
-            }
+            form.bodyPart(new StreamDataBodyPart("id", deployment, archiveName));
             
-            deploymentName = createDeploymentName(archive.getName());
+            deploymentName = createDeploymentName(archiveName);
             addDeployFormFields(deploymentName, form);
             
             // Do Deploy the application on the remote GlassFish
             HTTPContext httpContext = glassFishClient.doDeploy(deploymentName, form);			
             protocolMetaData.addContext(httpContext);
-            
         } catch (GlassFishClientException e) {
-            throw new DeploymentException("Could not deploy " + archive.getName(), e);
+            throw new DeploymentException("Could not deploy " + archiveName, e);
         }
         return protocolMetaData;
     }
