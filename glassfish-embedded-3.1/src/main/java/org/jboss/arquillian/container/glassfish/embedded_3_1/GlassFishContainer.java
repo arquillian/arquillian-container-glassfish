@@ -112,6 +112,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
 
       GlassFishProperties serverProps = new GlassFishProperties();
       
+      boolean shouldSetPort = true;
       if(configuration.getInstanceRoot() != null)
       {
          File instanceRoot = new File(configuration.getInstanceRoot());
@@ -120,13 +121,18 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
             instanceRoot.mkdirs();
          }
          serverProps.setInstanceRoot(configuration.getInstanceRoot());
+         shouldSetPort = false;
       }
       if(configuration.getConfigurationXml() != null)
       {
          serverProps.setConfigFileURI(configuration.getConfigurationXml());
+         shouldSetPort = false;
       }
       serverProps.setConfigFileReadOnly(configuration.isConfigurationReadOnly());
-      serverProps.setPort("http-listener", configuration.getBindHttpPort());
+      if(shouldSetPort)
+      {
+    	  serverProps.setPort("http-listener", configuration.getBindHttpPort());
+      }
       try
       {
          glassfish = glassfishRuntime.newGlassFish(serverProps);
