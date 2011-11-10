@@ -214,7 +214,7 @@ public class GlassFishClientService implements GlassFishClient {
 		Map<String, String> subComponents = (Map<String, String>) subComponentsResponce.get("properties");
 		
         // Build up the HTTPContext object using the nodeAddress information
-        int port = ( !this.configuration.isServerHttps() ) ? nodeAddress.getHttpPort() : nodeAddress.getHttpsPort();
+        int port = nodeAddress.getHttpPort();
         HTTPContext httpContext = new HTTPContext( nodeAddress.getHost(), port );
 		
         // Add the servlets to the HTTPContext
