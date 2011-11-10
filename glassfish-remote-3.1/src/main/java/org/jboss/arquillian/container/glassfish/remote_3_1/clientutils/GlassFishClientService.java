@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jboss.arquillian.container.glassfish.remote_3_1.GlassFishRestConfiguration;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
@@ -376,6 +378,23 @@ public class GlassFishClientService implements GlassFishClient {
 	}
 	
 	/**
+     * Get the clusterAttributes map of a cluster
+     * 
+     * @param name of the cluster
+     * @return serverAttributes map  
+     *  configRef:      - reference to the cluster's configuration object
+     *  ...
+     */
+    // the REST resource path template for cluster attributes object
+    private static final String CLUSTER_RESOURCE = "/clusters/cluster/{cluster}";
+    
+    protected Map<String, String> getClusterAttributes(String cluster) 
+    {
+        String path = CLUSTER_RESOURCE.replace("{cluster}", cluster);
+        return getClientUtil().getAttributes(path);
+    }
+    
+	/**
 	 * Get the HOST address (IP or name) of the node associated with the server
 	 * 
 	 * @param node name
@@ -406,43 +425,49 @@ public class GlassFishClientService implements GlassFishClient {
         }
         return nodeHost;
 	}
+
+	private static final String SYSTEM_PROPERTY = "/configs/config/{config}/system-property/{system-property}";
+
 	/**
-	 * Get the http/https port number of the Admin Server
+	 * Get the port number defined as a system property in a configuration.
 	 * 
-	 * @param must be "server"
-	 * 		  secure 	- http port = false, https port = true	
-	 * @return http/https port number 
-	 */	
-	// the REST resource path template for the Admin Servers's http-listener objects
-	private static final String HTTP_LISTENER_A = "/configs/config/{config}/network-config/network-listeners/network-listener/{http-listener}";
-	
-	protected int getAdminServerHttpPort(Map<String, String> serverAttributes, boolean secure) 
-	{
-		String listenerpath = HTTP_LISTENER_A.replace("{config}", serverAttributes.get("configRef") );
-		String httpListener = (!secure) ? "http-listener-1" : "http-listener-2";
-		Map<String, String> listener = getClientUtil().getAttributes(
-				listenerpath.replace("{http-listener}", httpListener) ); 
-	    return Integer.parseInt(listener.get("port"));
-	}	
-	
-	/**
-	 * Get the port number of the node associated with the server
-	 * 
-	 * @param serverAttributes (which contains the configRef)
-	 * 		  secure: false - http port number, true - https port number
-	 * @return http/https port number 
+	 * @param attributes
+	 *            The attributes which references the configuration (server or
+	 *            cluster configuration)
+	 * @param propertyName
+	 *            The name of the system property to resolve
+	 * @return The port number stored in the system property
 	 */
-	// the REST resource path template for the http-listener objects
-	private static final String HTTP_LISTENER = "/configs/config/{config}/system-property/{http-listener}";
-	
-	protected int getServerHttpPort(Map<String, String> serverAttributes, boolean secure) 
+	private int getSystemProperty(Map<String, String> attributes, String propertyName)
 	{
-		String listenerpath = HTTP_LISTENER.replace("{config}", serverAttributes.get("configRef") );
-		String httpListener = (!secure) ? "HTTP_LISTENER_PORT" : "HTTP_SSL_LISTENER_PORT";		
-		Map<String, String> listener = getClientUtil().getAttributes( 
-			 listenerpath.replace("{http-listener}", httpListener) ); 
-		
+		String propertyPath = SYSTEM_PROPERTY.replace("{config}", attributes.get("configRef"));
+		Map<String, String> listener = getClientUtil().getAttributes(
+				propertyPath.replace("{system-property}", propertyName));
 		return Integer.parseInt(listener.get("value"));
+	}
+
+	private static final String SERVER_PROPERTY = "/servers/server/{server}/system-property/{system-property}";
+
+	/**
+	 * Get the port number defined as a system property in a configuration, and
+	 * overridden at the level of the server instance.
+	 * 
+	 * @param server
+	 *            The name of the server instance
+	 * @param propertyName
+	 *            The name of the system property to resolve
+	 * @param defaultValue
+	 *            The default port number to be used, in case the system
+	 *            property is not overridden
+	 * @return The port number stored in the system property
+	 */
+	private int getServerSystemProperty(String server, String propertyName, int defaultValue)
+	{
+		String listenerpath = SERVER_PROPERTY.replace("{server}", server);
+		Map<String, String> listener = getClientUtil().getAttributes(
+				listenerpath.replace("{system-property}", propertyName));
+
+		return (listener.get("value") != null) ? Integer.parseInt(listener.get("value")) : defaultValue;
 	}		
 	
 	/**
@@ -467,7 +492,179 @@ public class GlassFishClientService implements GlassFishClient {
 			 listenerpath.replace("{http-listener}", httpListener) );
 		
 		return ( listener.get("value") != null) ? Integer.parseInt(listener.get("value")) : default_port;
-	}			
+	}
+
+	private static final String VIRTUAL_SERVERS = "/configs/config/{config}/http-service/list-virtual-servers?target={target}";
+
+	/**
+	 * Obtains the list of virtual servers associated with the deployment
+	 * target. This method omits '__asadmin' in the result, as no deployments
+	 * can target this virtual server.
+	 * 
+	 * @param attributes
+	 *            The attributes which references the configuration (server or
+	 *            cluster configuration)
+	 * @return A list of virtual server names that have been found in the
+	 *         server/cluster configuration
+	 */
+	private List<String> getVirtualServers(Map<String, String> attributes)
+	{
+		String virtualServerPath = VIRTUAL_SERVERS.replace("{config}", attributes.get("configRef")).replace("{target}",
+				attributes.get("name"));
+		Map virtualServersResponse = getClientUtil().GETRequest(virtualServerPath);
+		List<Map> virtualServers = (List<Map>) virtualServersResponse.get("children");
+		List<String> virtualServerNames = new ArrayList<String>();
+		for (Map virtualServer : virtualServers)
+		{
+			String virtualServerName = (String) virtualServer.get("message");
+			if (!virtualServerName.equals("__asadmin"))
+			{
+				virtualServerNames.add(virtualServerName);
+			}
+		}
+		return virtualServerNames;
+	}
+
+	private static final String VIRTUAL_SERVER = "/configs/config/{config}/http-service/virtual-server/{virtualServer}";
+
+	/**
+	 * Obtains the list of all network listeners associated with the list of
+	 * provided virtual servers.
+	 * 
+	 * @param attributes
+	 *            The attributes which references the configuration (server or
+	 *            cluster configuration)
+	 * @param virtualServers
+	 *            The {@link List} of all virtual servers whose the listeners
+	 *            must be retrieved
+	 * @return The list of all listener names associated with the provided list
+	 *         of virtual servers
+	 */
+	private List<String> getNetworkListeners(Map<String, String> attributes, List<String> virtualServers)
+	{
+		List<String> networkListeners = new ArrayList<String>();
+		for (String virtualServer : virtualServers)
+		{
+			String virtualServerPath = VIRTUAL_SERVER.replace("{config}", attributes.get("configRef")).replace(
+					"{virtualServer}", virtualServer);
+			Map<String, String> virtualServerAttributes = getClientUtil().getAttributes(virtualServerPath);
+			String listenerList = virtualServerAttributes.get("networkListeners");
+			String[] listeners = listenerList.split(",");
+			for (String listener : listeners)
+			{
+				networkListeners.add(listener.trim());
+			}
+		}
+		return networkListeners;
+	}
+
+	private static final String LISTENER = "/configs/config/{config}/network-config/network-listeners/network-listener/{listener}";
+
+	/**
+	 * Obtains the value of a HTTP/HTTPS network listener, as stored in the
+	 * GlassFish configuration.
+	 * 
+	 * @param attributes
+	 *            The attributes which references the configuration (server or
+	 *            cluster configuration)
+	 * @param networkListeners
+	 *            The {@link List} of network listeners among which one will be
+	 *            chosen
+	 * @param secure
+	 *            Should a listener with a secure protocol be chosen?
+	 * @return The value of the port number stored in the chosen listener
+	 *         configuration. This may be parseable as a number, but not
+	 *         necessarily so. Sometimes a system property might be returned.
+	 */
+	private String getActiveHttpPort(Map<String, String> attributes, List<String> networkListeners, boolean secure)
+	{
+		for (String networkListener : networkListeners)
+		{
+			String listenerPath = LISTENER.replace("{config}", attributes.get("configRef")).replace("{listener}",
+					networkListener);
+			Map<String, String> listenerAttributes = getClientUtil().getAttributes(listenerPath);
+			boolean enabled = Boolean.parseBoolean(listenerAttributes.get("enabled"));
+			if (!enabled)
+			{
+				continue;
+			}
+			String port = listenerAttributes.get("port");
+			String protocolName = listenerAttributes.get("protocol");
+			boolean secureProtocol = isSecureProtocol(attributes, protocolName);
+			if (secure && secureProtocol)
+			{
+				return port;
+			}
+			else if (!secure && !secureProtocol)
+			{
+				return port;
+			}
+		}
+		return null;
+	}
+
+	private static final String PROTOCOL = "/configs/config/{config}/network-config/protocols/protocol/{protocol}";
+
+	/**
+	 * Determines whether the protocol associated with the listener is a secure
+	 * protocol or not.
+	 * 
+	 * @param attributes
+	 *            The attributes which references the configuration (server or
+	 *            cluster configuration)
+	 * @param protocolName
+	 *            The name of the protocol
+	 * @return A boolean value indicating whether a protocol is secure or not
+	 */
+	private boolean isSecureProtocol(Map<String, String> attributes, String protocolName)
+	{
+		String protocolPath = PROTOCOL.replace("{config}", attributes.get("configRef")).replace("{protocol}",
+				protocolName);
+		Map<String, String> protocolAttributes = getClientUtil().getAttributes(protocolPath);
+		boolean isSecure = Boolean.parseBoolean(protocolAttributes.get("securityEnabled"));
+		return isSecure;
+	}
+
+	private static final String SYSTEM_PROPERTY_REGEX = "\\$\\{(.*)\\}";
+
+	/**
+	 * Get the port number of a network listener. Firstly, this method parses
+	 * the provided String as a number. If this fails, the provided String is
+	 * parsed as a system property stored in the format -
+	 * <blockquote>${systemProperty}</blockquote>. The value of the referenced
+	 * system property is then read from the GlassFish configuration.
+	 * 
+	 * @param attributes
+	 *            The attributes which references the configuration (server or
+	 *            cluster configuration)
+	 * @param serverName
+	 *            The name of the server instance
+	 * @param portNum
+	 *            The port number or a system property that stores the port
+	 *            number
+	 * @return The port number as stored in the network listener configuration
+	 *         or in the system property
+	 */
+	private int getPortValue(Map<String, String> attributes, String serverName, String portNum)
+	{
+		int portValue = -1;
+		try
+		{
+			portValue = Integer.parseInt(portNum);
+		}
+		catch (NumberFormatException formatEx)
+		{
+			Pattern propertyRegex = Pattern.compile(SYSTEM_PROPERTY_REGEX);
+			Matcher matcher = propertyRegex.matcher(portNum);
+			if (matcher.find())
+			{
+				String propertyName = matcher.group(1);
+				portValue = getSystemProperty(attributes, propertyName);
+				portValue = getServerSystemProperty(serverName, propertyName, portValue);
+			}
+		}
+		return portValue;
+	}
 	
     private GlassFishRestConfiguration getConfiguration(){
 		return configuration;    	
@@ -562,9 +759,23 @@ public class GlassFishClientService implements GlassFishClient {
 			// Get the host address of the Admin Server
 			nodeHost =  (String) getConfiguration().getAdminHost();        	
 			
-			// Get the port numbers
-			int httpPort  = getAdminServerHttpPort(serverAttributes, false );            
-	        int httpsPort = getAdminServerHttpPort(serverAttributes, true);
+			// Get the virtual servers and the associated network listeners for the DAS.
+			// We'll not verify if the listeners are bound to private IP
+			// addresses, or reachable from the Arquillian test client.
+			List<String> virtualServers = getVirtualServers(serverAttributes);
+			List<String> networkListeners = getNetworkListeners(serverAttributes, virtualServers);
+			String httpPortNum = getActiveHttpPort(serverAttributes, networkListeners, false);
+			String httpsPortNum = getActiveHttpPort(serverAttributes, networkListeners, true);
+
+			int httpPort = getPortValue(serverAttributes, getTarget(), httpPortNum);
+			// A HTTPS listener might not exist in the DAS config.
+			// And Arquillian requires a HTTP port for now.
+			// So, we'll parse the HTTPS config conditionally.
+			int httpsPort = -1;
+			if (httpsPortNum != null && !httpsPortNum.equals(""))
+			{
+				httpsPort = getPortValue(serverAttributes, getTarget(), httpsPortNum);
+			}
 			
 	        addNode(new NodeAddress(GlassFishClient.ADMINSERVER, nodeHost, httpPort, httpsPort));
 			
@@ -590,13 +801,23 @@ public class GlassFishClientService implements GlassFishClient {
 			// Get the host address of the Admin Server
 			nodeHost = getHostAddress(serverAttributes);        	
 			
-			// Get the port numbers
-	        int httpPort_def = getServerHttpPort(serverAttributes, false);
-	        int httpsPort_def = getServerHttpPort(serverAttributes, true);
-			
-	        // Check whether we have instance http-listeners to override the default ports
-	        int httpPort = getServerInstanceHttpPort(getTarget(), httpPort_def, false);
-	        int httpsPort = getServerInstanceHttpPort(getTarget(), httpsPort_def, true);
+			// Get the virtual servers and the associated network listeners for the DAS.
+			// We'll not verify if the listeners are bound to private IP addresses,
+			// or reachable from the Arquillian test client.
+			List<String> virtualServers = getVirtualServers(serverAttributes);
+			List<String> networkListeners = getNetworkListeners(serverAttributes, virtualServers);
+			String httpPortNum = getActiveHttpPort(serverAttributes, networkListeners, false);
+			String httpsPortNum = getActiveHttpPort(serverAttributes, networkListeners, true);
+
+			int httpPort = getPortValue(serverAttributes, getTarget(), httpPortNum);
+			// A HTTPS listener might not exist in the instance config.
+			// And Arquillian requires a HTTP port for now.
+			// So, we'll parse the HTTPS config conditionally.
+			int httpsPort = -1;
+			if (httpsPortNum != null && !httpsPortNum.equals(""))
+			{
+				httpsPort = getPortValue(serverAttributes, getTarget(), httpsPortNum);
+			}
 			
 	        addNode(new NodeAddress(getTarget(), nodeHost, httpPort, httpsPort));
 	    	return getNodes();
@@ -616,9 +837,24 @@ public class GlassFishClientService implements GlassFishClient {
 			setNodes( new ArrayList<NodeAddress>() );
 	        Map<String, String> serverAttributes;
 	        
+	        // Get the REST resource for the cluster attributes, to reference the config-ref later 
+	        Map<String, String> clusterAttributes = getClusterAttributes(getTarget());
 	        // Fetch the list of server instances of the cluster
 	        Map<String, String>  serverInstances = getServerInstances(getTarget());
 	        
+			// Get the virtual servers and the associated network listeners for the cluster.
+			// GlassFish clusters are homogeneous and the virtual servers and network listeners
+			// will be present on every cluster instance; only port numbers for the listener may vary.
+			// We'll not verify if the listeners are bound to private IP addresses,
+			// or reachable from the Arquillian test client.
+			List<String> virtualServers = getVirtualServers(clusterAttributes);
+			List<String> networkListeners = getNetworkListeners(clusterAttributes, virtualServers);
+
+			// Obtain a HTTP and a HTTPS port that have been enabled on the
+			// virtual server.
+			String httpPortNum = getActiveHttpPort(clusterAttributes, networkListeners, false);
+			String httpsPortNum = getActiveHttpPort(clusterAttributes, networkListeners, true);
+            
 	        for (Map.Entry serverInstance : serverInstances.entrySet()) 
 	        {
 	            String serverName = serverInstance.getKey().toString();
@@ -626,13 +862,15 @@ public class GlassFishClientService implements GlassFishClient {
 	            serverAttributes = getServerAttributes(serverName);				
 	            nodeHost = getHostAddress(serverAttributes);
 				
-	            // Get the port numbers
-	            int httpPort_def = getServerHttpPort(serverAttributes, false);
-	            int httpsPort_def = getServerHttpPort(serverAttributes, true);
-				
-	            // Check whether we have instance http-listeners to override the default ports
-	            int httpPort = getServerInstanceHttpPort(serverName, httpPort_def, false);
-	            int httpsPort = getServerInstanceHttpPort(serverName, httpsPort_def, true);
+				int httpPort = getPortValue(clusterAttributes, serverName, httpPortNum);
+				// A HTTPS listener might not exist in the cluster config.
+				// And Arquillian requires a HTTP port for now.
+				// So, we'll parse the HTTPS config conditionally.
+				int httpsPort = -1;
+				if (httpsPortNum != null && !httpsPortNum.equals(""))
+				{
+					httpsPort = getPortValue(clusterAttributes, serverName, httpsPortNum);
+				}
 				
 	            addNode(new NodeAddress(serverName, nodeHost, httpPort, httpsPort));
 	        }
