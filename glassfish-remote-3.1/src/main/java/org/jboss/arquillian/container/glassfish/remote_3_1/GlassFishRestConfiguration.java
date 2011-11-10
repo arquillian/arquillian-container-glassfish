@@ -46,12 +46,6 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 	private boolean adminHttps = false;
 	
 	/**
-	 * Flag indicating application urls use secure connections.
-	 * Used to build the URL for the REST request.
-	 */
-	private boolean serverHttps = false;
-	
-	/**
 	 * @deprecated
 	 * Http port for application urls.
 	 * Used to build the URL for the REST request.
@@ -176,11 +170,6 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
 		this.adminHttps = adminHttps;
 	}
 	
-	public boolean isServerHttps()
-	{
-		return serverHttps;
-	}
-	
 	/**
 	 * @deprecated
 	 */
@@ -194,19 +183,6 @@ public class GlassFishRestConfiguration implements ContainerConfiguration
     public void setRemoteServerHttpPort(int remoteServerHttpPort) {
     	this.remoteServerHttpPort = remoteServerHttpPort;
     }
-	
-	/**
-	 * @deprecated
-	 */
-	public void setRemoteServerHttps(Boolean serverHttps)
-	{
-		this.serverHttps = serverHttps;
-	}
-	
-	public void setServerHttps(boolean serverHttps)
-	{
-		this.serverHttps = serverHttps;
-	}	
 	
     public boolean isAuthorisation() {
         return authorisation;
