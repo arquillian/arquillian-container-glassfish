@@ -305,8 +305,13 @@ public class GlassFishClientService implements GlassFishClient {
 			if ( moduleProperties != null && !moduleProperties.isEmpty() ) {
 				String moduleInfo = moduleProperties.get("moduleInfo");
 				if (moduleInfo.startsWith(componentName)) {
-					// Get the webmodul's contextRoot 
-					contextRoot = moduleInfo.substring( moduleInfo.indexOf("/") );
+					// Get the webmodule's contextRoot 
+					// The moduleInfo property has the format - moduleArchiveURI:moduleType:contextRoot
+					// The contextRoot is extracted, and removed of any prefixed slash.
+					String[] moduleInfoElements = moduleInfo.split(":");
+					contextRoot = moduleInfoElements[2];
+					contextRoot = contextRoot.indexOf("/") > -1 ? contextRoot.substring(contextRoot.indexOf("/"))
+							: contextRoot;
 				}
 			} else {
 				throw new GlassFishClientException("Cuold not resolve the web-module contextRoot");
