@@ -42,7 +42,7 @@ public class GlassFishConfiguration implements ContainerConfiguration
    private String installRoot = null;
    private boolean configurationReadOnly = true;
    private String configurationXml;
-   private String sunResourcesXml;
+   private String glassfishResourcesXml;
    
    /* (non-Javadoc)
     * @see org.jboss.arquillian.spi.client.container.ContainerConfiguration#validate()
@@ -108,22 +108,39 @@ public class GlassFishConfiguration implements ContainerConfiguration
       this.configurationXml = configurationXml;
    }
 
-   public List<String> getSunResourcesXml()
+   public List<String> getGlassfishResourcesXml()
    {
-       if(sunResourcesXml == null){
+       if(glassfishResourcesXml == null){
            return Collections.emptyList();
        }
        List<String> resources = new ArrayList<String>();
-       for(String resource : sunResourcesXml.split(","))
+       for(String resource : glassfishResourcesXml.split(","))
        {
            resources.add(resource.trim());
        }
       return resources;
    }
 
+   public void setGlassfishResourcesXml(String glassfishResourcesXml)
+   {
+      this.glassfishResourcesXml = glassfishResourcesXml;
+   }
+
+   /**
+    * @deprecated
+    */
+   public List<String> getSunResourcesXml()
+   {
+      return getGlassfishResourcesXml();
+   }
+
+   /**
+    * @deprecated
+    */
    public void setSunResourcesXml(String sunResourcesXml)
    {
-      this.sunResourcesXml = sunResourcesXml;
+      Logger.getLogger(getClass().getName()).warning("The sunResourcesXml property deprecated. Please use glassfishResourcesXml. See http://docs.oracle.com/cd/E18930_01/html/821-2417/giyhh.html");
+      setGlassfishResourcesXml(sunResourcesXml);
    }
 
    /**
@@ -194,12 +211,12 @@ public class GlassFishConfiguration implements ContainerConfiguration
             configurationXml = configurationXmlURI.toString();
          }
 
-         List<String> sunResourcesXml = getSunResourcesXml();
-         if (sunResourcesXml.size() > 0)
+         List<String> glassfishResourcesXml = getGlassfishResourcesXml();
+         if (glassfishResourcesXml.size() > 0)
          {
-            for(String sunResourceXml : sunResourcesXml)
+            for(String glassfishResourceXml : glassfishResourcesXml)
             {
-               verifySunResourcesXml(sunResourceXml);
+               verifyGlassfishResourcesXml(glassfishResourceXml);
             }
          }
       }
@@ -294,20 +311,20 @@ public class GlassFishConfiguration implements ContainerConfiguration
       }
 
       /**
-       * Verifies whether the value of the <code>sunResourcesXml</code> property
+       * Verifies whether the value of the <code>glassfishResourcesXml</code> property
        * is a valid file path.
        * 
-       * @param sunResourcesXml
-       *           The file path to the <code>sun-resources.xml</code> file,
+       * @param glassfishResourcesXml
+       *           The file path to the <code>glassfish-resources.xml</code> file,
        *           that is later used in an <code>asadmin add-resources</code>
        *           command.
        */
-      private void verifySunResourcesXml(String sunResourcesXml)
+      private void verifyGlassfishResourcesXml(String glassfishResourcesXml)
       {
-         File sunResourcesXmlPath = new File(sunResourcesXml);
-         if (!sunResourcesXmlPath.exists())
+         File glassfishResourcesXmlPath = new File(glassfishResourcesXml);
+         if (!glassfishResourcesXmlPath.exists())
          {
-            throw new RuntimeException("The sunResourcesXml property does not appear to be a valid file path.");
+            throw new RuntimeException("The glassfishResourcesXml property does not appear to be a valid file path.");
          }
       }
 
