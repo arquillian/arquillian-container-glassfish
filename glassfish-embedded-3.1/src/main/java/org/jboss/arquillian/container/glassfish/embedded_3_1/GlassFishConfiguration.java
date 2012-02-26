@@ -42,7 +42,7 @@ public class GlassFishConfiguration implements ContainerConfiguration
    private String installRoot = null;
    private boolean configurationReadOnly = true;
    private String configurationXml;
-   private String glassfishResourcesXml;
+   private String resourcesXml;
    
    /* (non-Javadoc)
     * @see org.jboss.arquillian.spi.client.container.ContainerConfiguration#validate()
@@ -108,22 +108,22 @@ public class GlassFishConfiguration implements ContainerConfiguration
       this.configurationXml = configurationXml;
    }
 
-   public List<String> getGlassfishResourcesXml()
+   public List<String> getResourcesXml()
    {
-       if(glassfishResourcesXml == null){
+       if(resourcesXml == null){
            return Collections.emptyList();
        }
        List<String> resources = new ArrayList<String>();
-       for(String resource : glassfishResourcesXml.split(","))
+       for(String resource : resourcesXml.split(","))
        {
            resources.add(resource.trim());
        }
       return resources;
    }
 
-   public void setGlassfishResourcesXml(String glassfishResourcesXml)
+   public void setResourcesXml(String resourcesXml)
    {
-      this.glassfishResourcesXml = glassfishResourcesXml;
+      this.resourcesXml = resourcesXml;
    }
 
    /**
@@ -131,7 +131,7 @@ public class GlassFishConfiguration implements ContainerConfiguration
     */
    public List<String> getSunResourcesXml()
    {
-      return getGlassfishResourcesXml();
+      return getResourcesXml();
    }
 
    /**
@@ -139,8 +139,8 @@ public class GlassFishConfiguration implements ContainerConfiguration
     */
    public void setSunResourcesXml(String sunResourcesXml)
    {
-      Logger.getLogger(getClass().getName()).warning("The sunResourcesXml property deprecated. Please use glassfishResourcesXml. See http://docs.oracle.com/cd/E18930_01/html/821-2417/giyhh.html");
-      setGlassfishResourcesXml(sunResourcesXml);
+      Logger.getLogger(getClass().getName()).warning("The sunResourcesXml property deprecated. Please use resourcesXml. See http://docs.oracle.com/cd/E18930_01/html/821-2417/giyhh.html");
+      setResourcesXml(sunResourcesXml);
    }
 
    /**
@@ -211,12 +211,12 @@ public class GlassFishConfiguration implements ContainerConfiguration
             configurationXml = configurationXmlURI.toString();
          }
 
-         List<String> glassfishResourcesXml = getGlassfishResourcesXml();
-         if (glassfishResourcesXml.size() > 0)
+         List<String> resourcesXml = getResourcesXml();
+         if (resourcesXml.size() > 0)
          {
-            for(String glassfishResourceXml : glassfishResourcesXml)
+            for(String resourceXml : resourcesXml)
             {
-               verifyGlassfishResourcesXml(glassfishResourceXml);
+               verifyResourcesXml(resourceXml);
             }
          }
       }
@@ -311,20 +311,20 @@ public class GlassFishConfiguration implements ContainerConfiguration
       }
 
       /**
-       * Verifies whether the value of the <code>glassfishResourcesXml</code> property
+       * Verifies whether the value of the <code>resourcesXml</code> property
        * is a valid file path.
        * 
-       * @param glassfishResourcesXml
+       * @param resourcesXml
        *           The file path to the <code>glassfish-resources.xml</code> file,
        *           that is later used in an <code>asadmin add-resources</code>
        *           command.
        */
-      private void verifyGlassfishResourcesXml(String glassfishResourcesXml)
+      private void verifyResourcesXml(String resourcesXml)
       {
-         File glassfishResourcesXmlPath = new File(glassfishResourcesXml);
-         if (!glassfishResourcesXmlPath.exists())
+         File resourcesXmlPath = new File(resourcesXml);
+         if (!resourcesXmlPath.exists())
          {
-            throw new RuntimeException("The glassfishResourcesXml property does not appear to be a valid file path.");
+            throw new RuntimeException("The resourcesXml property does not appear to be a valid file path.");
          }
       }
 

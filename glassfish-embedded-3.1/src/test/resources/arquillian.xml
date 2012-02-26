@@ -6,7 +6,7 @@
 
        <container qualifier="glassfish" default="true">
            <configuration>
-               <property name="glassfishResourcesXml">
+               <property name="resourcesXml">
                    src/test/resources/glassfish-resources.xml,
                    src/test/resources/glassfish-resources2.xml
                </property>

@@ -114,4 +114,24 @@ public class GlassfishConfigurationTest
       config.validate();
    }
 
+   @Test
+   public void testValidResourcesXmlPath() throws Exception
+   {
+      String resourcesXml = "./src/test/resources/gfconfigs/resourcesxml/glassfish-resources.xml";
+
+      GlassFishConfiguration config = new GlassFishConfiguration();
+      config.setResourcesXml(resourcesXml);
+      config.validate();
+   }
+
+   @Test(expected = RuntimeException.class)
+   public void testInvalidResourcesXmlPath() throws Exception
+   {
+      String resourcesXml = "./src/test/resources/gfconfigs/emptydir/glassfish-resources.xml";
+
+      GlassFishConfiguration config = new GlassFishConfiguration();
+      config.setResourcesXml(resourcesXml);
+      config.validate();
+   }
+
 }
