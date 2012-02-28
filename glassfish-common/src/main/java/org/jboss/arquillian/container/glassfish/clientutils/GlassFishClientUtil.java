@@ -19,7 +19,7 @@
  *
  * @author Z.Paulovics
  */
-package org.jboss.arquillian.container.glassfish.remote_3_1.clientutils;
+package org.jboss.arquillian.container.glassfish.clientutils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -43,7 +43,8 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.multipart.FormDataMultiPart;
-import org.jboss.arquillian.container.glassfish.remote_3_1.GlassFishRestConfiguration;
+
+import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
 
 
 public class GlassFishClientUtil {
@@ -58,19 +59,19 @@ public class GlassFishClientUtil {
 	 */
 	public static final String WARNING = "WARNING";
 	
-	private GlassFishRestConfiguration configuration;
+	private CommonGlassFishConfiguration configuration;
 	
 	private String adminBaseUrl;
 	
 	private static final Logger log = Logger.getLogger(GlassFishClientUtil.class.getName());
 	
-	public GlassFishClientUtil(GlassFishRestConfiguration configuration, String adminBaseUrl) 
+	public GlassFishClientUtil(CommonGlassFishConfiguration configuration, String adminBaseUrl) 
 	{
 		this.configuration = configuration;
 		this.adminBaseUrl = adminBaseUrl;		
 	}
 	
-	public GlassFishRestConfiguration getConfiguration()
+	public CommonGlassFishConfiguration getConfiguration()
 	{
 		return configuration;
 	}	

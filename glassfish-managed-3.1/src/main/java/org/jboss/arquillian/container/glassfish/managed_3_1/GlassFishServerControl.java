@@ -24,16 +24,19 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jboss.arquillian.container.spi.client.container.LifecycleException;
 
 /**
- * TODO purge uses of System.out.println for error reporting (keep the console output calls)
+ * A class for issuing asadmin commands using the admin-cli.jar of the GlassFish distribution.
  * 
  * @author <a href="http://community.jboss.org/people/dan.j.allen">Dan Allen</a>
  */
 public class GlassFishServerControl {
-    
+
+    private static final Logger logger = Logger.getLogger(GlassFishServerControl.class.getName());
     private GlassFishManagedContainerConfiguration config;
     
     public GlassFishServerControl(GlassFishManagedContainerConfiguration config) {
@@ -88,11 +91,11 @@ public class GlassFishServerControl {
                 return process.waitFor();
             }
             catch (InterruptedException e) {
-                System.out.println(description + " interrupted.");
+                logger.log(Level.INFO, description + " interrupted.");
                 return 1;
             }
          } catch (IOException e) {
-             System.out.println(description + " failed: " + e.getMessage());
+             logger.log(Level.SEVERE, description + " failed.", e);
              return 1;
          }
     }

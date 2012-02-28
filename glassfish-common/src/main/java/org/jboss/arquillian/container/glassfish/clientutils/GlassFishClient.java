@@ -19,7 +19,7 @@
  *
  * @author Z.Paulovics
  */
-package org.jboss.arquillian.container.glassfish.remote_3_1.clientutils;
+package org.jboss.arquillian.container.glassfish.clientutils;
 
 import java.util.Map;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;

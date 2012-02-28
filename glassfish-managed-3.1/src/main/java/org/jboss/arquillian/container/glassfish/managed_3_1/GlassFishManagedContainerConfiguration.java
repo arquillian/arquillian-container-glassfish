@@ -18,15 +18,15 @@ package org.jboss.arquillian.container.glassfish.managed_3_1;
 
 import java.io.File;
 
+import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
 import org.jboss.arquillian.container.spi.ConfigurationException;
-import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
 import org.jboss.arquillian.container.spi.client.deployment.Validate;
 
 /**
  * @author <a href="http://community.jboss.org/people/dan.j.allen">Dan Allen</a>
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
-public class GlassFishManagedContainerConfiguration implements ContainerConfiguration {
+public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfiguration {
 
     /**
      * The local GlassFish installation directory
@@ -49,50 +49,11 @@ public class GlassFishManagedContainerConfiguration implements ContainerConfigur
     private boolean debug = false;
     
     /**
-     * Glassfish Admin Console port.
-     * Used to build the URL for the REST request.
-     */
-    private int remoteServerAdminPort = 4848;
-    
-    /**
-     * Glassfish address.
-     * Used to build the URL for the REST request.
-     */
-    private String remoteServerAddress = "localhost";
-    
-    /**
-     * Flag indicating the administration url uses a secure connection.
-     * Used to build the URL for the REST request.
-     */
-    private boolean remoteServerAdminHttps = false;
-    
-    /**
-     * Flag indicating application urls use secure connections.
-     * Used to build the URL for the REST request.
-     */
-    private boolean remoteServerHttps = false;
-    
-    /**
      * Http port for application urls.
      * Used to build the URL for the REST request.
      */
     private int remoteServerHttpPort = 8080;
     
-    /**
-     * Flag indicating the remote server requires an admin user and password. 
-     */
-    private boolean remoteServerAuthorisation = false;
-    
-    /**
-     * Authorised admin user in the remote glassfish admin realm
-     */
-    private String remoteServerAdminUser;
-
-    /**
-     * Authorised admin user password
-     */
-    private String remoteServerAdminPassword;
-
     public String getGlassfishHome() {
         return glassfishHome;
     }
@@ -125,30 +86,6 @@ public class GlassFishManagedContainerConfiguration implements ContainerConfigur
         this.debug = debug;
     }
 
-    public String getRemoteServerAddress() {
-        return remoteServerAddress;
-    }
-
-    public void setRemoteServerAddress(String remoteServerAddress) {
-        this.remoteServerAddress = remoteServerAddress;
-    }
-
-    public int getRemoteServerAdminPort() {
-        return remoteServerAdminPort;
-    }
-
-    public void setRemoteServerAdminPort(int remoteServerAdminPort) {
-        this.remoteServerAdminPort = remoteServerAdminPort;
-    }
-
-    public boolean isRemoteServerAdminHttps() {
-        return remoteServerAdminHttps;
-    }
-
-    public void setRemoteServerAdminHttps(boolean remoteServerAdminHttps) {
-        this.remoteServerAdminHttps = remoteServerAdminHttps;
-    }
-
     public int getRemoteServerHttpPort() {
         return remoteServerHttpPort;
     }
@@ -157,39 +94,6 @@ public class GlassFishManagedContainerConfiguration implements ContainerConfigur
         this.remoteServerHttpPort = remoteServerHttpPort;
     }
 
-    public boolean isRemoteServerHttps() {
-        return remoteServerHttps;
-    }
-
-    public void setRemoteServerHttps(boolean remoteServerHttps) {
-        this.remoteServerHttps = remoteServerHttps;
-    }
-
-    public boolean isRemoteServerAuthorisation() {
-        return remoteServerAuthorisation;
-    }
-
-    public void setRemoteServerAuthorisation(boolean remoteServerAuthorisation) {
-        this.remoteServerAuthorisation = remoteServerAuthorisation;
-    }
-
-    public String getRemoteServerAdminUser() {
-        return remoteServerAdminUser;
-    }
-
-    public void setRemoteServerAdminUser(String remoteServerAdminUser) {
-        this.setRemoteServerAuthorisation(true);
-        this.remoteServerAdminUser = remoteServerAdminUser;
-    }
-
-    public String getRemoteServerAdminPassword() {
-        return remoteServerAdminPassword;
-    }
-
-    public void setRemoteServerAdminPassword(String remoteServerAdminPassword) {
-        this.remoteServerAdminPassword = remoteServerAdminPassword;
-    }
-    
     public File getAdminCliJar() {
         return new File(getGlassfishHome() + "/glassfish/modules/admin-cli.jar");
     }
@@ -209,10 +113,6 @@ public class GlassFishManagedContainerConfiguration implements ContainerConfigur
             Validate.configurationDirectoryExists(getGlassfishHome() + "/glassfish/domains/" + getDomain(), "Invalid domain: " + getDomain());
         }
         
-       if(isRemoteServerAuthorisation())
-       {
-          Validate.notNull(getRemoteServerAdminUser(), "remoteServerAdminUser must be specified to use remoteServerAuthorisation");
-          Validate.notNull(getRemoteServerAdminPassword(), "remoteServerAdminPassword must be specified to use remoteServerAuthorisation");
-       }
+       super.validate();
     }
 }

@@ -19,7 +19,7 @@
  *
  * @author Z.Paulovics
  */
-package org.jboss.arquillian.container.glassfish.remote_3_1.clientutils;
+package org.jboss.arquillian.container.glassfish.clientutils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jboss.arquillian.container.glassfish.remote_3_1.GlassFishRestConfiguration;
+import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
 
@@ -49,7 +49,7 @@ public class GlassFishClientService implements GlassFishClient {
 	
     private String DASUrl;
 
-    GlassFishRestConfiguration configuration;
+    CommonGlassFishConfiguration configuration;
 	
     private ServerStartegy serverInstance = null; 
 	
@@ -60,7 +60,7 @@ public class GlassFishClientService implements GlassFishClient {
 	private static final Logger log = Logger.getLogger(GlassFishClientService.class.getName());
 	
     // GlassFish client service constructor
-    public GlassFishClientService(GlassFishRestConfiguration configuration){
+    public GlassFishClientService(CommonGlassFishConfiguration configuration){
     	this.configuration = configuration;
     	this.target = configuration.getTarget();
 		
@@ -671,8 +671,8 @@ public class GlassFishClientService implements GlassFishClient {
 		return portValue;
 	}
 	
-    private GlassFishRestConfiguration getConfiguration(){
-		return configuration;    	
+    private CommonGlassFishConfiguration getConfiguration(){
+		return configuration;
     }
 	
     private String getTarget(){

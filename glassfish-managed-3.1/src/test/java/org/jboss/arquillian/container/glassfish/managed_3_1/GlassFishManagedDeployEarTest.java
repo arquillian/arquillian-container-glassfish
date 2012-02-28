@@ -60,7 +60,6 @@ public class GlassFishManagedDeployEarTest {
         return ear;
     }
     
-    // FIXME for ear deployments, deploymentUrl does not contain context path!!
     @ArquillianResource
     private URL deploymentUrl;
 
@@ -68,7 +67,7 @@ public class GlassFishManagedDeployEarTest {
     public void shouldBeAbleToDeployEnterpriseArchive() throws Exception {
         final String servletPath = GreeterServlet.class.getAnnotation(WebServlet.class).urlPatterns()[0];
 
-        final URLConnection response = new URL(deploymentUrl.toString() + "/test/" + servletPath.substring(1)).openConnection();
+        final URLConnection response = new URL(deploymentUrl.toString() + servletPath.substring(1)).openConnection();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(response.getInputStream()));
         final String result = in.readLine();
