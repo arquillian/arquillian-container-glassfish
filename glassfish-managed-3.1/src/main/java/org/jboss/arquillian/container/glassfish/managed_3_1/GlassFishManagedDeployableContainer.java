@@ -30,9 +30,11 @@ import org.jboss.shrinkwrap.descriptor.api.Descriptor;
  * 
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  * @author <a href="http://community.jboss.org/people/dan.j.allen">Dan Allen</a>
+ * @author Vineet Reynolds
  */
 public class GlassFishManagedDeployableContainer implements DeployableContainer<GlassFishManagedContainerConfiguration> {
 
+    private GlassFishManagedContainerConfiguration configuration;
     private GlassFishServerControl serverControl;
     private CommonGlassFishManager<GlassFishManagedContainerConfiguration> glassFishManager;
 
@@ -45,13 +47,36 @@ public class GlassFishManagedDeployableContainer implements DeployableContainer<
             throw new IllegalArgumentException("configuration must not be null");
         }
 
+        this.configuration = configuration;
         this.serverControl = new GlassFishServerControl(configuration);
         this.glassFishManager = new CommonGlassFishManager<GlassFishManagedContainerConfiguration>(configuration);
     }
 
     public void start() throws LifecycleException {
-        serverControl.start();
-        glassFishManager.start();
+       if (glassFishManager.isDASRunning())
+       {
+          if (configuration.isAllowConnectingToRunningServer())
+          {
+             // If we are allowed to connect to a running server,
+             // then do not issue the 'asadmin start-domain' command. 
+             glassFishManager.start();
+             return;
+          }
+          else
+          {
+             throw new LifecycleException("The server is already running! "
+                   + "Managed containers does not support connecting to running server instances due to the "
+                   + "possible harmful effect of connecting to the wrong server. Please stop server before running or "
+                   + "change to another type of container.\n"
+                   + "To disable this check and allow Arquillian to connect to a running server, "
+                   + "set allowConnectingToRunningServer to true in the container configuration");
+          }
+       }
+       else
+       {
+          serverControl.start();
+          glassFishManager.start();
+       }
     }
 
     public void stop() throws LifecycleException {

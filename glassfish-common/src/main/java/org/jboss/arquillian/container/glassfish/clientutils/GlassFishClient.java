@@ -62,6 +62,12 @@ public interface GlassFishClient {
 	 * @param name 			- application name
 	 * @return responseMap
 	 */
-	public Map doUndeploy(String name, FormDataMultiPart form); 
+	public Map doUndeploy(String name, FormDataMultiPart form);
+	
+	/**
+	 * Verify whether the Domain Administration Server is running. 
+	 * @return
+	 */
+	public boolean isDASRunning();
     
 }

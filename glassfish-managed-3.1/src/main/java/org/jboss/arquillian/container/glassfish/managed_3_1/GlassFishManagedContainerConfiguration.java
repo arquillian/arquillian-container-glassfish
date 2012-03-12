@@ -19,12 +19,16 @@ package org.jboss.arquillian.container.glassfish.managed_3_1;
 import java.io.File;
 
 import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
+import org.jboss.arquillian.container.glassfish.clientutils.GlassFishClient;
 import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.deployment.Validate;
 
 /**
+ * Configuration for Managed GlassFish containers.
+ *
  * @author <a href="http://community.jboss.org/people/dan.j.allen">Dan Allen</a>
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
+ * @author Vineet Reynolds
  */
 public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfiguration {
 
@@ -32,7 +36,7 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
      * The local GlassFish installation directory
      */
     private String glassFishHome = System.getenv("GLASSFISH_HOME");
-    
+
     /**
      * The GlassFish domain to use or the default domain if not specified
      */
@@ -42,18 +46,17 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
      * Show the output of the admin commands on the console
      */
     private boolean outputToConsole = false;
-    
+
     /**
      * Flag to start the server in debug mode using standard GlassFish debug port
      */
     private boolean debug = false;
 
     /**
-     * Http port for application urls.
-     * Used to build the URL for the REST request.
+     * Allow Arquillian to use an already running GlassFish instance.
      */
-    private int remoteServerHttpPort = 8080;
-    
+    private boolean allowConnectingToRunningServer = false;
+
     public String getGlassFishHome() {
         return glassFishHome;
     }
@@ -61,7 +64,7 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     public void setGlassFishHome(String glassFishHome) {
         this.glassFishHome = glassFishHome;
     }
-    
+
     public String getDomain() {
         return domain;
     }
@@ -86,16 +89,21 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
         this.debug = debug;
     }
 
-    public int getRemoteServerHttpPort() {
-        return remoteServerHttpPort;
-    }
-
-    public void setRemoteServerHttpPort(int remoteServerHttpPort) {
-        this.remoteServerHttpPort = remoteServerHttpPort;
-    }
-
     public File getAdminCliJar() {
         return new File(getGlassFishHome() + "/glassfish/modules/admin-cli.jar");
+    }
+
+    public boolean isAllowConnectingToRunningServer() {
+        return allowConnectingToRunningServer;
+    }
+
+    public void setAllowConnectingToRunningServer(boolean allowConnectingToRunningServer) {
+        this.allowConnectingToRunningServer = allowConnectingToRunningServer;
+    }
+
+    @Override
+    public String getTarget() {
+        return GlassFishClient.ADMINSERVER;
     }
 
     /**
@@ -105,15 +113,15 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     public void validate() throws ConfigurationException {
         Validate.notNull(getGlassFishHome(), "The property glassFishHome must be specified or the GLASSFISH_HOME environment variable must be set");
         Validate.configurationDirectoryExists(getGlassFishHome() + "/glassfish", getGlassFishHome() + " is not a valid GlassFish installation");
-        
+
         if (!getAdminCliJar().isFile()) {
             throw new IllegalArgumentException("Could not locate admin-cli.jar module in GlassFish installation: " + getGlassFishHome());
         }
-        
+
         if (getDomain() != null) {
             Validate.configurationDirectoryExists(getGlassFishHome() + "/glassfish/domains/" + getDomain(), "Invalid domain: " + getDomain());
         }
-        
-       super.validate();
+
+        super.validate();
     }
 }

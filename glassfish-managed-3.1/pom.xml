@@ -15,7 +15,7 @@
     <description>GlassFish 3.1 Managed Container integration for the Arquillian Project</description>
 
     <properties>
-        <version.glassfish>3.1.1</version.glassfish>
+        <version.glassfish>3.1.2</version.glassfish>
     </properties>
 
     <dependencies>
@@ -56,6 +56,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jboss.arquillian.testenricher</groupId>
+            <artifactId>arquillian-testenricher-initialcontext</artifactId>
+        </dependency>
+        
+        <dependency>
             <groupId>org.jboss.spec</groupId>
             <artifactId>jboss-javaee-6.0</artifactId>
             <type>pom</type>
@@ -79,23 +84,30 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>setup-glassfish</id>
                         <phase>process-test-classes</phase>
                         <configuration>
-                            <target>
-                                <get src="http://download.java.net/glassfish/${version.glassfish}/release/glassfish-${version.glassfish}.zip" dest="${project.build.directory}" usetimestamp="true"/>
-                                <unzip src="${project.build.directory}/glassfish-${version.glassfish}.zip" dest="${project.build.directory}"/>
-                            </target>
+                            <artifactItems>
+                                <!-- The below coordinates are for GlassFish 3.1.2.
+                                 For prior distributions, use {org.glassfish.distributions}:{glassfish}:{version} -->
+                                <artifactItem>
+                                    <groupId>org.glassfish.main.distributions</groupId>
+                                    <artifactId>glassfish</artifactId>
+                                    <version>${version.glassfish}</version>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                         <goals>
-                            <goal>run</goal>
+                            <goal>unpack</goal>
                         </goals>
                     </execution>
                 </executions>
-            </plugin> 
+            </plugin>
         </plugins>
     </build>
 

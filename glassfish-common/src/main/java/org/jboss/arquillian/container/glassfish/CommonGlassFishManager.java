@@ -126,6 +126,11 @@ public class CommonGlassFishManager<C extends CommonGlassFishConfiguration>
       
    }
    
+   public boolean isDASRunning()
+   {
+      return glassFishClient.isDASRunning();
+   }
+   
    private String createDeploymentName(String archiveName)
    {
        String correctedName = archiveName;

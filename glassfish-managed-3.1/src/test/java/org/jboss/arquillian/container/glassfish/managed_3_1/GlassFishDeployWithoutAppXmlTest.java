@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.glassfish.remote_3_1;
+package org.jboss.arquillian.container.glassfish.managed_3_1;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -70,3 +70,4 @@ class Client
 {
 
 }
+

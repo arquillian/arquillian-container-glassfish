@@ -21,6 +21,7 @@
  */
 package org.jboss.arquillian.container.glassfish.clientutils;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -245,6 +246,21 @@ public class GlassFishClientService implements GlassFishClient {
 	{
 	    String path = APPLICATION_RESOURCE.replace("{name}", name);
 		return getClientUtil().POSTMultiPartRequest(path, form);
+	}
+	
+	/**
+	 * Verify if the DAS is running or not.
+	 */
+	public boolean isDASRunning() {
+        try {
+            getClientUtil().GETRequest("");
+        } catch (ClientHandlerException clientEx) {
+            if (clientEx.getCause().getClass().equals(ConnectException.class)) {
+                // We were unable to connect to the DAS through Jersey
+                return false;
+            }
+        }
+        return true;
 	}
 	
     /**
