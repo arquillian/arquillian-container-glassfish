@@ -64,15 +64,9 @@ public class GlassFishClientService implements GlassFishClient {
     	this.configuration = configuration;
     	this.target = configuration.getTarget();
 		
-    	final StringBuilder adminUrlBuilder = new StringBuilder();
-		
-        if (this.configuration.isAdminHttps()) {
-            adminUrlBuilder.append("https://");
-        } else {
-            adminUrlBuilder.append("http://");
-        }
-		
-        adminUrlBuilder.append(this.configuration.getAdminHost()).append(":")
+    	final StringBuilder adminUrlBuilder = new StringBuilder()
+    	    .append(NodeAddress.getHttpProtocolPrefix(this.configuration.isAdminHttps()))
+    	    .append(this.configuration.getAdminHost()).append(":")
         	.append(this.configuration.getAdminPort());
         DASUrl = adminUrlBuilder.toString();
         adminUrlBuilder.append("/management/domain");

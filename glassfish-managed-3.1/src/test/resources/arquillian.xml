@@ -12,7 +12,7 @@
 
     <container qualifier="glassfish" default="true">
         <configuration>
-            <property name="glassfishHome">target/glassfish3</property>
+            <property name="glassFishHome">target/glassfish3</property>
             <property name="adminHost">localhost</property>
             <property name="adminPort">4848</property>
         </configuration>
@@ -20,7 +20,7 @@
 
     <container qualifier="glassfish-auth">
         <configuration>
-            <property name="glassfishHome">target/glassfish3</property>
+            <property name="glassFishHome">target/glassfish3</property>
             <property name="adminHost">localhost</property>
             <property name="adminPort">4848</property>
             <property name="adminUser">admin</property>

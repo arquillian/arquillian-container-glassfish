@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,7 +34,6 @@ import org.jboss.arquillian.container.spi.client.container.LifecycleException;
  * @author <a href="http://community.jboss.org/people/dan.j.allen">Dan Allen</a>
  */
 public class GlassFishServerControl {
-
     private static final Logger logger = Logger.getLogger(GlassFishServerControl.class.getName());
     private GlassFishManagedContainerConfiguration config;
     
@@ -44,44 +42,50 @@ public class GlassFishServerControl {
     }
     
     public void start() throws LifecycleException {
-        String cmd = "start-domain";
+        String admincmd = "start-domain";
+        List<String> args = new ArrayList<String>();
         if (config.isDebug()) {
-            cmd += " --debug";
+            args.add("--debug");
         }
-        int result = executeDomainCommand(cmd, "Starting container");
+        int result = executeAdminDomainCommand("Starting container", admincmd, args);
         if (result > 0) {
             throw new LifecycleException("Could not start container");
         }
+
     }
     
     public void stop() throws LifecycleException {
-        int result = executeDomainCommand("stop-domain", "Stopping container");
+        int result = executeAdminDomainCommand("Stopping container", "stop-domain", new ArrayList<String>());
         if (result > 0) {
             throw new LifecycleException("Could not stop container");
         }
     }
     
-    private int executeDomainCommand(String command, String description) {
-        Process process;
+    private int executeAdminDomainCommand(String description, String admincmd, List<String> args) {
+        if (config.getDomain() != null) {
+            args.add(config.getDomain());
+        }
         
+        return executeAdminCommand(description, admincmd, args);
+    }
+    
+    private int executeAdminCommand(String description, String admincmd, List<String> args) {
         List<String> cmd = new ArrayList<String>();
         cmd.add("java");
 
         cmd.add("-jar");
         cmd.add(config.getAdminCliJar().getAbsolutePath());
-
-        for (StringTokenizer tok = new StringTokenizer(command, " "); tok.hasMoreTokens();) {
-            cmd.add(tok.nextToken());
-        }
-        if (config.getDomain() != null) {
-            cmd.add(config.getDomain());
-        }
+        
+        cmd.add(admincmd);
+        cmd.addAll(args);
+        
         cmd.add("-t");
-
+        
         if (config.isOutputToConsole()) {
             System.out.println(description + " using command: " + cmd.toString());
         }
 
+        Process process = null;
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(cmd);
             processBuilder.redirectErrorStream(true);
@@ -121,6 +125,7 @@ public class GlassFishServerControl {
                     }
                 }
             } catch (IOException e) {
+                logger.log(Level.SEVERE, e.getMessage(), e);
             }
         }
 

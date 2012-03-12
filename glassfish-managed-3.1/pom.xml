@@ -14,6 +14,10 @@
     <name>Arquillian Container GlassFish Managed 3.1</name>
     <description>GlassFish 3.1 Managed Container integration for the Arquillian Project</description>
 
+    <properties>
+        <version.glassfish>3.1.1</version.glassfish>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -81,10 +85,10 @@
                         <id>setup-glassfish</id>
                         <phase>process-test-classes</phase>
                         <configuration>
-                            <tasks>
-                                <get src="http://download.java.net/glassfish/3.1/release/glassfish-3.1.zip" dest="${project.build.directory}" usetimestamp="true"/>
-                                <unzip src="${project.build.directory}/glassfish-3.1.zip" dest="${project.build.directory}"/>
-                            </tasks>
+                            <target>
+                                <get src="http://download.java.net/glassfish/${version.glassfish}/release/glassfish-${version.glassfish}.zip" dest="${project.build.directory}" usetimestamp="true"/>
+                                <unzip src="${project.build.directory}/glassfish-${version.glassfish}.zip" dest="${project.build.directory}"/>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>

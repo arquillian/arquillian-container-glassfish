@@ -16,8 +16,6 @@
  */
 package org.jboss.arquillian.container.glassfish.managed_3_1;
 
-import java.util.logging.Logger;
-
 import org.jboss.arquillian.container.glassfish.CommonGlassFishManager;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
@@ -35,9 +33,6 @@ import org.jboss.shrinkwrap.descriptor.api.Descriptor;
  */
 public class GlassFishManagedDeployableContainer implements DeployableContainer<GlassFishManagedContainerConfiguration> {
 
-    private static final Logger log = Logger.getLogger(GlassFishManagedDeployableContainer.class.getName());
-
-    private GlassFishManagedContainerConfiguration configuration;
     private GlassFishServerControl serverControl;
     private CommonGlassFishManager<GlassFishManagedContainerConfiguration> glassFishManager;
 
@@ -50,9 +45,7 @@ public class GlassFishManagedDeployableContainer implements DeployableContainer<
             throw new IllegalArgumentException("configuration must not be null");
         }
 
-        this.configuration = configuration;
         this.serverControl = new GlassFishServerControl(configuration);
-        
         this.glassFishManager = new CommonGlassFishManager<GlassFishManagedContainerConfiguration>(configuration);
     }
 

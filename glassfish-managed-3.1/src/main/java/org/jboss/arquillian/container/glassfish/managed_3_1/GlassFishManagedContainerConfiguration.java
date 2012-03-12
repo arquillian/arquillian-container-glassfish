@@ -31,7 +31,7 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     /**
      * The local GlassFish installation directory
      */
-    private String glassfishHome = System.getenv("GLASSFISH_HOME");
+    private String glassFishHome = System.getenv("GLASSFISH_HOME");
     
     /**
      * The GlassFish domain to use or the default domain if not specified
@@ -47,19 +47,19 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
      * Flag to start the server in debug mode using standard GlassFish debug port
      */
     private boolean debug = false;
-    
+
     /**
      * Http port for application urls.
      * Used to build the URL for the REST request.
      */
     private int remoteServerHttpPort = 8080;
     
-    public String getGlassfishHome() {
-        return glassfishHome;
+    public String getGlassFishHome() {
+        return glassFishHome;
     }
 
-    public void setGlassfishHome(String glassfishHome) {
-        this.glassfishHome = glassfishHome;
+    public void setGlassFishHome(String glassFishHome) {
+        this.glassFishHome = glassFishHome;
     }
     
     public String getDomain() {
@@ -95,7 +95,7 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     }
 
     public File getAdminCliJar() {
-        return new File(getGlassfishHome() + "/glassfish/modules/admin-cli.jar");
+        return new File(getGlassFishHome() + "/glassfish/modules/admin-cli.jar");
     }
 
     /**
@@ -103,14 +103,15 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
      * properties are set and have correct values
      */
     public void validate() throws ConfigurationException {
-        Validate.notNull(getGlassfishHome(), "glassfishHome must be specified or the GLASSFISH_HOME environment variable must be set");
-        // FIXME this should be a more robust check
-        if (!getAdminCliJar().exists()) {
-            throw new IllegalArgumentException(getGlassfishHome() + " is not a valid GlassFish installation");
+        Validate.notNull(getGlassFishHome(), "The property glassFishHome must be specified or the GLASSFISH_HOME environment variable must be set");
+        Validate.configurationDirectoryExists(getGlassFishHome() + "/glassfish", getGlassFishHome() + " is not a valid GlassFish installation");
+        
+        if (!getAdminCliJar().isFile()) {
+            throw new IllegalArgumentException("Could not locate admin-cli.jar module in GlassFish installation: " + getGlassFishHome());
         }
         
         if (getDomain() != null) {
-            Validate.configurationDirectoryExists(getGlassfishHome() + "/glassfish/domains/" + getDomain(), "Invalid domain: " + getDomain());
+            Validate.configurationDirectoryExists(getGlassFishHome() + "/glassfish/domains/" + getDomain(), "Invalid domain: " + getDomain());
         }
         
        super.validate();

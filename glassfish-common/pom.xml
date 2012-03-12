@@ -8,7 +8,7 @@
         <relativePath>..</relativePath>
     </parent>
     <artifactId>arquillian-glassfish-common</artifactId>
-    <name>Arquillian Containers for GlassFish Common Functionality</name>
+    <name>Arquillian Container GlassFish Common Services</name>
 
     <dependencies>
         

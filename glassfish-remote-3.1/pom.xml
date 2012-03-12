@@ -11,8 +11,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>arquillian-glassfish-remote-3.1</artifactId>
-    <name>Arquillian Container GlassFish Remote 3.1 (REST)</name>
-    <description>GlassFish 3.1 Remote Container integration (REST) for the Arquillian Project</description>
+    <name>Arquillian Container GlassFish Remote 3.1</name>
+    <description>GlassFish 3.1 Remote Container integration for the Arquillian Project</description>
 
     <dependencies>
 
