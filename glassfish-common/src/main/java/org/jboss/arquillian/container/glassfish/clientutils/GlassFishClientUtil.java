@@ -19,7 +19,7 @@
  *
  * @author Z.Paulovics
  */
-package org.jboss.arquillian.container.glassfish.remote_3_1.clientutils;
+package org.jboss.arquillian.container.glassfish.clientutils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -41,9 +41,11 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.api.client.filter.CsrfProtectionFilter;
 import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.multipart.FormDataMultiPart;
-import org.jboss.arquillian.container.glassfish.remote_3_1.GlassFishRestConfiguration;
+
+import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
 
 
 public class GlassFishClientUtil {
@@ -58,19 +60,19 @@ public class GlassFishClientUtil {
 	 */
 	public static final String WARNING = "WARNING";
 	
-	private GlassFishRestConfiguration configuration;
+	private CommonGlassFishConfiguration configuration;
 	
 	private String adminBaseUrl;
 	
 	private static final Logger log = Logger.getLogger(GlassFishClientUtil.class.getName());
 	
-	public GlassFishClientUtil(GlassFishRestConfiguration configuration, String adminBaseUrl) 
+	public GlassFishClientUtil(CommonGlassFishConfiguration configuration, String adminBaseUrl) 
 	{
 		this.configuration = configuration;
 		this.adminBaseUrl = adminBaseUrl;		
 	}
 	
-	public GlassFishRestConfiguration getConfiguration()
+	public CommonGlassFishConfiguration getConfiguration()
 	{
 		return configuration;
 	}	
@@ -104,7 +106,7 @@ public class GlassFishClientUtil {
     public Map GETRequest(String additionalResourceUrl) 
     {
     	ClientResponse response = prepareClient(additionalResourceUrl).get(ClientResponse.class);
-    	Map responseMap = getResponceMap(response);
+    	Map responseMap = getResponseMap(response);
     	
     	return responseMap;
 	}
@@ -126,7 +128,7 @@ public class GlassFishClientUtil {
     {
     	ClientResponse response = prepareClient(additionalResourceUrl).type(MediaType.MULTIPART_FORM_DATA_TYPE)
 		.post(ClientResponse.class, form);
-    	Map responseMap = getResponceMap(response);
+    	Map responseMap = getResponseMap(response);
     	
     	return responseMap;
 	}
@@ -145,11 +147,11 @@ public class GlassFishClientUtil {
 													 configuration.getAdminUser(),
 													 configuration.getAdminPassword()));
         }
-        
+        client.addFilter(new CsrfProtectionFilter());
         return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_XML_TYPE);
     }
 	
-    private Map getResponceMap(ClientResponse response) throws ContainerException 
+    private Map getResponseMap(ClientResponse response) throws ContainerException 
     {
     	Map responseMap = new HashMap(); String message = "";
         final String xmlDoc = response.getEntity(String.class);
@@ -182,10 +184,10 @@ public class GlassFishClientUtil {
 			
 	    } else if (status.getReasonPhrase() == "Not Found") {
 	    	// the REST resource can not be found (for optional resources it can be O.K.)
-	    	message += " [satus: " + status.getFamily() + " reason: " + status.getReasonPhrase() +"]";
+	    	message += " [status: " + status.getFamily() + " reason: " + status.getReasonPhrase() +"]";
 	        log.warning(message);
 	    } else {
-	    	message += " [satus: " + status.getFamily() + " reason: " + status.getReasonPhrase() +"]";
+	    	message += " [status: " + status.getFamily() + " reason: " + status.getReasonPhrase() +"]";
 	    	log.severe(message);
 	    	throw new ContainerException(message);
 	    }

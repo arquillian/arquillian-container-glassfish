@@ -19,7 +19,7 @@
  *
  * @author Z.Paulovics
  */
-package org.jboss.arquillian.container.glassfish.remote_3_1.clientutils;
+package org.jboss.arquillian.container.glassfish.clientutils;
 
 public class GlassFishClientException extends RuntimeException {
 

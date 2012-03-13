@@ -19,11 +19,20 @@
  *
  * @author Z.Paulovics
  */
-package org.jboss.arquillian.container.glassfish.remote_3_1.clientutils;
+package org.jboss.arquillian.container.glassfish.clientutils;
 
 import java.net.URI;
 
 public class NodeAddress {
+        /**
+         * HTTP protocol URI prefix
+         */
+        public static final String HTTP_PROTOCOL_PREFIX = "http://";
+    
+        /**
+         * HTTPS protocol URI prefix
+         */
+        public static final String HTTPS_PROTOCOL_PREFIX = "https://";
 
 	   /**
 	    * name of the server instance
@@ -131,6 +140,10 @@ public class NodeAddress {
 
 	   public URI getURI(boolean secure)
 	   {
-		   return URI.create( ((!secure) ? "http://" : "https://") + host + ":" + ((!secure) ? this.httpPort : this.httpsPort) );
+		   return URI.create( getHttpProtocolPrefix(secure) + host + ":" + ((!secure) ? this.httpPort : this.httpsPort) );
+	   }
+	   
+	   public static String getHttpProtocolPrefix(boolean secure) {
+	       return secure ? HTTPS_PROTOCOL_PREFIX : HTTP_PROTOCOL_PREFIX;
 	   }
 }

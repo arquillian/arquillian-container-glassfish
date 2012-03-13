@@ -19,8 +19,9 @@
  *
  * @author Z.Paulovics
  */
-package org.jboss.arquillian.container.glassfish.remote_3_1.clientutils;
+package org.jboss.arquillian.container.glassfish.clientutils;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jboss.arquillian.container.glassfish.remote_3_1.GlassFishRestConfiguration;
+import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
 
@@ -49,7 +50,7 @@ public class GlassFishClientService implements GlassFishClient {
 	
     private String DASUrl;
 
-    GlassFishRestConfiguration configuration;
+    CommonGlassFishConfiguration configuration;
 	
     private ServerStartegy serverInstance = null; 
 	
@@ -60,19 +61,13 @@ public class GlassFishClientService implements GlassFishClient {
 	private static final Logger log = Logger.getLogger(GlassFishClientService.class.getName());
 	
     // GlassFish client service constructor
-    public GlassFishClientService(GlassFishRestConfiguration configuration){
+    public GlassFishClientService(CommonGlassFishConfiguration configuration){
     	this.configuration = configuration;
     	this.target = configuration.getTarget();
 		
-    	final StringBuilder adminUrlBuilder = new StringBuilder();
-		
-        if (this.configuration.isAdminHttps()) {
-            adminUrlBuilder.append("https://");
-        } else {
-            adminUrlBuilder.append("http://");
-        }
-		
-        adminUrlBuilder.append(this.configuration.getAdminHost()).append(":")
+    	final StringBuilder adminUrlBuilder = new StringBuilder()
+    	    .append(NodeAddress.getHttpProtocolPrefix(this.configuration.isAdminHttps()))
+    	    .append(this.configuration.getAdminHost()).append(":")
         	.append(this.configuration.getAdminPort());
         DASUrl = adminUrlBuilder.toString();
         adminUrlBuilder.append("/management/domain");
@@ -251,6 +246,21 @@ public class GlassFishClientService implements GlassFishClient {
 	{
 	    String path = APPLICATION_RESOURCE.replace("{name}", name);
 		return getClientUtil().POSTMultiPartRequest(path, form);
+	}
+	
+	/**
+	 * Verify if the DAS is running or not.
+	 */
+	public boolean isDASRunning() {
+        try {
+            getClientUtil().GETRequest("");
+        } catch (ClientHandlerException clientEx) {
+            if (clientEx.getCause().getClass().equals(ConnectException.class)) {
+                // We were unable to connect to the DAS through Jersey
+                return false;
+            }
+        }
+        return true;
 	}
 	
     /**
@@ -671,8 +681,8 @@ public class GlassFishClientService implements GlassFishClient {
 		return portValue;
 	}
 	
-    private GlassFishRestConfiguration getConfiguration(){
-		return configuration;    	
+    private CommonGlassFishConfiguration getConfiguration(){
+		return configuration;
     }
 	
     private String getTarget(){

@@ -91,6 +91,8 @@
     </build>
 
     <modules>
+        <module>glassfish-common</module>
+        <module>glassfish-managed-3.1</module>
         <module>glassfish-remote-3.1</module>
         <module>glassfish-embedded-3.1</module>
     </modules>
