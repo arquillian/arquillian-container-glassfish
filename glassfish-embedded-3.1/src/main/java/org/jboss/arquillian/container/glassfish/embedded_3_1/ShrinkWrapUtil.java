@@ -47,7 +47,7 @@ final class ShrinkWrapUtil
       File root = File.createTempFile("arquillian", archive.getName());
       root.delete();
       root.mkdirs();
-      
+      root.deleteOnExit(); 
       File deployment = new File(root, archive.getName());
       deployment.deleteOnExit();
       archive.as(ZipExporter.class).exportTo(deployment, true);
