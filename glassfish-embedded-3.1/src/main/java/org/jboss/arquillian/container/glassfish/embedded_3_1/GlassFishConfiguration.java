@@ -43,6 +43,7 @@ public class GlassFishConfiguration implements ContainerConfiguration
    private boolean configurationReadOnly = true;
    private String configurationXml;
    private String resourcesXml;
+   private boolean cleanup = true;
    
    /* (non-Javadoc)
     * @see org.jboss.arquillian.spi.client.container.ContainerConfiguration#validate()
@@ -106,6 +107,16 @@ public class GlassFishConfiguration implements ContainerConfiguration
    public void setConfigurationXml(String configurationXml)
    {
       this.configurationXml = configurationXml;
+   }
+
+   public boolean getCleanup()
+   {
+      return cleanup;
+   }
+
+   public void setCleanup(boolean cleanup)
+   {
+      this.cleanup = cleanup;
    }
 
    public List<String> getResourcesXml()

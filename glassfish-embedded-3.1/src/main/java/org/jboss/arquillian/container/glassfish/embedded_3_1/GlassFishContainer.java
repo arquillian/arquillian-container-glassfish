@@ -22,8 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.naming.NamingException;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletRegistration;
 
 import org.apache.catalina.Container;
@@ -52,8 +53,8 @@ import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.web.WebModule;
-import javax.naming.InitialContext;
 
 /**
  * GlassfishContainer
@@ -110,15 +111,16 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
          throw new RuntimeException("Could not setup GlassFish Embedded Bootstrap", e);
       }
 
+      boolean cleanup = configuration.getCleanup();
       GlassFishProperties serverProps = new GlassFishProperties();
       
       boolean shouldSetPort = true;
       if(configuration.getInstanceRoot() != null)
       {
          File instanceRoot = new File(configuration.getInstanceRoot());
-         if(!instanceRoot.exists())
+         if (instanceRoot.exists())
          {
-            instanceRoot.mkdirs();
+            cleanup = false;
          }
          serverProps.setInstanceRoot(configuration.getInstanceRoot());
          shouldSetPort = false;
@@ -133,6 +135,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       {
     	  serverProps.setPort("http-listener", configuration.getBindHttpPort());
       }
+      
       try
       {
          glassfish = glassfishRuntime.newGlassFish(serverProps);
@@ -140,6 +143,18 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       catch (Exception e) 
       {
          throw new RuntimeException("Could not setup GlassFish Embedded Runtime", e);
+      }
+
+      if (cleanup)
+      {
+         Runtime.getRuntime().addShutdownHook(new Thread()
+         {
+            @Override
+            public void run()
+            {
+               deleteRecursive(new File(System.getProperty(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY)));
+            }
+         });
       }
    }
 
@@ -158,7 +173,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
          throw new LifecycleException("Could not start GlassFish Embedded", e);
       }
       // Server needs to be started before we can deploy resources
-      for(String resource : configuration.getSunResourcesXml())
+      for(String resource : configuration.getResourcesXml())
       {
           try
           {
@@ -356,4 +371,24 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
    private void unbindCommandRunner() throws NamingException {
        new InitialContext().unbind("org.glassfish.embeddable.CommandRunner");
    }
+   
+    private void deleteRecursive(File dir) {
+        if (dir == null) {
+            throw new IllegalArgumentException("directory cannot be null");
+        }
+        if (!dir.isDirectory()) {
+            throw new IllegalArgumentException("directory must be a directory");
+        }
+        if (dir.exists()) {
+            for (File file : dir.listFiles()) {
+                if (file.isDirectory()) {
+                    deleteRecursive(file);
+                    file.delete();
+                } else {
+                    file.delete();
+                }
+            }
+            dir.delete();
+        }
+    }
 }
