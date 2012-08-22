@@ -32,35 +32,23 @@ import org.jboss.arquillian.container.spi.client.deployment.Validate;
  */
 public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfiguration {
 
-    /**
-     * The local GlassFish installation directory
-     */
     private String glassFishHome = System.getenv("GLASSFISH_HOME");
 
-    /**
-     * The GlassFish domain to use or the default domain if not specified
-     */
     private String domain = null;
 
-    /**
-     * Show the output of the admin commands on the console
-     */
     private boolean outputToConsole = false;
 
-    /**
-     * Flag to start the server in debug mode using standard GlassFish debug port
-     */
     private boolean debug = false;
 
-    /**
-     * Allow Arquillian to use an already running GlassFish instance.
-     */
     private boolean allowConnectingToRunningServer = false;
 
     public String getGlassFishHome() {
         return glassFishHome;
     }
 
+    /**
+     * @param glassFishHome The local GlassFish installation directory
+     */
     public void setGlassFishHome(String glassFishHome) {
         this.glassFishHome = glassFishHome;
     }
@@ -69,6 +57,9 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
         return domain;
     }
 
+    /**
+     * @param domain The GlassFish domain to use or the default domain if not specified
+     */
     public void setDomain(String domain) {
         this.domain = domain;
     }
@@ -77,6 +68,9 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
         return outputToConsole;
     }
 
+    /**
+     * @param outputToConsole Show the output of the admin commands on the console
+     */
     public void setOutputToConsole(boolean outputToConsole) {
         this.outputToConsole = outputToConsole;
     }
@@ -85,6 +79,9 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
         return debug;
     }
 
+    /**
+     * @param debug Flag to start the server in debug mode using standard GlassFish debug port
+     */
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
@@ -97,6 +94,9 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
         return allowConnectingToRunningServer;
     }
 
+    /**
+     * @param allowConnectingToRunningServer Allow Arquillian to use an already running GlassFish instance.
+     */
     public void setAllowConnectingToRunningServer(boolean allowConnectingToRunningServer) {
         this.allowConnectingToRunningServer = allowConnectingToRunningServer;
     }

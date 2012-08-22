@@ -58,6 +58,9 @@ public class GlassFishConfiguration implements ContainerConfiguration
       return bindHttpPort;
    }
 
+   /**
+    * @param bindHttpPort The port number of the http-listener for the embedded GlassFish server.
+    */
    public void setBindHttpPort(int bindHttpPort)
    {
       this.bindHttpPort = bindHttpPort;
@@ -67,7 +70,11 @@ public class GlassFishConfiguration implements ContainerConfiguration
    {
       return instanceRoot;
    }
-   
+
+   /**
+    * @param instanceRoot The instance root directory is the parent directory of a GlassFish server instance directory.
+    *        Embedded GlassFish Server uses the server instance directory for domain configuration files.
+    */
    public void setInstanceRoot(String instanceRoot)
    {
       this.instanceRoot = instanceRoot;
@@ -77,22 +84,24 @@ public class GlassFishConfiguration implements ContainerConfiguration
    {
       return installRoot;
    }
-   
+
+   /**
+    * @param installRoot The location of the GlassFish installation root directory. This directory corresponds to the base
+    *        directory for an installation of GlassFish Server.
+    */
    public void setInstallRoot(String installRoot)
    {
       this.installRoot = installRoot;
    }
    
-   /**
-    * @return the configurationReadOnly
-    */
    public boolean isConfigurationReadOnly()
    {
       return configurationReadOnly;
    }
    
    /**
-    * @param configurationReadOnly the configurationReadOnly to set
+    * @param configurationReadOnly Specifies whether GlassFish should writeback any changes to specified configuration file or
+    *        config/domain.xml at the specified instance root.
     */
    public void setConfigurationReadOnly(boolean configurationReadOnly)
    {
@@ -104,6 +113,10 @@ public class GlassFishConfiguration implements ContainerConfiguration
       return configurationXml;
    }
 
+   /**
+    * @param configurationXml Set the location of configuration file i.e. domain.xml using which the GlassFish server should
+    *        run.
+    */
    public void setConfigurationXml(String configurationXml)
    {
       this.configurationXml = configurationXml;
@@ -114,6 +127,10 @@ public class GlassFishConfiguration implements ContainerConfiguration
       return cleanup;
    }
 
+    /**
+     * @param cleanup Specifies whether Arquillian should cleanup on shutdown. This recursively deletes files in the
+     *        {@link GlassFishConfiguration#instanceRoot} directory.
+     */
    public void setCleanup(boolean cleanup)
    {
       this.cleanup = cleanup;
@@ -132,6 +149,10 @@ public class GlassFishConfiguration implements ContainerConfiguration
       return resources;
    }
 
+   /**
+    * @param resourcesXml A comma-separated list of GlassFish resources.xml files containing resources that will be added to
+    *        the GlassFish instance using the <code>add-resources</code> command.
+    */   
    public void setResourcesXml(String resourcesXml)
    {
       this.resourcesXml = resourcesXml;
