@@ -36,6 +36,7 @@ import org.jboss.arquillian.container.spi.client.container.LifecycleException;
 public class GlassFishServerControl {
     private static final Logger logger = Logger.getLogger(GlassFishServerControl.class.getName());
     private GlassFishManagedContainerConfiguration config;
+    private Thread shutdownHook;
     
     public GlassFishServerControl(GlassFishManagedContainerConfiguration config) {
         this.config = config;
@@ -51,10 +52,22 @@ public class GlassFishServerControl {
         if (result > 0) {
             throw new LifecycleException("Could not start container");
         }
+        
+        shutdownHook = new Thread(new Runnable() {
 
+            @Override
+            public void run() {
+                executeAdminDomainCommand("Forcing container shutdown", "stop-domain", new ArrayList<String>());
+            }
+        });
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
     
     public void stop() throws LifecycleException {
+        if (shutdownHook != null) {
+            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            shutdownHook = null;
+        }
         int result = executeAdminDomainCommand("Stopping container", "stop-domain", new ArrayList<String>());
         if (result > 0) {
             throw new LifecycleException("Could not stop container");
