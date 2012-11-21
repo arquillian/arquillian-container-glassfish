@@ -37,6 +37,7 @@ public class GlassFishManagedDeployableContainer implements DeployableContainer<
     private GlassFishManagedContainerConfiguration configuration;
     private GlassFishServerControl serverControl;
     private CommonGlassFishManager<GlassFishManagedContainerConfiguration> glassFishManager;
+    private boolean connectedToRunningServer;
 
     public Class<GlassFishManagedContainerConfiguration> getConfigurationClass() {
         return GlassFishManagedContainerConfiguration.class;
@@ -58,7 +59,8 @@ public class GlassFishManagedDeployableContainer implements DeployableContainer<
           if (configuration.isAllowConnectingToRunningServer())
           {
              // If we are allowed to connect to a running server,
-             // then do not issue the 'asadmin start-domain' command. 
+             // then do not issue the 'asadmin start-domain' command.
+             connectedToRunningServer = true;
              glassFishManager.start();
              return;
           }
@@ -80,7 +82,10 @@ public class GlassFishManagedDeployableContainer implements DeployableContainer<
     }
 
     public void stop() throws LifecycleException {
-        serverControl.stop();
+        if(!connectedToRunningServer)
+        {
+          serverControl.stop();
+        }
     }
 
     public ProtocolDescription getDefaultProtocol() {
