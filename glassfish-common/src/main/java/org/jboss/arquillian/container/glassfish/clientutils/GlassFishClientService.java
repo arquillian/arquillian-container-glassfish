@@ -193,7 +193,7 @@ public class GlassFishClientService implements GlassFishClient {
 	// the REST resource path template to retrieve the list of server instances
     private static final String APPLICATION = "/applications/application";
 	private static final String APPLICATION_RESOURCE = "/applications/application/{name}";
-    private static final String LIST_SUB_COMPONENTS = "/applications/application/list-sub-components?id={application}&type=servlets";
+    private static final String LIST_SUB_COMPONENTS = "/applications/application/list-sub-components?id={application}";
 	
     public HTTPContext doDeploy(String name, FormDataMultiPart form) {
 		
