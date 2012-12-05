@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -65,7 +67,8 @@ import com.sun.enterprise.web.WebModule;
 public class GlassFishContainer implements DeployableContainer<GlassFishConfiguration>
 {
    private static final Logger log = Logger.getLogger(GlassFishContainer.class.getName());
-
+   
+   private static final String SYSTEM_PROPERTY_REGEX = "\\$\\{(.*)\\}";
    private static final String COMMAND_ADD_RESOURCES = "add-resources";
    
    // TODO: open configuration up for bind address
@@ -73,7 +76,10 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
    
    private GlassFishConfiguration configuration;
    private GlassFishRuntime glassfishRuntime;
-   private GlassFish glassfish; 
+   private GlassFish glassfish;
+
+   private boolean shouldSetPort = true;
+   private int bindHttpPort;
    
    /* (non-Javadoc)
     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
@@ -114,7 +120,6 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       boolean cleanup = configuration.getCleanup();
       GlassFishProperties serverProps = new GlassFishProperties();
       
-      boolean shouldSetPort = true;
       if(configuration.getInstanceRoot() != null)
       {
          File instanceRoot = new File(configuration.getInstanceRoot());
@@ -133,7 +138,8 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       serverProps.setConfigFileReadOnly(configuration.isConfigurationReadOnly());
       if(shouldSetPort)
       {
-    	  serverProps.setPort("http-listener", configuration.getBindHttpPort());
+          bindHttpPort = configuration.getBindHttpPort();
+    	  serverProps.setPort("http-listener", bindHttpPort);
       }
       
       try
@@ -166,6 +172,10 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       try
       {
          glassfish.start();
+         if(!shouldSetPort)
+         {
+             readBindingHttpPort();
+         }
          bindCommandRunner();
       }
       catch (Exception e) 
@@ -223,9 +233,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       
       try
       {
-         HTTPContext httpContext = new HTTPContext(
-               ADDRESS, 
-               configuration.getBindHttpPort()); 
+         HTTPContext httpContext = new HTTPContext(ADDRESS,bindHttpPort); 
          
          findServlets(httpContext, resolveWebArchiveNames(archive));
          
@@ -347,20 +355,23 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
       }
    }
    
-   private void executeCommand(String command, String... parameterList) throws Throwable
+   private String executeCommand(String command, String... parameterList) throws Throwable
    {
       CommandRunner runner = glassfish.getCommandRunner();
       CommandResult result = runner.run(command, parameterList);
 
+      String output = null;
       switch(result.getExitStatus())
       {
          case FAILURE:
          case WARNING:
             throw result.getFailureCause();
          case SUCCESS:
-            log.info("command " + command + " result: " + result.getOutput());
+            output = result.getOutput();
+            log.info("command " + command + " parameters" + parameterList + " result: " + output);
             break;
       }
+      return output;
    }
    
    private void bindCommandRunner() throws NamingException, GlassFishException  {
@@ -389,6 +400,119 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
                 }
             }
             dir.delete();
+        }
+    }
+    
+    /**
+     * Populates the bindHttpPort value by reading the GlassFish configuration.
+     * 
+     * @throws LifecycleException When there is failure reading the contents of the GlassFish configuration
+     */
+    private void readBindingHttpPort() throws LifecycleException {
+        // Fetch the name of the configuration ref element of the Default Admin Server
+        String config = fetchAttribute("servers.server.server.config-ref");
+
+        // Fetch the virtual servers in the configuration element
+        List<String> virtualServers = fetchAttributes("configs.config." + config + ".http-service.virtual-server.*.id");
+        for (String virtualServer : virtualServers) {
+            // Ignore the __asadmin virtual server as no deployments will occur against this
+            if (virtualServer.equals("__asadmin")) {
+                continue;
+            } else {
+                // Fetch the network listeners of the virtual server
+                String networkListenerList = fetchAttribute("configs.config." + config + ".http-service.virtual-server."
+                        + virtualServer + ".network-listeners");
+
+                // Iterate through the network listeners, resolve the port number of the first one. Ignore the rest.
+                String[] networkListeners = networkListenerList.split(",");
+                for (String networkListener : networkListeners) {
+                    Integer listenPort = readNetworkListenerPort(config, networkListener);
+                    if (listenPort != null) {
+                        bindHttpPort = listenPort;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param config
+     * @param networkListener
+     * @throws LifecycleException
+     */
+    private Integer readNetworkListenerPort(String config, String networkListener) throws LifecycleException {
+        boolean enabled = Boolean.parseBoolean(fetchAttribute("configs.config." + config
+                + ".network-config.network-listeners.network-listener." + networkListener + ".enabled"));
+        // Is the listener enabled?
+        if (enabled) {
+            String protocol = fetchAttribute("configs.config." + config + ".network-config.network-listeners.network-listener."
+                    + networkListener + ".protocol");
+            boolean securityEnabled = Boolean.parseBoolean(fetchAttribute("configs.config." + config
+                    + ".network-config.protocols.protocol." + protocol + ".security-enabled"));
+            // Is the protocol secure? If yes, then ignore since Arquillian will not make HTTPS connections (yet) 
+            if (!securityEnabled) {
+                String portNum = fetchAttribute("configs.config." + config
+                        + ".network-config.network-listeners.network-listener." + networkListener + ".port");
+                Pattern sysProp = Pattern.compile(SYSTEM_PROPERTY_REGEX);
+                Matcher matcher = sysProp.matcher(portNum);
+                if (matcher.matches()) {
+                    // If the port number is stored as a system property, then resolve the property value
+                    String propertyName = matcher.group(1);
+                    portNum = fetchAttribute("configs.config." + config + ".system-property." + propertyName + ".value");
+                    return Integer.parseInt(portNum);
+                } else {
+                    return Integer.parseInt(portNum);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Executes the 'get' command and parses the output for multiple values. Use this method if you're not sure of the number of
+     * values returned in the command output.
+     * 
+     * @param parameterList The list of parameters to be provided for the execution of the 'get' command.
+     * @return The list of values of the attribute returned in the command output.
+     * @throws LifecycleException When there is a failure executing the 'get' command
+     */
+    private List<String> fetchAttributes(String... parameterList) throws LifecycleException {
+        try {
+            String output = executeCommand("get", parameterList);
+            String[] lines = output.split("\\n");
+            List<String> result = new ArrayList<String>();
+            // Omit the first line and parse the rest
+            for (int ctr = 1; ctr < lines.length; ctr++) {
+                String currentLine = lines[ctr];
+                String[] kvPair = currentLine.split("=");
+                // Obtain the value in the K=V pair
+                result.add(kvPair[1]);
+            }
+            return result;
+        } catch (Throwable ex) {
+            throw new LifecycleException("Failed to read the HTTP listener configuration.", ex);
+        }
+    }
+    
+    /**
+     * Executes the 'get' command and parses the output for a single value. Multiple values are not recognized. Use this only if
+     * you are sure of a single return value.
+     * 
+     * @param parameterList The list of parameters to be provided for the execution of the 'get' command.
+     * @return The value of the attribute returned in the command output.
+     * @throws LifecycleException When there is a failure executing the 'get' command
+     */
+    private String fetchAttribute(String... parameterList) throws LifecycleException {
+        try {
+            String output = executeCommand("get", parameterList);
+            String[] lines = output.split("\\n");
+            // Omit the first line and parse only the second
+            String currentLine = lines[1];
+            String[] kvPair = currentLine.split("=");
+            // Obtain the value in the K=V pair
+            return kvPair[1];
+        } catch (Throwable ex) {
+            throw new LifecycleException("Failed to read the HTTP listener configuration.", ex);
         }
     }
 }
