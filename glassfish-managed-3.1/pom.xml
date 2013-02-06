@@ -14,10 +14,6 @@
     <name>Arquillian Container GlassFish Managed 3.1</name>
     <description>GlassFish 3.1 Managed Container integration for the Arquillian Project</description>
 
-    <properties>
-        <version.glassfish>3.1.2</version.glassfish>
-    </properties>
-
     <dependencies>
 
         <dependency>
@@ -111,4 +107,21 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>3.x</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <version.glassfish>3.1.2</version.glassfish>
+            </properties>
+        </profile>
+        <profile>
+            <id>4.x</id>
+            <properties>
+                <version.glassfish>4.0-b72</version.glassfish>
+            </properties>
+        </profile>
+    </profiles>
 </project>

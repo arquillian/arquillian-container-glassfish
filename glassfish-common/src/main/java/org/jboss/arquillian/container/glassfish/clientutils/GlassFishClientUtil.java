@@ -37,15 +37,15 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.client.filter.CsrfProtectionFilter;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.multipart.FormDataMultiPart;
-
-import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
 
 
 public class GlassFishClientUtil {
@@ -148,7 +148,7 @@ public class GlassFishClientUtil {
 													 configuration.getAdminPassword()));
         }
         client.addFilter(new CsrfProtectionFilter());
-        return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_XML_TYPE);
+        return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_XML_TYPE).header("X-GlassFish-3", "ignore");
     }
 	
     private Map getResponseMap(ClientResponse response) throws ContainerException 
