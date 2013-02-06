@@ -193,8 +193,8 @@ public class GlassFishClientService implements GlassFishClient {
 	// the REST resource path template to retrieve the list of server instances
     private static final String APPLICATION = "/applications/application";
 	private static final String APPLICATION_RESOURCE = "/applications/application/{name}";
-    private static final String LIST_SUB_COMPONENTS = "/applications/application/list-sub-components?id={application}";
-	
+    private static final String LIST_SUB_COMPONENTS = "/applications/application/{application}/list-sub-components?type=servlets";
+
     public HTTPContext doDeploy(String name, FormDataMultiPart form) {
 		
     	Map<String, String> SubComponents = new HashMap<String, String>();
@@ -205,36 +205,38 @@ public class GlassFishClientService implements GlassFishClient {
 		// Fetch the list of SubComponents of the application
 		String path = LIST_SUB_COMPONENTS.replace("{application}", name );
 		
-		Map subComponentsResponce = getClientUtil().GETRequest(path);	
-		Map<String, String> subComponents = (Map<String, String>) subComponentsResponce.get("properties");
-		
+		Map subComponentsResponce = getClientUtil().GETRequest(path);
+        Map<String, String> subComponents = (Map<String, String>) subComponentsResponce.get("properties");
+
         // Build up the HTTPContext object using the nodeAddress information
         int port = nodeAddress.getHttpPort();
         HTTPContext httpContext = new HTTPContext( nodeAddress.getHost(), port );
-		
+
         // Add the servlets to the HTTPContext
         String componentName;
         String contextRoot = getApplicationContextRoot(name);
-		
-        for (Map.Entry subComponent : subComponents.entrySet()) 
-        {
-        	componentName = subComponent.getKey().toString();
-        	if ( WEBMODULE.equals(subComponent.getValue()) ) {
-				
-        		List<Map> children = (List<Map>) subComponentsResponce.get("children");
-        		// Override the application contextRoot by the webmodul's contextRoot
-        		contextRoot = resolveWebModuleContextRoot(componentName, children);
-	    		resolveWebModuleSubComponents(name, componentName, contextRoot, httpContext);
-				
-        	} else if ( SERVLET.equals(subComponent.getValue()) ) {
-				
-        		httpContext.add(new Servlet(componentName, contextRoot));
-        	}
+
+        if ( subComponents != null ) {
+            for (Map.Entry subComponent : subComponents.entrySet())
+            {
+                componentName = subComponent.getKey().toString();
+                if ( WEBMODULE.equals(subComponent.getValue()) ) {
+
+                    List<Map> children = (List<Map>) subComponentsResponce.get("children");
+                    // Override the application contextRoot by the webmodul's contextRoot
+                    contextRoot = resolveWebModuleContextRoot(componentName, children);
+                    resolveWebModuleSubComponents(name, componentName, contextRoot, httpContext);
+
+                } else if ( SERVLET.equals(subComponent.getValue()) ) {
+
+                    httpContext.add(new Servlet(componentName, contextRoot));
+                }
+            }
         }
-		
+
     	return httpContext;
     }
-	
+
     /**
 	 * Undeploy the component 
 	 * 
@@ -339,9 +341,9 @@ public class GlassFishClientService implements GlassFishClient {
 	 * @param httpContext	- httpContext to be updated
 	 */
 	// the REST resource path template to retrieve the servlets
-	private static final String WEBMODUL_RESOURCE = "/applications/application/list-sub-components?appname={application}&id={module}&type=servlets";
-	
-	private void resolveWebModuleSubComponents(String name, String module, String context, HTTPContext httpContext) 
+	private static final String WEBMODUL_RESOURCE = "/applications/application/{application}/list-sub-components?appname={application}&id={module}&type=servlets";
+
+	private void resolveWebModuleSubComponents(String name, String module, String context, HTTPContext httpContext)
 	{
 		// Fetch the list of SubComponents of the application
 		String applicationPath = WEBMODUL_RESOURCE.replace("{application}", name );
@@ -768,9 +770,17 @@ public class GlassFishClientService implements GlassFishClient {
 		{        
 	        String nodeHost = "localhost"; // default host
 	        setNodes( new ArrayList<NodeAddress>() );
-			
+
+            // getting the server attributes is happening too fast.  The admin server hasn't started yet.
+            int count = 10;
 			Map<String, String> serverAttributes = getServerAttributes(GlassFishClient.ADMINSERVER);
-			
+            while ( serverAttributes.size() == 0 && count-- > 0 ) {
+                try {
+                    Thread.sleep( 1000 );
+                } catch (InterruptedException ignore) {}
+                serverAttributes = getServerAttributes(GlassFishClient.ADMINSERVER);
+            }
+
 			// Get the host address of the Admin Server
 			nodeHost =  (String) getConfiguration().getAdminHost();        	
 			
