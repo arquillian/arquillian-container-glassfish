@@ -148,7 +148,7 @@ public class GlassFishClientUtil {
 													 configuration.getAdminPassword()));
         }
         client.addFilter(new CsrfProtectionFilter());
-        return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_XML_TYPE).header("X-GlassFish-3", "junk");
+        return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_XML_TYPE).header("X-GlassFish-3", "ignore");
     }
 	
     private Map getResponseMap(ClientResponse response) throws ContainerException 
