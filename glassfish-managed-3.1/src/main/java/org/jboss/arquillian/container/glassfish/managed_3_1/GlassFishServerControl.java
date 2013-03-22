@@ -73,6 +73,28 @@ public class GlassFishServerControl {
             throw new LifecycleException("Could not stop container");
         }
     }
+
+    public List<String> getJMSResources() {
+        String admincmd = "list-jms-resources";
+        List<String> args = new ArrayList<String>();
+        List<String> retVal = executeAdminCommandAndWait(admincmd, admincmd, args);
+        return retVal;
+    }
+
+    public void createJMSResource( String resourceType, String name, String jndiLocation ) {
+        String admincmd = "create-jms-resource";
+        List<String> args = new ArrayList<String>();
+        args.add( "--restype");
+        args.add( resourceType );
+        args.add( "--property" );
+        args.add( "Name=" + name );
+        args.add( jndiLocation );
+        executeAdminCommand(buildCreatJmsResourceDescription(resourceType, name, jndiLocation), admincmd, args);
+    }
+
+    private String buildCreatJmsResourceDescription(String resourceType, String name, String jndiLocation ) {
+        return "create-jms-resource for type: " + resourceType + " Name: " + name + " JNDI location: " + jndiLocation;
+    }
     
     private int executeAdminDomainCommand(String description, String admincmd, List<String> args) {
         if (config.getDomain() != null) {
@@ -128,19 +150,66 @@ public class GlassFishServerControl {
         }
 
         public void run() {
+            getOutput();
+        }
+
+        public List<String> getOutput() {
             final InputStream stream = process.getInputStream();
             final BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+            List<String> retVal = new ArrayList<String>();
             String line = null;
             try {
                 while ((line = reader.readLine()) != null) {
                     if (writeOutput) {
                         System.out.println(line);
                     }
+                    retVal.add(line);
                 }
             } catch (IOException e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
+
+            return retVal;
         }
 
     }
+
+    private List<String> executeAdminCommandAndWait(String description, String admincmd, List<String> args) {
+        List<String> retVal = new ArrayList<String>();
+        List<String> cmd = new ArrayList<String>();
+        cmd.add("java");
+
+        cmd.add("-jar");
+        cmd.add(config.getAdminCliJar().getAbsolutePath());
+
+        cmd.add(admincmd);
+        cmd.addAll(args);
+
+        cmd.add("-t");
+
+        if (config.isOutputToConsole()) {
+            System.out.println(description + " using command: " + cmd.toString());
+        }
+
+        Process process = null;
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder(cmd);
+            processBuilder.redirectErrorStream(true);
+            process = processBuilder.start();
+            try {
+                process.waitFor();
+                ConsoleConsumer consoleConsumer = new ConsoleConsumer(process, false );
+                retVal = consoleConsumer.getOutput();
+            }
+            catch (InterruptedException e) {
+                logger.log(Level.INFO, description + " interrupted.");
+            }
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, description + " failed.", e);
+        }
+
+        return retVal;
+    }
+
+
 }
