@@ -251,7 +251,12 @@ public class GlassFishClientService implements GlassFishClient {
         Map<String, String> subComponents = (Map<String, String>) subComponentsResponce.get("properties");
 
         // Build up the HTTPContext object using the nodeAddress information
-        int port = nodeAddress.getHttpPort();
+        int port;
+        if(nodeAddress.getHttpPort() > 0){
+        	port = nodeAddress.getHttpPort();
+        } else {
+        	port = nodeAddress.getHttpsPort();
+        }
         HTTPContext httpContext = new HTTPContext( nodeAddress.getHost(), port );
 
         // Add the servlets to the HTTPContext
@@ -710,19 +715,21 @@ public class GlassFishClientService implements GlassFishClient {
 	private int getPortValue(Map<String, String> attributes, String serverName, String portNum)
 	{
 		int portValue = -1;
-		try
-		{
-			portValue = Integer.parseInt(portNum);
-		}
-		catch (NumberFormatException formatEx)
-		{
-			Pattern propertyRegex = Pattern.compile(SYSTEM_PROPERTY_REGEX);
-			Matcher matcher = propertyRegex.matcher(portNum);
-			if (matcher.find())
+		if(portNum != null && portNum.length() > 0){
+			try
 			{
-				String propertyName = matcher.group(1);
-				portValue = getSystemProperty(attributes, propertyName);
-				portValue = getServerSystemProperty(serverName, propertyName, portValue);
+				portValue = Integer.parseInt(portNum);
+			}
+			catch (NumberFormatException formatEx)
+			{
+				Pattern propertyRegex = Pattern.compile(SYSTEM_PROPERTY_REGEX);
+				Matcher matcher = propertyRegex.matcher(portNum);
+				if (matcher.find())
+				{
+					String propertyName = matcher.group(1);
+					portValue = getSystemProperty(attributes, propertyName);
+					portValue = getServerSystemProperty(serverName, propertyName, portValue);
+				}
 			}
 		}
 		return portValue;
