@@ -31,11 +31,11 @@
 
         <version.arquillian_core>1.0.0.Final</version.arquillian_core>
         <version.jersey>1.10</version.jersey>
-        <version.jboss.javaee-6_api>1.0.0.Final</version.jboss.javaee-6_api>
+        <version.jboss.javaee-7_api>1.0.0.Final</version.jboss.javaee-7_api>
 
         <!-- override from parent -->
-        <maven.compiler.argument.target>1.5</maven.compiler.argument.target>
-        <maven.compiler.argument.source>1.5</maven.compiler.argument.source>
+        <maven.compiler.argument.target>1.7</maven.compiler.argument.target>
+        <maven.compiler.argument.source>1.7</maven.compiler.argument.source>
 
     </properties>
 
@@ -54,8 +54,8 @@
 
             <dependency>
                 <groupId>org.jboss.spec</groupId>
-                <artifactId>jboss-javaee-6.0</artifactId>
-                <version>${version.jboss.javaee-6_api}</version>
+                <artifactId>jboss-javaee-7.0</artifactId>
+                <version>${version.jboss.javaee-7_api}</version>
                 <type>pom</type>
                 <scope>test</scope>
             </dependency>
@@ -92,9 +92,9 @@
 
     <modules>
         <module>glassfish-common</module>
-        <module>glassfish-managed-3.1</module>
-        <module>glassfish-remote-3.1</module>
-        <module>glassfish-embedded-3.1</module>
+        <module>glassfish-managed-4.0</module>
+        <module>glassfish-remote-4.0</module>
+        <module>glassfish-embedded-4.0</module>
     </modules>
 
 </project>
