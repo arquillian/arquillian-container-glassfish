@@ -25,6 +25,13 @@ import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaD
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Glassfish 3.1 managed container using REST deployments
  * 
@@ -78,13 +85,23 @@ public class GlassFishManagedDeployableContainer implements DeployableContainer<
        {
           serverControl.start();
           glassFishManager.start();
+
+          if (configuration.getPostStartCommandFile() != null) {
+             runCommands("Post start", configuration.getPostStartCommandFile());
+          }
        }
     }
 
     public void stop() throws LifecycleException {
         if(!connectedToRunningServer)
         {
-          serverControl.stop();
+           try {
+              if (configuration.getPreStopCommandFile() != null) {
+                 runCommands("Pre stop", configuration.getPreStopCommandFile());
+              }
+           } finally {
+              serverControl.stop();
+           }
         }
     }
 
@@ -108,4 +125,30 @@ public class GlassFishManagedDeployableContainer implements DeployableContainer<
         throw new UnsupportedOperationException("Not implemented");
     }
 
+    void runCommands(final String description, final String fileName) throws LifecycleException {
+        try {
+            final BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "US-ASCII"));
+            final String delimiter = configuration.getCommandFileDelimiter();
+            String command;
+            while ((command = r.readLine()) != null) {
+                if (command.startsWith("#")) {
+                    continue;
+                }
+                final String[] parts = command.split(delimiter);
+                if (parts.length == 0) {
+                    throw new LifecycleException("Invalid command: " + command);
+                }
+                final List<String> args = new ArrayList<String>(parts.length - 1);
+                for (int i = 1; i < parts.length; ++i) {
+                    args.add(parts[i]);
+                }
+                int ret = serverControl.executeAdminCommand(description, parts[0], args);
+                if (ret != 0) {
+                    throw new LifecycleException("Exited with code " + ret + " on command " + command);
+                }
+            }
+        } catch (final IOException e) {
+            throw new LifecycleException("", e);
+        }
+    }
 }
