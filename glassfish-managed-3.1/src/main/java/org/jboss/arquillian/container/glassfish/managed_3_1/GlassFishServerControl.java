@@ -78,11 +78,12 @@ public class GlassFishServerControl {
         if (config.getDomain() != null) {
             args.add(config.getDomain());
         }
+        args.add("-t");
         
         return executeAdminCommand(description, admincmd, args);
     }
-    
-    private int executeAdminCommand(String description, String admincmd, List<String> args) {
+
+    public int executeAdminCommand(String description, String admincmd, List<String> args) {
         List<String> cmd = new ArrayList<String>();
         cmd.add("java");
 
@@ -91,8 +92,6 @@ public class GlassFishServerControl {
         
         cmd.add(admincmd);
         cmd.addAll(args);
-        
-        cmd.add("-t");
         
         if (config.isOutputToConsole()) {
             System.out.println(description + " using command: " + cmd.toString());

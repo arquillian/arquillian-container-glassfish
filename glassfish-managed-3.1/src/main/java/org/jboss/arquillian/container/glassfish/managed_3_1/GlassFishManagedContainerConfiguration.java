@@ -42,6 +42,12 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
 
     private boolean allowConnectingToRunningServer = false;
 
+    private String commandFileDelimiter = "\\s";
+
+    private String postStartCommandFile = null;
+
+    private String preStopCommandFile = null;
+
     public String getGlassFishHome() {
         return glassFishHome;
     }
@@ -99,6 +105,39 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
      */
     public void setAllowConnectingToRunningServer(boolean allowConnectingToRunningServer) {
         this.allowConnectingToRunningServer = allowConnectingToRunningServer;
+    }
+
+    public String getCommandFileDelimiter() {
+        return commandFileDelimiter;
+    }
+
+    /**
+     * @param commandFileDelimiter The delimiter to use for separating tokens in postStartCommandFile and preStopCommandFile
+     */
+    public void setCommandFileDelimiter(final String commandFileDelimiter) {
+        this.commandFileDelimiter = commandFileDelimiter;
+    }
+
+    public String getPostStartCommandFile() {
+        return postStartCommandFile;
+    }
+
+    /**
+     * @param postStartCommandFile A file of asadmin command to run after starting Glassfish.
+     */
+    public void setPostStartCommandFile(final String postStartCommandFile) {
+        this.postStartCommandFile = postStartCommandFile;
+    }
+
+    public String getPreStopCommandFile() {
+        return preStopCommandFile;
+    }
+
+    /**
+     * @param preStopCommandFile A file of asadmin command to run before shutting down Glassfish.
+     */
+    public void setPreStopCommandFile(final String preStopCommandFile) {
+        this.preStopCommandFile = preStopCommandFile;
     }
 
     @Override
