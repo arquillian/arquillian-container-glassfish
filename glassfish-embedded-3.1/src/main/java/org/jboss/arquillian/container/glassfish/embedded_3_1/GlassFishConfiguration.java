@@ -37,6 +37,7 @@ import java.util.logging.Logger;
  */
 public class GlassFishConfiguration implements ContainerConfiguration {
     private int bindHttpPort = 8181;
+    private int bindHttpsPort = 8182;
     private String instanceRoot = null;
     private String installRoot = null;
     private boolean configurationReadOnly = true;
@@ -60,6 +61,17 @@ public class GlassFishConfiguration implements ContainerConfiguration {
      */
     public void setBindHttpPort(int bindHttpPort) {
         this.bindHttpPort = bindHttpPort;
+    }
+
+    public int getBindHttpsPort() {
+      return bindHttpsPort;
+    }
+
+    /**
+     * @param bindHttpsPort The port number of the https-listener for the embedded GlassFish server.
+     */
+    public void setBindHttpsPort(int bindHttpsPort) {
+        this.bindHttpsPort = bindHttpsPort;
     }
 
     public String getInstanceRoot() {
