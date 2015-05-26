@@ -77,6 +77,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
 
     private boolean shouldSetPort = true;
     private int bindHttpPort;
+    private int bindHttpsPort;
 
     /* (non-Javadoc)
      * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
@@ -126,6 +127,8 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
         if (shouldSetPort) {
             bindHttpPort = configuration.getBindHttpPort();
             serverProps.setPort("http-listener", bindHttpPort);
+            bindHttpsPort = configuration.getBindHttpsPort();
+            serverProps.setPort("https-listener", bindHttpsPort);
         }
 
         try {
