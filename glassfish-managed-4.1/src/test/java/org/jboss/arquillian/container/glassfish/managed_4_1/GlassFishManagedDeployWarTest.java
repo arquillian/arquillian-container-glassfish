@@ -47,7 +47,7 @@ public class GlassFishManagedDeployWarTest {
 
     @Deployment(testable = false)
     public static WebArchive getTestArchive() {
-        final WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
+        final WebArchive war = ShrinkWrap.create(WebArchive.class, "GlassFishManagedDeployWarTest.war")
                 .addClasses(GreeterServlet.class, Greeter.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         return war;

@@ -49,11 +49,11 @@ public class GlassFishManagedDeployEarTest {
 
     @Deployment(testable = false)
     public static Archive<?> getTestArchive() {
-        final WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
+        final WebArchive war = ShrinkWrap.create(WebArchive.class, "GlassFishManagedDeployEarTest.war")
                 .addClasses(GreeterServlet.class);
-        final JavaArchive ejb = ShrinkWrap.create(JavaArchive.class, "test.jar")
+        final JavaArchive ejb = ShrinkWrap.create(JavaArchive.class, "GlassFishManagedDeployEarTest.jar")
                 .addClasses(Greeter.class);
-        final EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
+        final EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "GlassFishManagedDeployEarTest.ear")
                 .setApplicationXML("application.xml")
                 .addAsModule(war)
                 .addAsModule(ejb);

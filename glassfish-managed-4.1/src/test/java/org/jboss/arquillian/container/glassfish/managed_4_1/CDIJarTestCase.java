@@ -30,18 +30,18 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class CDIJarTestCase {
 
-    @Inject
-    private SimpleBean foo;
+	@Inject
+	private SimpleBean foo;
 
-    @Deployment
-    public static JavaArchive deploy() {
-        return ShrinkWrap.create(JavaArchive.class, "foo.jar").addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
-                .addClasses(SimpleBean.class, CDIJarTestCase.class);
-    }
+	@Deployment
+	public static JavaArchive deploy() {
+		return ShrinkWrap.create(JavaArchive.class, "CDIJarTestCase.jar")
+				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
+				.addClasses(SimpleBean.class, CDIJarTestCase.class);
+	}
 
-    @Test
-    public void test() {
-        Assert.assertNotNull(foo);
-    }
+	@Test
+	public void test() {
+		Assert.assertNotNull(foo);
+	}
 }
-

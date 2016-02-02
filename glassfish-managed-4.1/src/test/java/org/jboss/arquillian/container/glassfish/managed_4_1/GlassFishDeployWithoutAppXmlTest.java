@@ -34,40 +34,36 @@ import org.junit.runner.RunWith;
  * A test to serve as a regression test for ARQ-658.
  *
  * The deployment created by this class, does not have an application.xml file.
- * As a result, the context root is created by GlassFish,
- * instead of being specified by the developer.
- * Such context roots do not begin with a forward slash,
- * and the Arquillian REST client should recognize them.
+ * As a result, the context root is created by GlassFish, instead of being
+ * specified by the developer. Such context roots do not begin with a forward
+ * slash, and the Arquillian REST client should recognize them.
  *
- * The class is a converse test for the GlassFishRestDeployEarTest class,
- * which adds an application.xml file with a user-specified context root.
+ * The class is a converse test for the GlassFishRestDeployEarTest class, which
+ * adds an application.xml file with a user-specified context root.
  *
  * @author Vineet Reynolds
  */
 @RunWith(Arquillian.class)
-public class GlassFishDeployWithoutAppXmlTest
-{
-   @Inject
-   private Client client;
+public class GlassFishDeployWithoutAppXmlTest {
+	@Inject
+	private Client client;
 
-   @Deployment
-   public static EnterpriseArchive createTestArchive()
-   {
-      JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar").addClasses(Client.class,GlassFishDeployWithoutAppXmlTest.class)
-            .addAsManifestResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
-      EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear").addAsLibrary(jar);
-      return ear;
-   }
+	@Deployment
+	public static EnterpriseArchive createTestArchive() {
+		JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "GlassFishDeployWithoutAppXmlTest.jar")
+				.addClasses(Client.class, GlassFishDeployWithoutAppXmlTest.class)
+				.addAsManifestResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
+		EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "GlassFishDeployWithoutAppXmlTest.ear")
+				.addAsLibrary(jar);
+		return ear;
+	}
 
-   @Test
-   public void testClient()
-   {
-      assertNotNull(client);
-   }
+	@Test
+	public void testClient() {
+		assertNotNull(client);
+	}
 }
 
-class Client
-{
+class Client {
 
 }
-

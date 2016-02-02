@@ -21,11 +21,11 @@
              version="5">
    <module>
       <web>
-         <web-uri>test.war</web-uri>
+         <web-uri>GlassFishManagedDeployEarTest.war</web-uri>
          <context-root>/test</context-root>
       </web>
    </module>
    <module>
-      <ejb>test.jar</ejb>
+      <ejb>GlassFishManagedDeployEarTest.jar</ejb>
    </module>
 </application>
