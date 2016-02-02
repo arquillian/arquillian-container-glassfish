@@ -39,6 +39,8 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     private boolean outputToConsole = false;
 
     private boolean debug = false;
+    
+    private boolean verbose = false;
 
     private boolean allowConnectingToRunningServer = false;
 
@@ -85,6 +87,17 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
+    
+    public boolean isVerbose() {
+		return verbose;
+	}
+    
+    /**
+     * @param verbose Flag to start the server in verbose mode. The log will go to console
+     */
+    public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
+	}
 
     public File getAdminCliJar() {
         return new File(getGlassFishHome() + "/glassfish/modules/admin-cli.jar");
