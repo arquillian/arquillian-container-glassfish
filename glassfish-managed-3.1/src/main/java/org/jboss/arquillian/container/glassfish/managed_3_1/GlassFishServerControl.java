@@ -48,10 +48,6 @@ public class GlassFishServerControl {
         if (config.isDebug()) {
             args.add("--debug");
         }
-        if(config.isVerbose()) {
-        	args.add("--verbose");
-        }
-        
         int result = executeAdminDomainCommand("Starting container", admincmd, args);
         if (result > 0) {
             throw new LifecycleException("Could not start container");
