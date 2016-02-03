@@ -11,12 +11,12 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>arquillian-glassfish-managed-4.1</artifactId>
-	<name>Arquillian Container GlassFish Managed 4.1</name>
-	<description>GlassFish 4.1 Managed Container integration for the Arquillian Project</description>
+	<artifactId>arquillian-glassfish-managed-4</artifactId>
+	<name>Arquillian Container GlassFish Managed 4.x</name>
+	<description>GlassFish 4.x Managed Container integration for the Arquillian Project</description>
 
 	<properties>
-		<version.glassfish>4.1.1</version.glassfish>
+		<version.glassfish>4.0</version.glassfish>
 	</properties>
 
 	<dependencies>
