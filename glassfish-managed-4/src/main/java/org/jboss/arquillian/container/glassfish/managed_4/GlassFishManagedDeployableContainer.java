@@ -88,7 +88,7 @@ public class GlassFishManagedDeployableContainer
 			glassFishManager.start();
 		}
 	}
-	
+
 	public void stop() throws LifecycleException {
 		if (!connectedToRunningServer) {
 			if (shutdownHook != null) {
@@ -135,27 +135,10 @@ public class GlassFishManagedDeployableContainer
 
 				@Override
 				public void run() {
-					List<String> cmd = buildProcessArguments("stop-domain", getStopDomainArguments());
-
-					if (configuration.isOutputToConsole()) {
-						System.out.println("Forcing container shutdown using command: " + cmd.toString());
-					}
-
 					try {
-						executeAdminCommand(cmd, true);
-					} catch (IOException e) {
+						stopServer(process);
+					} catch (LifecycleException e) {
 						logger.log(Level.SEVERE, "Failed to shutdown container.", e);
-					} catch (InterruptedException e) {
-						logger.log(Level.INFO, "Interrupted while shutting down the container.");
-					}
-
-					if (process != null) {
-						process.destroy();
-						try {
-							process.waitFor();
-						} catch (InterruptedException e) {
-							logger.log(Level.INFO, "Interrupted while shutting down the container.");
-						}
 					}
 				}
 			});
@@ -180,9 +163,8 @@ public class GlassFishManagedDeployableContainer
 			throw new LifecycleException("Could not start container", e);
 		}
 	}
-	
-	private void stopServer(Process process) throws LifecycleException {
 
+	private void stopServer(Process process) throws LifecycleException {
 		if (process == null) {
 			return;
 		}
