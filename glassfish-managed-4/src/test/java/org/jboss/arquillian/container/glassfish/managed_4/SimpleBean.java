@@ -14,25 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.glassfish.managed_4_1;
-
-import java.io.Serializable;
-
-import javax.ejb.Stateless;
-
-/**
- * Basic SLSB for injection.
- *
- * @author <a href="http://community.jboss.org/people/aslak">Aslak Knutsen</a>
- * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
- */
-@Stateless
-public class Greeter implements Serializable
-{
-   private static final long serialVersionUID = 6410949671035595273L;
-
-   public String greet()
-   {
-      return "Hello";
-   }
+package org.jboss.arquillian.container.glassfish.managed_4;
+public class SimpleBean {
 }

@@ -1,1 +1,1 @@
-org.jboss.arquillian.container.glassfish.managed_4_1.GlassFishManagedContainerExtension
+org.jboss.arquillian.container.glassfish.managed_4.GlassFishManagedContainerExtension

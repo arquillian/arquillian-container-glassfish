@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.glassfish.managed_4_1;
+package org.jboss.arquillian.container.glassfish.managed_4;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -29,35 +29,42 @@ import javax.servlet.annotation.WebServlet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Verifies arquillian tests can run in container mode with this REST based container.
+ * Verifies arquillian tests can run in client mode with this REST based container.
  *
  * @author <a href="http://community.jboss.org/people/aslak">Aslak Knutsen</a>
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  * @author <a href="http://community.jboss.org/people/dan.j.allen">Dan Allen</a>
  */
 @RunWith(Arquillian.class)
-public class GlassFishManagedDeployWarTest {
+public class GlassFishManagedDeployEarTest {
 
     @Deployment(testable = false)
-    public static WebArchive getTestArchive() {
-        final WebArchive war = ShrinkWrap.create(WebArchive.class, "GlassFishManagedDeployWarTest.war")
-                .addClasses(GreeterServlet.class, Greeter.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        return war;
+    public static Archive<?> getTestArchive() {
+        final WebArchive war = ShrinkWrap.create(WebArchive.class, "GlassFishManagedDeployEarTest.war")
+                .addClasses(GreeterServlet.class);
+        final JavaArchive ejb = ShrinkWrap.create(JavaArchive.class, "GlassFishManagedDeployEarTest.jar")
+                .addClasses(Greeter.class);
+        final EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "GlassFishManagedDeployEarTest.ear")
+                .setApplicationXML("application.xml")
+                .addAsModule(war)
+                .addAsModule(ejb);
+        return ear;
     }
     
     @ArquillianResource
     private URL deploymentUrl;
 
     @Test
-    public void assertWarDeployed() throws Exception {
+    public void shouldBeAbleToDeployEnterpriseArchive() throws Exception {
         final String servletPath = GreeterServlet.class.getAnnotation(WebServlet.class).urlPatterns()[0];
 
         final URLConnection response = new URL(deploymentUrl.toString() + servletPath.substring(1)).openConnection();
@@ -67,5 +74,4 @@ public class GlassFishManagedDeployWarTest {
 
         assertThat(result, equalTo("Hello"));
     }
-
 }

@@ -14,35 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.jboss.arquillian.container.glassfish.managed_4;
 
-package org.jboss.arquillian.container.glassfish.managed_4_1;
+import java.io.Serializable;
 
-import java.io.IOException;
-
-import javax.ejb.EJB;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ejb.Stateless;
 
 /**
- * Simple servlet for testing deployment.
+ * Basic SLSB for injection.
  *
  * @author <a href="http://community.jboss.org/people/aslak">Aslak Knutsen</a>
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
-@WebServlet(urlPatterns = "/Greeter")
-public class GreeterServlet extends HttpServlet
+@Stateless
+public class Greeter implements Serializable
 {
-   private static final long serialVersionUID = 8249673615048070666L;
+   private static final long serialVersionUID = 6410949671035595273L;
 
-   @EJB
-   private Greeter greeter;
-
-   @Override
-   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+   public String greet()
    {
-      resp.getWriter().append(this.greeter.greet());
+      return "Hello";
    }
 }
