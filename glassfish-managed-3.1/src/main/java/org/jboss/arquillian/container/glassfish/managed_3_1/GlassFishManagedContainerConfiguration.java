@@ -17,7 +17,6 @@
 package org.jboss.arquillian.container.glassfish.managed_3_1;
 
 import java.io.File;
-
 import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
 import org.jboss.arquillian.container.glassfish.clientutils.GlassFishClient;
 import org.jboss.arquillian.container.spi.ConfigurationException;
@@ -41,6 +40,8 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     private boolean debug = false;
 
     private boolean allowConnectingToRunningServer = false;
+
+    private boolean startDerby = false;
 
     public String getGlassFishHome() {
         return glassFishHome;
@@ -99,6 +100,17 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
      */
     public void setAllowConnectingToRunningServer(boolean allowConnectingToRunningServer) {
         this.allowConnectingToRunningServer = allowConnectingToRunningServer;
+    }
+
+    public boolean isStartDerby() {
+        return startDerby;
+    }
+
+    /**
+     * @param startDerby Flag to start/stop the registered derby server using standard Derby port
+     */
+    public void setStartDerby(boolean startDerby) {
+        this.startDerby = startDerby;
     }
 
     @Override
