@@ -16,7 +16,6 @@
             <property name="adminHost">localhost</property>
             <property name="adminPort">4848</property>
             <property name="startDerby">true</property>
-            <property name="outputToConsole">true</property>
         </configuration>
     </container>
 
