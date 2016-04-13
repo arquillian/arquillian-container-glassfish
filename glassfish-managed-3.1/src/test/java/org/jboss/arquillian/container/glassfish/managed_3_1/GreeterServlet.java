@@ -17,14 +17,13 @@
 
 package org.jboss.arquillian.container.glassfish.managed_3_1;
 
-import java.io.IOException;
-
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Simple servlet for testing deployment.
@@ -33,16 +32,14 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
 @WebServlet(urlPatterns = "/Greeter")
-public class GreeterServlet extends HttpServlet
-{
-   private static final long serialVersionUID = 8249673615048070666L;
+public class GreeterServlet extends HttpServlet {
+    private static final long serialVersionUID = 8249673615048070666L;
 
-   @EJB
-   private Greeter greeter;
+    @EJB
+    private Greeter greeter;
 
-   @Override
-   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-   {
-      resp.getWriter().append(this.greeter.greet());
-   }
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.getWriter().append(this.greeter.greet());
+    }
 }

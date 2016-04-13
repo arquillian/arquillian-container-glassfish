@@ -16,12 +16,12 @@
  */
 package org.jboss.arquillian.container.glassfish.managed_3_1;
 
-import java.io.File;
-
 import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
 import org.jboss.arquillian.container.glassfish.clientutils.GlassFishClient;
 import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.deployment.Validate;
+
+import java.io.File;
 
 /**
  * Configuration for Managed GlassFish containers.
@@ -36,11 +36,13 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
 
     private String domain = null;
 
-    private boolean outputToConsole = false;
+    private boolean outputToConsole = true;
 
     private boolean debug = false;
 
     private boolean allowConnectingToRunningServer = false;
+
+    private boolean enableDerby = false;
 
     public String getGlassFishHome() {
         return glassFishHome;
@@ -69,7 +71,7 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     }
 
     /**
-     * @param outputToConsole Show the output of the admin commands on the console
+     * @param outputToConsole Show the output of the admin commands on the console. By default enabled
      */
     public void setOutputToConsole(boolean outputToConsole) {
         this.outputToConsole = outputToConsole;
@@ -99,6 +101,17 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
      */
     public void setAllowConnectingToRunningServer(boolean allowConnectingToRunningServer) {
         this.allowConnectingToRunningServer = allowConnectingToRunningServer;
+    }
+
+    public boolean isEnableDerby() {
+        return enableDerby;
+    }
+
+    /**
+     * @param enableDerby Flag to start/stop the registered derby server using standard Derby port
+     */
+    public void setEnableDerby(boolean enableDerby) {
+        this.enableDerby = enableDerby;
     }
 
     @Override

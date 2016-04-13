@@ -55,7 +55,7 @@
             <groupId>org.jboss.arquillian.testenricher</groupId>
             <artifactId>arquillian-testenricher-initialcontext</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.spec</groupId>
             <artifactId>jboss-javaee-6.0</artifactId>
@@ -110,6 +110,7 @@
                 <configuration>
                     <systemPropertyVariables>
                         <glassfish.home>${glassfish.home}</glassfish.home>
+                        <enableDerby>${enableDerby}</enableDerby>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -127,6 +128,7 @@
                 <artifactId>glassfish</artifactId>
                 <version.glassfish>3.1.2.2</version.glassfish>
                 <glassfish.home>glassfish3</glassfish.home>
+                <enableDerby>false</enableDerby>
             </properties>
         </profile>
         <profile>
@@ -136,6 +138,7 @@
                 <artifactId>glassfish</artifactId>
                 <version.glassfish>4.1.1</version.glassfish>
                 <glassfish.home>glassfish4</glassfish.home>
+                <enableDerby>true</enableDerby>
             </properties>
         </profile>
         <profile>

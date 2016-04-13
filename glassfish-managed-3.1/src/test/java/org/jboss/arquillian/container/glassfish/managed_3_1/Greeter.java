@@ -16,9 +16,8 @@
  */
 package org.jboss.arquillian.container.glassfish.managed_3_1;
 
-import java.io.Serializable;
-
 import javax.ejb.Stateless;
+import java.io.Serializable;
 
 /**
  * Basic SLSB for injection.

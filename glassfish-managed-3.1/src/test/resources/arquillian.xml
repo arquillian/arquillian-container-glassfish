@@ -4,10 +4,10 @@
 	xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
     <!-- Uncomment to have test archives exported to the file system for inspection -->
-    <!-- 
-    <engine> 
-        <property name="deploymentExportPath">target/</property> 
-    </engine> 
+    <!--
+    <engine>
+        <property name="deploymentExportPath">target/</property>
+    </engine>
     -->
 
     <container qualifier="glassfish" default="true">
@@ -15,6 +15,8 @@
             <property name="glassFishHome">target/${glassfish.home}</property>
             <property name="adminHost">localhost</property>
             <property name="adminPort">4848</property>
+            <property name="enableDerby">${enableDerby:true}</property>
+            <property name="outputToConsole">true</property>
         </configuration>
     </container>
 

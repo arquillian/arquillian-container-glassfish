@@ -16,16 +16,6 @@
  */
 package org.jboss.arquillian.container.glassfish.managed_3_1;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-
-import javax.servlet.annotation.WebServlet;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -36,6 +26,15 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.servlet.annotation.WebServlet;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
  * Verifies arquillian tests can run in client mode with this REST based container.
@@ -50,7 +49,7 @@ public class GlassFishManagedDeployEarTest {
     @Deployment(testable = false)
     public static Archive<?> getTestArchive() {
         final WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-                .addClasses(GreeterServlet.class);
+                .addClasses(greeterDependsOnDerbyFeature());
         final JavaArchive ejb = ShrinkWrap.create(JavaArchive.class, "test.jar")
                 .addClasses(Greeter.class);
         final EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
@@ -59,13 +58,13 @@ public class GlassFishManagedDeployEarTest {
                 .addAsModule(ejb);
         return ear;
     }
-    
+
     @ArquillianResource
     private URL deploymentUrl;
 
     @Test
     public void shouldBeAbleToDeployEnterpriseArchive() throws Exception {
-        final String servletPath = GreeterServlet.class.getAnnotation(WebServlet.class).urlPatterns()[0];
+        final String servletPath = greeterDependsOnDerbyFeature().getAnnotation(WebServlet.class).urlPatterns()[0];
 
         final URLConnection response = new URL(deploymentUrl.toString() + servletPath.substring(1)).openConnection();
 
@@ -73,5 +72,12 @@ public class GlassFishManagedDeployEarTest {
         final String result = in.readLine();
 
         assertThat(result, equalTo("Hello"));
+    }
+
+    private static Class<?> greeterDependsOnDerbyFeature() {
+        if (Boolean.valueOf(System.getProperty("enableDerby"))) {
+            return GreeterServletWithDerby.class;
+        }
+        return GreeterServlet.class;
     }
 }
