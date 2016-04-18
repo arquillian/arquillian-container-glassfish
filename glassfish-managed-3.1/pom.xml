@@ -104,6 +104,15 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <glassfish.home>${glassfish.home}</glassfish.home>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -114,13 +123,15 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <version.glassfish>3.1.2</version.glassfish>
+                <version.glassfish>3.1.2.2</version.glassfish>
+                <glassfish.home>glassfish3</glassfish.home>
             </properties>
         </profile>
         <profile>
             <id>4.x</id>
             <properties>
-                <version.glassfish>4.0-b72</version.glassfish>
+                <version.glassfish>4.1.1</version.glassfish>
+                <glassfish.home>glassfish4</glassfish.home>
             </properties>
         </profile>
     </profiles>

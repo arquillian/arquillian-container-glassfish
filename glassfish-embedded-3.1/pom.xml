@@ -88,7 +88,7 @@
         <profile>
             <id>4.x</id>
             <properties>
-                <version.glassfish>4.0-b72</version.glassfish>
+                <version.glassfish>4.1.1</version.glassfish>
             </properties>
             <dependencies>
                 <dependency>
