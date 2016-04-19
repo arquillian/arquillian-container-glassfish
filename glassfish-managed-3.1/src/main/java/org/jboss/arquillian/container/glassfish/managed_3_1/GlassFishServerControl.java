@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,14 +86,14 @@ public class GlassFishServerControl {
     }
 
     private void startDerbyDatabase() throws LifecycleException {
-        final int statusCode = executeAdminDomainCommand("Starting database", "start-database", Collections.EMPTY_LIST);
+        final int statusCode = executeAdminDomainCommand("Starting database", "start-database", new ArrayList<String>());
         if (statusCode > 0) {
             throw new LifecycleException("Could not start database");
         }
     }
 
     private void stopDerbyDatabase() throws LifecycleException {
-        final int statusCode = executeAdminDomainCommand("Stopping database", "stop-database", Collections.EMPTY_LIST);
+        final int statusCode = executeAdminDomainCommand("Stopping database", "stop-database", new ArrayList<String>());
         if (statusCode > 0) {
             throw new LifecycleException("Could not stop database");
         }

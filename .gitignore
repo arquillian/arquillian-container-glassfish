@@ -21,3 +21,5 @@ transaction.log
 # GlassFish CommandRunner Test
 derby.log
 my_database/
+
+.autoenv.zsh
