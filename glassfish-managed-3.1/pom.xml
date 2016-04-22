@@ -90,8 +90,8 @@
                                 <!-- The below coordinates are for GlassFish 3.1.2.
                                  For prior distributions, use {org.glassfish.distributions}:{glassfish}:{version} -->
                                 <artifactItem>
-                                    <groupId>org.glassfish.main.distributions</groupId>
-                                    <artifactId>glassfish</artifactId>
+                                    <groupId>${groupId}</groupId>
+                                    <artifactId>${artifactId}</artifactId>
                                     <version>${version.glassfish}</version>
                                     <type>zip</type>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -123,6 +123,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
+                <groupId>org.glassfish.main.distributions</groupId>
+                <artifactId>glassfish</artifactId>
                 <version.glassfish>3.1.2.2</version.glassfish>
                 <glassfish.home>glassfish3</glassfish.home>
             </properties>
@@ -130,8 +132,19 @@
         <profile>
             <id>4.x</id>
             <properties>
+                <groupId>org.glassfish.main.distributions</groupId>
+                <artifactId>glassfish</artifactId>
                 <version.glassfish>4.1.1</version.glassfish>
                 <glassfish.home>glassfish4</glassfish.home>
+            </properties>
+        </profile>
+        <profile>
+            <id>payara-4</id>
+            <properties>
+                <groupId>fish.payara.distributions</groupId>
+                <artifactId>payara</artifactId>
+                <version.glassfish>4.1.1.161.1</version.glassfish>
+                <glassfish.home>payara41</glassfish.home>
             </properties>
         </profile>
     </profiles>
