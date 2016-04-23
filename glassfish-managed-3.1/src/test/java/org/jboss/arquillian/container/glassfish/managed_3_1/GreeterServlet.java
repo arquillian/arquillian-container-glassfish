@@ -14,17 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jboss.arquillian.container.glassfish.managed_3_1;
 
 import java.io.IOException;
-
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 /**
  * Simple servlet for testing deployment.
@@ -33,16 +37,37 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
 @WebServlet(urlPatterns = "/Greeter")
-public class GreeterServlet extends HttpServlet
-{
-   private static final long serialVersionUID = 8249673615048070666L;
+public class GreeterServlet extends HttpServlet {
 
-   @EJB
-   private Greeter greeter;
+    private static final long serialVersionUID = 8249673615048070666L;
 
-   @Override
-   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-   {
-      resp.getWriter().append(this.greeter.greet());
-   }
+    @EJB
+    private Greeter greeter;
+
+    @Resource(name = "jdbc/__default")
+    private DataSource dataSource;
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.getWriter().append(this.greeter.greet());
+
+        // test the DataSource and thus the working DB connection with an internal Derby query
+        try {
+            final Connection conn = dataSource.getConnection();
+            final Statement stmt = conn.createStatement();
+            final String sql = "VALUES SYSCS_UTIL.SYSCS_GET_DATABASE_PROPERTY('derby.storage.logArchiveMode')";
+            final ResultSet rs = stmt.executeQuery(sql);
+
+            rs.next();
+            resp.getWriter().append(rs.getBoolean(1) ? "-1" : "-0");
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException ex) {
+            throw new ServletException(ex);
+        }
+
+
+    }
 }

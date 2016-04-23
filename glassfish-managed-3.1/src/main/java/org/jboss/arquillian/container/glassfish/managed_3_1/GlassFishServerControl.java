@@ -25,24 +25,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.jboss.arquillian.container.spi.client.container.LifecycleException;
 
 /**
  * A class for issuing asadmin commands using the admin-cli.jar of the GlassFish distribution.
- * 
+ *
  * @author <a href="http://community.jboss.org/people/dan.j.allen">Dan Allen</a>
  */
 public class GlassFishServerControl {
+
     private static final Logger logger = Logger.getLogger(GlassFishServerControl.class.getName());
     private GlassFishManagedContainerConfiguration config;
     private Thread shutdownHook;
-    
+
     public GlassFishServerControl(GlassFishManagedContainerConfiguration config) {
         this.config = config;
     }
-    
+
     public void start() throws LifecycleException {
+        if (config.isStartDerby()) {
+            startDerbyDatabase();
+        }
+
         String admincmd = "start-domain";
         List<String> args = new ArrayList<String>();
         if (config.isDebug()) {
@@ -52,17 +56,20 @@ public class GlassFishServerControl {
         if (result > 0) {
             throw new LifecycleException("Could not start container");
         }
-        
+
         shutdownHook = new Thread(new Runnable() {
 
             @Override
             public void run() {
                 executeAdminDomainCommand("Forcing container shutdown", "stop-domain", new ArrayList<String>());
+                if (config.isStartDerby()) {
+                    executeAdminDomainCommand("Forcing database shutdown", "stop-database", new ArrayList<String>());
+                }
             }
         });
         Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
-    
+
     public void stop() throws LifecycleException {
         if (shutdownHook != null) {
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
@@ -72,28 +79,47 @@ public class GlassFishServerControl {
         if (result > 0) {
             throw new LifecycleException("Could not stop container");
         }
+
+        if (config.isStartDerby()) {
+            stopDerbyDatabase();
+        }
     }
-    
+
+    private void startDerbyDatabase() throws LifecycleException {
+        final int statusCode = executeAdminDomainCommand("Starting database", "start-database", new ArrayList<String>());
+        if (statusCode > 0) {
+            throw new LifecycleException("Could not start database");
+        }
+    }
+
+    private void stopDerbyDatabase() throws LifecycleException {
+        final int statusCode = executeAdminDomainCommand("Stopping database", "stop-database", new ArrayList<String>());
+        if (statusCode > 0) {
+            throw new LifecycleException("Could not stop database");
+        }
+    }
+
     private int executeAdminDomainCommand(String description, String admincmd, List<String> args) {
         if (config.getDomain() != null) {
             args.add(config.getDomain());
         }
-        
+
         return executeAdminCommand(description, admincmd, args);
     }
-    
+
     private int executeAdminCommand(String description, String admincmd, List<String> args) {
         List<String> cmd = new ArrayList<String>();
         cmd.add("java");
 
         cmd.add("-jar");
         cmd.add(config.getAdminCliJar().getAbsolutePath());
-        
+
         cmd.add(admincmd);
         cmd.addAll(args);
-        
+
+        // very concise output data in a format that is optimized for use in scripts instead of for reading by humans
         cmd.add("-t");
-        
+
         if (config.isOutputToConsole()) {
             System.out.println(description + " using command: " + cmd.toString());
         }
@@ -111,10 +137,10 @@ public class GlassFishServerControl {
                 logger.log(Level.INFO, description + " interrupted.");
                 return 1;
             }
-         } catch (IOException e) {
-             logger.log(Level.SEVERE, description + " failed.", e);
-             return 1;
-         }
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, description + " failed.", e);
+            return 1;
+        }
     }
 
     private class ConsoleConsumer implements Runnable {

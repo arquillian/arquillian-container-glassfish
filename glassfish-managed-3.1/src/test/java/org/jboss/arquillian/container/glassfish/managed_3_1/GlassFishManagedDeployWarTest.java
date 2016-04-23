@@ -16,22 +16,19 @@
  */
 package org.jboss.arquillian.container.glassfish.managed_3_1;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-
 import javax.servlet.annotation.WebServlet;
-
+import static org.hamcrest.core.IsEqual.equalTo;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -52,7 +49,7 @@ public class GlassFishManagedDeployWarTest {
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         return war;
     }
-    
+
     @ArquillianResource
     private URL deploymentUrl;
 
@@ -65,7 +62,7 @@ public class GlassFishManagedDeployWarTest {
         BufferedReader in = new BufferedReader(new InputStreamReader(response.getInputStream()));
         final String result = in.readLine();
 
-        assertThat(result, equalTo("Hello"));
+        assertThat(result, equalTo("Hello-0"));
     }
 
 }
