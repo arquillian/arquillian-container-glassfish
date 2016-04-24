@@ -50,6 +50,8 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration
    
    private String type = null;
 
+   private boolean ignoreCertificate = false;
+
    public CommonGlassFishConfiguration()
    {
       super();
@@ -228,4 +230,16 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration
     	}
     }
 
+   public boolean isIgnoreCertificate() {
+      return ignoreCertificate;
+   }
+
+   /**
+    *
+    * @param ignoreCertificate Flag indicating that certificate of the remote server
+    *                                (when using https) should be ignored
+    */
+   public void setIgnoreCertificate(boolean ignoreCertificate) {
+      this.ignoreCertificate = ignoreCertificate;
+   }
 }

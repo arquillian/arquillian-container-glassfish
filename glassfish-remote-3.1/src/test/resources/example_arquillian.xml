@@ -18,6 +18,7 @@
                 <property name="adminUser">admin</property>
                 <property name="adminPassword">yourPassword</property>
                 <property name="target">server</property>
+                <property name="ignoreCertificate">false</property>
 	       </configuration>
 	   </container>
     </group>

@@ -24,6 +24,7 @@ package org.jboss.arquillian.container.glassfish.clientutils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,12 +32,16 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.net.ssl.*;
 import javax.ws.rs.core.MediaType;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.client.urlconnection.HTTPSProperties;
 import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
 
 import com.sun.jersey.api.client.Client;
@@ -141,7 +146,7 @@ public class GlassFishClientUtil {
      */
     private WebResource.Builder prepareClient(String additionalResourceUrl) 
     {
-    	final Client client = Client.create();
+        final Client client = createClient();
         if (configuration.isAuthorisation()) {
             client.addFilter(new HTTPBasicAuthFilter(
 													 configuration.getAdminUser(),
@@ -150,7 +155,31 @@ public class GlassFishClientUtil {
         client.addFilter(new CsrfProtectionFilter());
         return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_XML_TYPE).header("X-GlassFish-3", "ignore");
     }
-	
+
+    private Client createClient()
+    {
+        if (configuration.isIgnoreCertificate()) {
+            return createCertificateIgnoringClient();
+        } else {
+            return Client.create();
+        }
+    }
+
+    private Client createCertificateIgnoringClient() {
+        ClientConfig clientConfig = new DefaultClientConfig();
+        clientConfig.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, new HTTPSProperties(
+                new HostnameVerifier() {
+
+                    @Override
+                    public boolean verify(String s, SSLSession sslSession) {
+                        return true;
+                    }
+
+                }, getCertificateCheckIgnoringSSLContext()
+        ));
+        return Client.create(clientConfig);
+    }
+
     private Map getResponseMap(ClientResponse response) throws ContainerException 
     {
     	Map responseMap = new HashMap(); String message = "";
@@ -333,6 +362,37 @@ public class GlassFishClientUtil {
             
         } // end while
         return list;
+    }
+
+    public SSLContext getCertificateCheckIgnoringSSLContext() {
+        // TrustManager that does not check anything
+        TrustManager allTrustingTrustManager = new X509TrustManager() {
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            @Override
+            public void checkClientTrusted(
+                    X509Certificate[] certs, String authType) {
+            }
+
+            @Override
+            public void checkServerTrusted(
+                    X509Certificate[] certs, String authType) {
+            }
+        };
+
+        // Create SSLContext that uses the all trusting TrustManager
+        try {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new TrustManager[] { allTrustingTrustManager }, new java.security.SecureRandom());
+            return sslContext;
+        } catch (Exception e) {
+            throw new GlassFishClientException("Unable to create certificate check ignoring SSLContext", e);
+        }
+
     }
 	
 }
