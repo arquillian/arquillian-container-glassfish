@@ -26,13 +26,11 @@ import javax.inject.Inject;
  * @version $Revision: $
  */
 @Stateless
-public class NoInterfaceEJB
-{
-   @Inject
-   private NameProvider provider;
-   
-   public String getName() 
-   {
-      return provider.getName();
-   }
+public class NoInterfaceEJB {
+    @Inject
+    private NameProvider provider;
+
+    public String getName() {
+        return provider.getName();
+    }
 }

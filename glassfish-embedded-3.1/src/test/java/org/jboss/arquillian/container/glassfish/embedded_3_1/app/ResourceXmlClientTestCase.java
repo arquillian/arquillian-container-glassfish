@@ -16,10 +16,6 @@
  */
 package org.jboss.arquillian.container.glassfish.embedded_3_1.app;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -29,6 +25,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+
 /**
  * GlassFishEmbeddedContainerTestCase
  *
@@ -36,45 +36,41 @@ import org.junit.runner.RunWith;
  * @version $Revision: $
  */
 @RunWith(Arquillian.class)
-public class ResourceXmlClientTestCase 
-{
-   /**
-    * Deployment for the test
-    * @return
-    */
-   @Deployment(testable = false)
-   public static WebArchive getDeployment()
-   {
-      return ShrinkWrap.create(WebArchive.class).addClass(MyServlet.class);
-   }
+public class ResourceXmlClientTestCase {
+    /**
+     * Deployment for the test
+     *
+     * @return
+     */
+    @Deployment(testable = false)
+    public static WebArchive getDeployment() {
+        return ShrinkWrap.create(WebArchive.class).addClass(MyServlet.class);
+    }
 
-   @Test
-   public void shouldBeAbleToDeployWebArchive(@ArquillianResource(MyServlet.class) URL baseURL) throws Exception
-   {
-      String body = readAllAndClose(
-            new URL(baseURL, "Test").openStream());
-      
-      Assert.assertEquals(
-            "Verify that the servlet was deployed and returns expected result",
-            MyServlet.MESSAGE,
-            body);
-   }
-   
-   private String readAllAndClose(InputStream is) throws Exception 
-   {
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      try
-      {
-         int read;
-         while( (read = is.read()) != -1)
-         {
-            out.write(read);
-         }
-      }
-      finally 
-      {
-         try { is.close(); } catch (Exception e) { }
-      }
-      return out.toString();
-   }
+    @Test
+    public void shouldBeAbleToDeployWebArchive(@ArquillianResource(MyServlet.class) URL baseURL) throws Exception {
+        String body = readAllAndClose(
+                new URL(baseURL, "Test").openStream());
+
+        Assert.assertEquals(
+                "Verify that the servlet was deployed and returns expected result",
+                MyServlet.MESSAGE,
+                body);
+    }
+
+    private String readAllAndClose(InputStream is) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            int read;
+            while ((read = is.read()) != -1) {
+                out.write(read);
+            }
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+            }
+        }
+        return out.toString();
+    }
 }

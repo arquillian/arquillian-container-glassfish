@@ -16,14 +16,12 @@
  */
 
 /**
- *
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
 package org.jboss.arquillian.container.glassfish.remote_3_1;
 
-import java.io.Serializable;
-
 import javax.ejb.Stateless;
+import java.io.Serializable;
 
 /**
  * Basic SLSB for injection.
@@ -32,12 +30,10 @@ import javax.ejb.Stateless;
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
 @Stateless
-public class Greeter implements Serializable
-{
-   private static final long serialVersionUID = 6410949671035595273L;
+public class Greeter implements Serializable {
+    private static final long serialVersionUID = 6410949671035595273L;
 
-   public String greet()
-   {
-      return "Hello";
-   }
+    public String greet() {
+        return "Hello";
+    }
 }

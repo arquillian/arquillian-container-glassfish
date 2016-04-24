@@ -22,10 +22,8 @@ package org.jboss.arquillian.container.glassfish.embedded_3_1.app;
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @version $Revision: $
  */
-public class NameProvider
-{
-   public String getName()
-   {
-      return "Arquillian";
-   }
+public class NameProvider {
+    public String getName() {
+        return "Arquillian";
+    }
 }

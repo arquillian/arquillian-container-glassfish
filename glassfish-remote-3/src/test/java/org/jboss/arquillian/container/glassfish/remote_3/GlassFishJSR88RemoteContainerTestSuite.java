@@ -16,7 +16,6 @@
  */
 package org.jboss.arquillian.container.glassfish.remote_3;
 
-import java.io.File;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -24,10 +23,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import java.io.File;
+
 /**
  * A JUnit 4 test suite that manages the lifecycle of a locally-installed
  * GlassFish instance in order to test the JSR 88 deployment.
- *
+ * <p>
  * <p>This class relies on the system property glassfish.install.dir
  * to point to a valid installation of GlassFish v3.</p>
  *
@@ -35,36 +36,31 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-   GlassFishJSR88RemoteContainerWARTestCase.class,
-   GlassFishJSR88RemoteContainerEARTestCase.class})
-public class GlassFishJSR88RemoteContainerTestSuite
-{
-   @BeforeClass
-   public static void startContainer() throws Exception
-   {
-      Runtime.getRuntime().exec(new String[] {
-            getAsadminCommand(),
-            "start-domain",
-            "tests"}).waitFor();
-   }
+        GlassFishJSR88RemoteContainerWARTestCase.class,
+        GlassFishJSR88RemoteContainerEARTestCase.class})
+public class GlassFishJSR88RemoteContainerTestSuite {
+    @BeforeClass
+    public static void startContainer() throws Exception {
+        Runtime.getRuntime().exec(new String[]{
+                getAsadminCommand(),
+                "start-domain",
+                "tests"}).waitFor();
+    }
 
-   @AfterClass
-   public static void stopContainer() throws Exception
-   {
-      Runtime.getRuntime().exec(new String[] {
-            getAsadminCommand(),
-            "stop-domain",
-            "tests"}).waitFor();
-   }
+    @AfterClass
+    public static void stopContainer() throws Exception {
+        Runtime.getRuntime().exec(new String[]{
+                getAsadminCommand(),
+                "stop-domain",
+                "tests"}).waitFor();
+    }
 
-   public static String getAsadminCommand()
-   {
-      File asadminFile = new File(System.getProperty("glassfish.install.dir") +
-            File.separator + "bin" + File.separator + "asadmin");
-      if (!asadminFile.exists() || !asadminFile.isFile())
-      {
-         Assert.fail("Path to asadmin command is invalid: " + asadminFile.getAbsolutePath());
-      }
-      return asadminFile.getAbsolutePath();
-   }
+    public static String getAsadminCommand() {
+        File asadminFile = new File(System.getProperty("glassfish.install.dir") +
+                File.separator + "bin" + File.separator + "asadmin");
+        if (!asadminFile.exists() || !asadminFile.isFile()) {
+            Assert.fail("Path to asadmin command is invalid: " + asadminFile.getAbsolutePath());
+        }
+        return asadminFile.getAbsolutePath();
+    }
 }

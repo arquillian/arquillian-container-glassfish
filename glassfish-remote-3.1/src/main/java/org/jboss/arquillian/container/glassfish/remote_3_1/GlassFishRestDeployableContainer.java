@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 /**
- *
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
 package org.jboss.arquillian.container.glassfish.remote_3_1;
-
-import java.util.logging.Logger;
 
 import org.jboss.arquillian.container.glassfish.CommonGlassFishManager;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
@@ -31,22 +28,24 @@ import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaD
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
+import java.util.logging.Logger;
+
 /**
  * Glassfish v3.1 remote container using REST deployment.
  *
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
 public class GlassFishRestDeployableContainer implements DeployableContainer<GlassFishRestConfiguration> {
-	
+
     private GlassFishRestConfiguration configuration;
     private CommonGlassFishManager<GlassFishRestConfiguration> glassFishManager;
-	
-	private static final Logger log = Logger.getLogger(GlassFishRestDeployableContainer.class.getName());
-	
+
+    private static final Logger log = Logger.getLogger(GlassFishRestDeployableContainer.class.getName());
+
     public Class<GlassFishRestConfiguration> getConfigurationClass() {
         return GlassFishRestConfiguration.class;
     }
-	
+
     public void setup(GlassFishRestConfiguration configuration) {
         if (configuration == null) {
             throw new IllegalArgumentException("configuration must not be null");
@@ -54,33 +53,33 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
         this.configuration = configuration;
         this.glassFishManager = new CommonGlassFishManager<GlassFishRestConfiguration>(configuration);
     }
-	
-    public void start() throws LifecycleException {   	
-		glassFishManager.start();
+
+    public void start() throws LifecycleException {
+        glassFishManager.start();
     }
-	
+
     public void stop() throws LifecycleException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
-	
+
     public ProtocolDescription getDefaultProtocol() {
         return new ProtocolDescription("Servlet 3.0");
     }
-	
+
     public ProtocolMetaData deploy(Archive<?> archive) throws DeploymentException {
-        return glassFishManager.deploy(archive); 
+        return glassFishManager.deploy(archive);
     }
-	
+
     public void undeploy(Archive<?> archive) throws DeploymentException {
-    	glassFishManager.undeploy(archive);
+        glassFishManager.undeploy(archive);
     }
-	
+
     public void deploy(Descriptor descriptor) throws DeploymentException {
-		throw new UnsupportedOperationException("Not implemented");
+        throw new UnsupportedOperationException("Not implemented");
     }
-	
+
     public void undeploy(Descriptor descriptor) throws DeploymentException {
-		throw new UnsupportedOperationException("Not implemented");
+        throw new UnsupportedOperationException("Not implemented");
     }
 
 }

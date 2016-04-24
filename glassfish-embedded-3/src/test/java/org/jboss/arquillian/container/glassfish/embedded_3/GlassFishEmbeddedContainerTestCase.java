@@ -16,12 +16,6 @@
  */
 package org.jboss.arquillian.container.glassfish.embedded_3;
 
-import static org.jboss.arquillian.api.RunModeType.AS_CLIENT;
-
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.api.Run;
 import org.jboss.arquillian.junit.Arquillian;
@@ -31,6 +25,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+
+import static org.jboss.arquillian.api.RunModeType.AS_CLIENT;
+
 /**
  * GlassFishEmbeddedContainerTestCase
  *
@@ -39,45 +39,41 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @Run(AS_CLIENT)
-public class GlassFishEmbeddedContainerTestCase 
-{
-   /**
-    * Deployment for the test
-    * @return
-    */
-   @Deployment
-   public static WebArchive getDeployment()
-   {
-      return ShrinkWrap.create(WebArchive.class, "test.war").addClass(TestServlet.class);
-   }
+public class GlassFishEmbeddedContainerTestCase {
+    /**
+     * Deployment for the test
+     *
+     * @return
+     */
+    @Deployment
+    public static WebArchive getDeployment() {
+        return ShrinkWrap.create(WebArchive.class, "test.war").addClass(TestServlet.class);
+    }
 
-   @Test
-   public void shouldBeAbleToDeployWebArchive() throws Exception
-   {
-      String body = readAllAndClose(
-            new URL("http://localhost:7070/test" + TestServlet.URL_PATTERN).openStream());
-      
-      Assert.assertEquals(
-            "Verify that the servlet was deployed and returns expected result",
-            TestServlet.MESSAGE,
-            body);
-   }
-   
-   private String readAllAndClose(InputStream is) throws Exception 
-   {
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      try
-      {
-         int read;
-         while( (read = is.read()) != -1)
-         {
-            out.write(read);
-         }
-      }
-      finally 
-      {
-         try { is.close(); } catch (Exception e) { }
-      }
-      return out.toString();
-   }
+    @Test
+    public void shouldBeAbleToDeployWebArchive() throws Exception {
+        String body = readAllAndClose(
+                new URL("http://localhost:7070/test" + TestServlet.URL_PATTERN).openStream());
+
+        Assert.assertEquals(
+                "Verify that the servlet was deployed and returns expected result",
+                TestServlet.MESSAGE,
+                body);
+    }
+
+    private String readAllAndClose(InputStream is) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            int read;
+            while ((read = is.read()) != -1) {
+                out.write(read);
+            }
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+            }
+        }
+        return out.toString();
+    }
 }

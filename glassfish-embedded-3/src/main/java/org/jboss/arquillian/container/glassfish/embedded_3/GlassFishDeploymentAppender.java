@@ -26,30 +26,27 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 /**
- * 
- * Package the required dependencies needed by the GlassFish Embedded Container plugin 
- * to run in container. 
+ * Package the required dependencies needed by the GlassFish Embedded Container plugin
+ * to run in container.
  *
  * @author <a href="mailto:aslak@conduct.no">Aslak Knutsen</a>
  * @version $Revision: $
  */
-public class GlassFishDeploymentAppender implements AuxiliaryArchiveAppender
-{
+public class GlassFishDeploymentAppender implements AuxiliaryArchiveAppender {
 
-   public Archive<?> createAuxiliaryArchive()
-   {
-      JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "arquillian-glassfish-testenrichers.jar")
-                        .addPackages(
-                              true, 
-                              EJBInjectionEnricher.class.getPackage(),
-                              ResourceInjectionEnricher.class.getPackage(),
-                              CDIInjectionEnricher.class.getPackage())
-                        .addServiceProvider(
-                              TestEnricher.class, 
-                              CDIInjectionEnricher.class,
-                              EJBInjectionEnricher.class,
-                              ResourceInjectionEnricher.class);
-      return archive;
-   }
+    public Archive<?> createAuxiliaryArchive() {
+        JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "arquillian-glassfish-testenrichers.jar")
+                .addPackages(
+                        true,
+                        EJBInjectionEnricher.class.getPackage(),
+                        ResourceInjectionEnricher.class.getPackage(),
+                        CDIInjectionEnricher.class.getPackage())
+                .addServiceProvider(
+                        TestEnricher.class,
+                        CDIInjectionEnricher.class,
+                        EJBInjectionEnricher.class,
+                        ResourceInjectionEnricher.class);
+        return archive;
+    }
 
 }

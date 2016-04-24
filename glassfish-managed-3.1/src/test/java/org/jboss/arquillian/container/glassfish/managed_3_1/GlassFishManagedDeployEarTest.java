@@ -42,9 +42,9 @@ public class GlassFishManagedDeployEarTest extends GlassFishManagedDeploymentTes
         final JavaArchive ejb = ShrinkWrap.create(JavaArchive.class, "test.jar")
                 .addClasses(Greeter.class);
         return ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
-                          .setApplicationXML("application.xml")
-                          .addAsModule(war)
-                          .addAsModule(ejb);
+                .setApplicationXML("application.xml")
+                .addAsModule(war)
+                .addAsModule(ejb);
     }
 
 }

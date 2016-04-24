@@ -25,15 +25,13 @@ import org.jboss.arquillian.container.jsr88.remote_1_2.JSR88Configuration;
  * @author Dan Allen
  * @author Iskandar Salim
  */
-public class GlassFishJSR88Configuration extends JSR88Configuration
-{
-   public static final String GLASSFISH_JSR88_DEFAULT_DEPLOYMENT_URI = "deployer:Sun:AppServer::localhost:4848";
-   public static final String GLASSFISH_JSR88_DEPLOYMENT_FACTORY_CLASS = "org.glassfish.deployapi.SunDeploymentFactory";
+public class GlassFishJSR88Configuration extends JSR88Configuration {
+    public static final String GLASSFISH_JSR88_DEFAULT_DEPLOYMENT_URI = "deployer:Sun:AppServer::localhost:4848";
+    public static final String GLASSFISH_JSR88_DEPLOYMENT_FACTORY_CLASS = "org.glassfish.deployapi.SunDeploymentFactory";
 
-   @Override
-   protected void setDefaults()
-   {
-      setDeploymentUri(GLASSFISH_JSR88_DEFAULT_DEPLOYMENT_URI);
-      setDeploymentFactoryClass(GLASSFISH_JSR88_DEPLOYMENT_FACTORY_CLASS);
-   }
+    @Override
+    protected void setDefaults() {
+        setDeploymentUri(GLASSFISH_JSR88_DEFAULT_DEPLOYMENT_URI);
+        setDeploymentFactoryClass(GLASSFISH_JSR88_DEPLOYMENT_FACTORY_CLASS);
+    }
 }

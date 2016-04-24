@@ -16,16 +16,15 @@
  */
 package org.jboss.arquillian.container.glassfish.embedded_3_1.app;
 
-import javax.ejb.EJB;
-
 import junit.framework.Assert;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.ejb.EJB;
 
 /**
  * JBossEmbeddedIntegrationTestCase
@@ -34,28 +33,25 @@ import org.junit.runner.RunWith;
  * @version $Revision: $
  */
 @RunWith(Arquillian.class)
-public class IntegrationJarTestCase
-{
-   @Deployment
-   public static JavaArchive createDeployment() throws Exception 
-   {
-      return ShrinkWrap.create(JavaArchive.class)
-               .addClasses(
-                     LocalInterfaceEJB.class,
-                     LocalInterfaceEJBBean.class);
-      
-   }
-   
-   @EJB
-   private LocalInterfaceEJB bean;
-   
-   @Test
-   public void shouldBeAbleToInjectEJBAsInstanceVariable() throws Exception 
-   {
-      Assert.assertNotNull(
-            "Verify that the Bean has been injected",
-            bean);
-      
-      Assert.assertEquals("Arquillian", bean.getName());
-   }
+public class IntegrationJarTestCase {
+    @Deployment
+    public static JavaArchive createDeployment() throws Exception {
+        return ShrinkWrap.create(JavaArchive.class)
+                .addClasses(
+                        LocalInterfaceEJB.class,
+                        LocalInterfaceEJBBean.class);
+
+    }
+
+    @EJB
+    private LocalInterfaceEJB bean;
+
+    @Test
+    public void shouldBeAbleToInjectEJBAsInstanceVariable() throws Exception {
+        Assert.assertNotNull(
+                "Verify that the Bean has been injected",
+                bean);
+
+        Assert.assertEquals("Arquillian", bean.getName());
+    }
 }

@@ -1,137 +1,123 @@
 package org.jboss.arquillian.container.glassfish.embedded_3_1;
 
-import static org.junit.Assert.*;
-
-import org.jboss.arquillian.container.glassfish.embedded_3_1.GlassFishConfiguration;
 import org.junit.Test;
 
-public class GlassfishConfigurationTest
-{
+import static org.junit.Assert.assertTrue;
 
-   @Test
-   public void testValidInstallRoot() throws Exception
-   {
-      String installRoot = "./src/test/resources/gfconfigs/installRoot";
+public class GlassfishConfigurationTest {
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setInstallRoot(installRoot);
-      config.validate();
-   }
+    @Test
+    public void testValidInstallRoot() throws Exception {
+        String installRoot = "./src/test/resources/gfconfigs/installRoot";
 
-   @Test(expected = RuntimeException.class)
-   public void testInstallRootWithoutDirectories() throws Exception
-   {
-      String installRoot = "./src/test/resources/gfconfigs/";
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setInstallRoot(installRoot);
+        config.validate();
+    }
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setInstallRoot(installRoot);
-      config.validate();
-   }
+    @Test(expected = RuntimeException.class)
+    public void testInstallRootWithoutDirectories() throws Exception {
+        String installRoot = "./src/test/resources/gfconfigs/";
 
-   @Test
-   public void testValidInstanceRoot() throws Exception
-   {
-      String instanceRoot = "./src/test/resources/gfconfigs/instanceRoot";
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setInstallRoot(installRoot);
+        config.validate();
+    }
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setInstanceRoot(instanceRoot);
-      config.validate();
-   }
+    @Test
+    public void testValidInstanceRoot() throws Exception {
+        String instanceRoot = "./src/test/resources/gfconfigs/instanceRoot";
 
-   @Test(expected = RuntimeException.class)
-   public void testInstanceRootWithoutDirectories() throws Exception
-   {
-      String instanceRoot = "./src/test/resources/gfconfigs/emptydir";
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setInstanceRoot(instanceRoot);
+        config.validate();
+    }
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setInstanceRoot(instanceRoot);
-      config.validate();
-   }
+    @Test(expected = RuntimeException.class)
+    public void testInstanceRootWithoutDirectories() throws Exception {
+        String instanceRoot = "./src/test/resources/gfconfigs/emptydir";
 
-   @Test
-   public void testInstanceRootWithoutConfigXml() throws Exception
-   {
-      String instanceRoot = "./src/test/resources/gfconfigs/instanceRootNoConfigxml";
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setInstanceRoot(instanceRoot);
+        config.validate();
+    }
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setInstanceRoot(instanceRoot);
-      config.validate();
-   }
+    @Test
+    public void testInstanceRootWithoutConfigXml() throws Exception {
+        String instanceRoot = "./src/test/resources/gfconfigs/instanceRootNoConfigxml";
 
-   @Test
-   public void testValidConfigXmlPath() throws Exception
-   {
-      String configXml = "./src/test/resources/gfconfigs/configxml/test-domain.xml";
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setInstanceRoot(instanceRoot);
+        config.validate();
+    }
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setConfigurationXml(configXml);
-      config.validate();
+    @Test
+    public void testValidConfigXmlPath() throws Exception {
+        String configXml = "./src/test/resources/gfconfigs/configxml/test-domain.xml";
 
-      assertTrue(config.getConfigurationXml().startsWith("file:"));
-   }
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setConfigurationXml(configXml);
+        config.validate();
 
-   @Test(expected = RuntimeException.class)
-   public void testInvalidConfigXmlPath() throws Exception
-   {
-      String configXml = "./src/test/resources/gfconfigs/emptydir/test-domain.xml";
+        assertTrue(config.getConfigurationXml().startsWith("file:"));
+    }
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setConfigurationXml(configXml);
-      config.validate();
-   }
+    @Test(expected = RuntimeException.class)
+    public void testInvalidConfigXmlPath() throws Exception {
+        String configXml = "./src/test/resources/gfconfigs/emptydir/test-domain.xml";
 
-   @Test
-   public void testInstanceRootAndConfigXml() throws Exception
-   {
-      String instanceRoot = "./src/test/resources/gfconfigs/instanceRoot";
-      String configXml = "./src/test/resources/gfconfigs/configxml/test-domain.xml";
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setConfigurationXml(configXml);
+        config.validate();
+    }
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setInstanceRoot(instanceRoot);
-      config.setConfigurationXml(configXml);
-      config.validate();
+    @Test
+    public void testInstanceRootAndConfigXml() throws Exception {
+        String instanceRoot = "./src/test/resources/gfconfigs/instanceRoot";
+        String configXml = "./src/test/resources/gfconfigs/configxml/test-domain.xml";
 
-      assertTrue(config.getConfigurationXml().startsWith("file:"));
-   }
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setInstanceRoot(instanceRoot);
+        config.setConfigurationXml(configXml);
+        config.validate();
 
-   @Test
-   public void testValidSunResourcesXmlPath() throws Exception
-   {
-      String sunResourcesXml = "./src/test/resources/gfconfigs/sunresourcesxml/sun-resources.xml";
+        assertTrue(config.getConfigurationXml().startsWith("file:"));
+    }
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setSunResourcesXml(sunResourcesXml);
-      config.validate();
-   }
+    @Test
+    public void testValidSunResourcesXmlPath() throws Exception {
+        String sunResourcesXml = "./src/test/resources/gfconfigs/sunresourcesxml/sun-resources.xml";
 
-   @Test(expected = RuntimeException.class)
-   public void testInvalidSunResourcesXmlPath() throws Exception
-   {
-      String sunResourcesXml = "./src/test/resources/gfconfigs/emptydir/sun-resources.xml";
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setSunResourcesXml(sunResourcesXml);
+        config.validate();
+    }
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setSunResourcesXml(sunResourcesXml);
-      config.validate();
-   }
+    @Test(expected = RuntimeException.class)
+    public void testInvalidSunResourcesXmlPath() throws Exception {
+        String sunResourcesXml = "./src/test/resources/gfconfigs/emptydir/sun-resources.xml";
 
-   @Test
-   public void testValidResourcesXmlPath() throws Exception
-   {
-      String resourcesXml = "./src/test/resources/gfconfigs/resourcesxml/glassfish-resources.xml";
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setSunResourcesXml(sunResourcesXml);
+        config.validate();
+    }
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setResourcesXml(resourcesXml);
-      config.validate();
-   }
+    @Test
+    public void testValidResourcesXmlPath() throws Exception {
+        String resourcesXml = "./src/test/resources/gfconfigs/resourcesxml/glassfish-resources.xml";
 
-   @Test(expected = RuntimeException.class)
-   public void testInvalidResourcesXmlPath() throws Exception
-   {
-      String resourcesXml = "./src/test/resources/gfconfigs/emptydir/glassfish-resources.xml";
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setResourcesXml(resourcesXml);
+        config.validate();
+    }
 
-      GlassFishConfiguration config = new GlassFishConfiguration();
-      config.setResourcesXml(resourcesXml);
-      config.validate();
-   }
+    @Test(expected = RuntimeException.class)
+    public void testInvalidResourcesXmlPath() throws Exception {
+        String resourcesXml = "./src/test/resources/gfconfigs/emptydir/glassfish-resources.xml";
+
+        GlassFishConfiguration config = new GlassFishConfiguration();
+        config.setResourcesXml(resourcesXml);
+        config.validate();
+    }
 
 }

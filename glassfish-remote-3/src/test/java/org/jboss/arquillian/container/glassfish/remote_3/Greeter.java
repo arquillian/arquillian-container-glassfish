@@ -19,10 +19,8 @@ package org.jboss.arquillian.container.glassfish.remote_3;
 import javax.ejb.Stateless;
 
 @Stateless
-public class Greeter
-{
-   public String greet()
-   {
-      return "hello";
-   }
+public class Greeter {
+    public String greet() {
+        return "hello";
+    }
 }

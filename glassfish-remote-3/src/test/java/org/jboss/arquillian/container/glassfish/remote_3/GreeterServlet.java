@@ -16,14 +16,13 @@
  */
 package org.jboss.arquillian.container.glassfish.remote_3;
 
-import java.io.IOException;
 import javax.ejb.EJB;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * GreeterServlet
@@ -31,15 +30,14 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  */
 @WebServlet(urlPatterns = "/Greeter")
-public class GreeterServlet extends HttpServlet
-{
-   private static final long serialVersionUID = 1L;
+public class GreeterServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
-   @EJB private Greeter greeter;
+    @EJB
+    private Greeter greeter;
 
-   @Override
-   protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-   {
-      response.getWriter().append(greeter.greet());
-   }
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.getWriter().append(greeter.greet());
+    }
 }

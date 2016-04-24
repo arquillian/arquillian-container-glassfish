@@ -15,5 +15,6 @@
  * limitations under the License.
  */
 package org.jboss.arquillian.container.glassfish.managed_3_1;
+
 public class SimpleBean {
 }

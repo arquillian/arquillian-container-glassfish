@@ -16,9 +16,9 @@
  */
 package org.jboss.arquillian.container.glassfish.embedded_3;
 
-import java.util.UUID;
-
 import org.jboss.arquillian.spi.client.container.ContainerConfiguration;
+
+import java.util.UUID;
 
 /**
  * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} implementation for
@@ -28,61 +28,50 @@ import org.jboss.arquillian.spi.client.container.ContainerConfiguration;
  * @author Dan Allen
  * @version $Revision: $
  */
-public class GlassFishConfiguration implements ContainerConfiguration
-{
-   private int bindHttpPort = 8181;
-   private String instanceRoot = "target/glassfish_" + UUID.randomUUID().toString();
-   private boolean autoDelete = true;
-   private String domainXml;
-   private String sunResourcesXml;
-   
-   public int getBindHttpPort()
-   {
-      return bindHttpPort;
-   }
+public class GlassFishConfiguration implements ContainerConfiguration {
+    private int bindHttpPort = 8181;
+    private String instanceRoot = "target/glassfish_" + UUID.randomUUID().toString();
+    private boolean autoDelete = true;
+    private String domainXml;
+    private String sunResourcesXml;
 
-   public void setBindHttpPort(int bindHttpPort)
-   {
-      this.bindHttpPort = bindHttpPort;
-   }
+    public int getBindHttpPort() {
+        return bindHttpPort;
+    }
 
-   public String getInstanceRoot() 
-   {
-      return instanceRoot;
-   }
-   
-   public void setInstanceRoot(String instanceRoot)
-   {
-      this.instanceRoot = instanceRoot;
-   }
-   
-   public boolean isAutoDelete()
-   {
-      return autoDelete;
-   }
-   
-   public void setAutoDelete(boolean autoDelete)
-   {
-      this.autoDelete = autoDelete;
-   }
+    public void setBindHttpPort(int bindHttpPort) {
+        this.bindHttpPort = bindHttpPort;
+    }
 
-   public String getDomainXml()
-   {
-      return domainXml;
-   }
+    public String getInstanceRoot() {
+        return instanceRoot;
+    }
 
-   public void setDomainXml(String domainXml)
-   {
-      this.domainXml = domainXml;
-   }
+    public void setInstanceRoot(String instanceRoot) {
+        this.instanceRoot = instanceRoot;
+    }
 
-   public String getSunResourcesXml()
-   {
-      return sunResourcesXml;
-   }
+    public boolean isAutoDelete() {
+        return autoDelete;
+    }
 
-   public void setSunResourcesXml(String sunResourcesXml)
-   {
-      this.sunResourcesXml = sunResourcesXml;
-   }
+    public void setAutoDelete(boolean autoDelete) {
+        this.autoDelete = autoDelete;
+    }
+
+    public String getDomainXml() {
+        return domainXml;
+    }
+
+    public void setDomainXml(String domainXml) {
+        this.domainXml = domainXml;
+    }
+
+    public String getSunResourcesXml() {
+        return sunResourcesXml;
+    }
+
+    public void setSunResourcesXml(String sunResourcesXml) {
+        this.sunResourcesXml = sunResourcesXml;
+    }
 }

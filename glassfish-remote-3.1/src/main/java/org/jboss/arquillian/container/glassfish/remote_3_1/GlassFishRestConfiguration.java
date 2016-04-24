@@ -15,59 +15,54 @@
  * limitations under the License.
  */
 /**
- *
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
 package org.jboss.arquillian.container.glassfish.remote_3_1;
 
 import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
 
-public class GlassFishRestConfiguration extends CommonGlassFishConfiguration
-{
-	
-	/**
-	 * @deprecated
-	 * Http port for application urls.
-	 * Used to build the URL for the REST request.
-	 */
-	private int remoteServerHttpPort = 8080;
-	
-	/**
-	 * @deprecated
-	 */
-	public void setRemoteServerAddress(String adminHost)
-	{
-		this.adminHost = adminHost;
-	}
-	
-	/**
-	 * @deprecated
-	 */
-	public void setRemoteServerAdminPort(int adminPort)
-	{
-		this.adminPort = adminPort;
-	}
-	
-	/**
-	 * @deprecated
-	 */
-	public void setRemoteServerAdminHttps(boolean adminHttps)
-	{
-		this.adminHttps = adminHttps;
-	}
-	
-	/**
-	 * @deprecated
-	 */
-    public int getRemoteServerHttpPort() {
-    	return remoteServerHttpPort;
+public class GlassFishRestConfiguration extends CommonGlassFishConfiguration {
+
+    /**
+     * @deprecated
+     * Http port for application urls.
+     * Used to build the URL for the REST request.
+     */
+    private int remoteServerHttpPort = 8080;
+
+    /**
+     * @deprecated
+     */
+    public void setRemoteServerAddress(String adminHost) {
+        this.adminHost = adminHost;
     }
-	
-	/**
-	 * @deprecated
-	 */
+
+    /**
+     * @deprecated
+     */
+    public void setRemoteServerAdminPort(int adminPort) {
+        this.adminPort = adminPort;
+    }
+
+    /**
+     * @deprecated
+     */
+    public void setRemoteServerAdminHttps(boolean adminHttps) {
+        this.adminHttps = adminHttps;
+    }
+
+    /**
+     * @deprecated
+     */
+    public int getRemoteServerHttpPort() {
+        return remoteServerHttpPort;
+    }
+
+    /**
+     * @deprecated
+     */
     public void setRemoteServerHttpPort(int remoteServerHttpPort) {
-    	this.remoteServerHttpPort = remoteServerHttpPort;
+        this.remoteServerHttpPort = remoteServerHttpPort;
     }
 
 }

@@ -28,39 +28,35 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /**
  * An extension of the {@link JSR88RemoteContainer} for GlassFish
- *
+ * <p>
  * <p>This class simply provides the {@link GlassFishJSR88Configuration} as
  * an override.</p>
  *
  * @author Dan Allen
  * @author Iskandar Salim
  */
-public class GlassFishJSR88RemoteContainer extends JSR88RemoteContainer
-{
-   @Override
-   public Class<? extends JSR88Configuration> getConfigurationClass()
-   {
-      return GlassFishJSR88Configuration.class;
-   }
+public class GlassFishJSR88RemoteContainer extends JSR88RemoteContainer {
+    @Override
+    public Class<? extends JSR88Configuration> getConfigurationClass() {
+        return GlassFishJSR88Configuration.class;
+    }
 
     @Override
     public ContainerMethodExecutor deploy(Context context, Archive<?> archive) throws DeploymentException {
-       if (WebArchive.class.isInstance(archive))
-       {
-          //ArchivePath webXmlPath = ArchivePaths.create("/WEB-INF/web.xml");
-          //if (!archive.contains(webXmlPath))
-          //{
-          //   // sets the module name to "test"
-          //   ((WebArchive) archive).setWebXML("org/jboss/arquillian/container/glassfish/remote_3/web.xml");
-          //}
-          ArchivePath sunWebXmlPath = ArchivePaths.create("/WEB-INF/sun-web.xml");
-          if (!archive.contains(sunWebXmlPath))
-          {
-             // sets the module name to "test"
-             WebArchive.class.cast(archive).addWebResource("org/jboss/arquillian/container/glassfish/remote_3/sun-web.xml", "sun-web.xml");
-          }
-       }
-       return super.deploy(context, archive);
+        if (WebArchive.class.isInstance(archive)) {
+            //ArchivePath webXmlPath = ArchivePaths.create("/WEB-INF/web.xml");
+            //if (!archive.contains(webXmlPath))
+            //{
+            //   // sets the module name to "test"
+            //   ((WebArchive) archive).setWebXML("org/jboss/arquillian/container/glassfish/remote_3/web.xml");
+            //}
+            ArchivePath sunWebXmlPath = ArchivePaths.create("/WEB-INF/sun-web.xml");
+            if (!archive.contains(sunWebXmlPath)) {
+                // sets the module name to "test"
+                WebArchive.class.cast(archive).addWebResource("org/jboss/arquillian/container/glassfish/remote_3/sun-web.xml", "sun-web.xml");
+            }
+        }
+        return super.deploy(context, archive);
     }
 
 }

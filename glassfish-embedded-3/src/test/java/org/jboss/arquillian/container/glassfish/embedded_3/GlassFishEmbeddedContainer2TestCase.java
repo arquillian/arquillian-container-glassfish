@@ -20,13 +20,12 @@ package org.jboss.arquillian.container.glassfish.embedded_3;
 /**
  * Identical to GlassFishEmbeddedContainerTestCase, we only want to see that two deployments to the
  * server works as well as one. e.g. Verify server clean up.
- * 
- *  https://glassfish.dev.java.net/issues/show_bug.cgi?id=13017
+ * <p>
+ * https://glassfish.dev.java.net/issues/show_bug.cgi?id=13017
  *
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @version $Revision: $
  */
-public class GlassFishEmbeddedContainer2TestCase extends GlassFishEmbeddedContainerTestCase 
-{
+public class GlassFishEmbeddedContainer2TestCase extends GlassFishEmbeddedContainerTestCase {
 
 }

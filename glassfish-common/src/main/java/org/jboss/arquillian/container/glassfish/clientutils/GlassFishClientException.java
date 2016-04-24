@@ -16,7 +16,6 @@
  */
 
 /**
- *
  * @author Z.Paulovics
  */
 package org.jboss.arquillian.container.glassfish.clientutils;
@@ -46,7 +45,7 @@ public class GlassFishClientException extends RuntimeException {
     public GlassFishClientException(String message, Throwable cause) {
         super(message, cause);
     }
-        
+
     /**
      * Construct a new instance with the supplied cause
      * @param cause the Throwable that caused the exception to be thrown
@@ -54,5 +53,5 @@ public class GlassFishClientException extends RuntimeException {
     public GlassFishClientException(Throwable cause) {
         super(cause);
     }
-	
+
 }

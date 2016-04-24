@@ -16,15 +16,14 @@
  */
 package org.jboss.arquillian.container.glassfish.embedded_3;
 
-import java.io.IOException;
 import javax.annotation.Resource;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.IOException;
 
 /**
  * TestServlet
@@ -33,19 +32,18 @@ import javax.sql.DataSource;
  * @version $Revision: $
  */
 @WebServlet(urlPatterns = TestServlet.URL_PATTERN)
-public class TestServlet extends HttpServlet
-{
-   private static final long serialVersionUID = 1L;
+public class TestServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
-   public static final String URL_PATTERN = "/Test";
+    public static final String URL_PATTERN = "/Test";
 
-   public static final String MESSAGE = "hello";
+    public static final String MESSAGE = "hello";
 
-   @Resource(name = "jdbc/arquillian") private DataSource arquillianDS;
+    @Resource(name = "jdbc/arquillian")
+    private DataSource arquillianDS;
 
-   @Override
-   protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-   {
-      response.getWriter().append(arquillianDS != null ? MESSAGE : "#fail");
-   }
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.getWriter().append(arquillianDS != null ? MESSAGE : "#fail");
+    }
 }

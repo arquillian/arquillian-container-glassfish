@@ -26,12 +26,10 @@ import java.io.Serializable;
  * @author <a href="http://community.jboss.org/people/LightGuard">Jason Porter</a>
  */
 @Stateless
-public class Greeter implements Serializable
-{
-   private static final long serialVersionUID = 6410949671035595273L;
+public class Greeter implements Serializable {
+    private static final long serialVersionUID = 6410949671035595273L;
 
-   public String greet()
-   {
-      return "Hello";
-   }
+    public String greet() {
+        return "Hello";
+    }
 }

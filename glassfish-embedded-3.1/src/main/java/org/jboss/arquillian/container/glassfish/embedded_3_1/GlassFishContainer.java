@@ -16,19 +16,8 @@
  */
 package org.jboss.arquillian.container.glassfish.embedded_3_1;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.servlet.ServletRegistration;
-
+import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.web.WebModule;
 import org.apache.catalina.Container;
 import org.glassfish.embeddable.BootstrapProperties;
 import org.glassfish.embeddable.CommandResult;
@@ -55,8 +44,17 @@ import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.web.WebModule;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletRegistration;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * GlassfishContainer
@@ -64,325 +62,260 @@ import com.sun.enterprise.web.WebModule;
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @version $Revision: $
  */
-public class GlassFishContainer implements DeployableContainer<GlassFishConfiguration>
-{
-   private static final Logger log = Logger.getLogger(GlassFishContainer.class.getName());
-   
-   private static final String SYSTEM_PROPERTY_REGEX = "\\$\\{(.*)\\}";
-   private static final String COMMAND_ADD_RESOURCES = "add-resources";
-   
-   // TODO: open configuration up for bind address
-   private static final String ADDRESS = "localhost";
-   
-   private GlassFishConfiguration configuration;
-   private GlassFishRuntime glassfishRuntime;
-   private GlassFish glassfish;
+public class GlassFishContainer implements DeployableContainer<GlassFishConfiguration> {
+    private static final Logger log = Logger.getLogger(GlassFishContainer.class.getName());
 
-   private boolean shouldSetPort = true;
-   private int bindHttpPort;
-   
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
-    */
-   public Class<GlassFishConfiguration> getConfigurationClass()
-   {
-      return GlassFishConfiguration.class;
-   }
+    private static final String SYSTEM_PROPERTY_REGEX = "\\$\\{(.*)\\}";
+    private static final String COMMAND_ADD_RESOURCES = "add-resources";
 
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getDefaultProtocol()
-    */
-   public ProtocolDescription getDefaultProtocol()
-   {
-      return new ProtocolDescription("Servlet 3.0");
-   }
+    // TODO: open configuration up for bind address
+    private static final String ADDRESS = "localhost";
 
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#setup(org.jboss.arquillian.spi.client.container.ContainerConfiguration)
-    */
-   public void setup(GlassFishConfiguration configuration)
-   {
-      this.configuration = configuration;
-      BootstrapProperties bootstrapProps = new BootstrapProperties();
-      if(configuration.getInstallRoot() != null)
-      {
-         bootstrapProps.setInstallRoot(configuration.getInstallRoot());
-      }
-      try
-      {
-         glassfishRuntime = GlassFishRuntime.bootstrap(bootstrapProps);
-      }
-      catch (Exception e) 
-      {
-         throw new RuntimeException("Could not setup GlassFish Embedded Bootstrap", e);
-      }
+    private GlassFishConfiguration configuration;
+    private GlassFishRuntime glassfishRuntime;
+    private GlassFish glassfish;
 
-      boolean cleanup = configuration.getCleanup();
-      GlassFishProperties serverProps = new GlassFishProperties();
-      
-      if(configuration.getInstanceRoot() != null)
-      {
-         File instanceRoot = new File(configuration.getInstanceRoot());
-         if (instanceRoot.exists())
-         {
-            cleanup = false;
-         }
-         serverProps.setInstanceRoot(configuration.getInstanceRoot());
-         shouldSetPort = false;
-      }
-      if(configuration.getConfigurationXml() != null)
-      {
-         serverProps.setConfigFileURI(configuration.getConfigurationXml());
-         shouldSetPort = false;
-      }
-      serverProps.setConfigFileReadOnly(configuration.isConfigurationReadOnly());
-      if(shouldSetPort)
-      {
-          bindHttpPort = configuration.getBindHttpPort();
-    	  serverProps.setPort("http-listener", bindHttpPort);
-      }
-      
-      try
-      {
-         glassfish = glassfishRuntime.newGlassFish(serverProps);
-      }
-      catch (Exception e) 
-      {
-         throw new RuntimeException("Could not setup GlassFish Embedded Runtime", e);
-      }
+    private boolean shouldSetPort = true;
+    private int bindHttpPort;
 
-      if (cleanup)
-      {
-         Runtime.getRuntime().addShutdownHook(new Thread()
-         {
-            @Override
-            public void run()
-            {
-               deleteRecursive(new File(System.getProperty(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY)));
+    /* (non-Javadoc)
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
+     */
+    public Class<GlassFishConfiguration> getConfigurationClass() {
+        return GlassFishConfiguration.class;
+    }
+
+    /* (non-Javadoc)
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getDefaultProtocol()
+     */
+    public ProtocolDescription getDefaultProtocol() {
+        return new ProtocolDescription("Servlet 3.0");
+    }
+
+    /* (non-Javadoc)
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#setup(org.jboss.arquillian.spi.client.container.ContainerConfiguration)
+     */
+    public void setup(GlassFishConfiguration configuration) {
+        this.configuration = configuration;
+        BootstrapProperties bootstrapProps = new BootstrapProperties();
+        if (configuration.getInstallRoot() != null) {
+            bootstrapProps.setInstallRoot(configuration.getInstallRoot());
+        }
+        try {
+            glassfishRuntime = GlassFishRuntime.bootstrap(bootstrapProps);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not setup GlassFish Embedded Bootstrap", e);
+        }
+
+        boolean cleanup = configuration.getCleanup();
+        GlassFishProperties serverProps = new GlassFishProperties();
+
+        if (configuration.getInstanceRoot() != null) {
+            File instanceRoot = new File(configuration.getInstanceRoot());
+            if (instanceRoot.exists()) {
+                cleanup = false;
             }
-         });
-      }
-   }
+            serverProps.setInstanceRoot(configuration.getInstanceRoot());
+            shouldSetPort = false;
+        }
+        if (configuration.getConfigurationXml() != null) {
+            serverProps.setConfigFileURI(configuration.getConfigurationXml());
+            shouldSetPort = false;
+        }
+        serverProps.setConfigFileReadOnly(configuration.isConfigurationReadOnly());
+        if (shouldSetPort) {
+            bindHttpPort = configuration.getBindHttpPort();
+            serverProps.setPort("http-listener", bindHttpPort);
+        }
 
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#start()
-    */
-   public void start() throws LifecycleException
-   {
-      try
-      {
-         glassfish.start();
-         if(!shouldSetPort)
-         {
-             readBindingHttpPort();
-         }
-         bindCommandRunner();
-      }
-      catch (Exception e) 
-      {
-         throw new LifecycleException("Could not start GlassFish Embedded", e);
-      }
-      // Server needs to be started before we can deploy resources
-      for(String resource : configuration.getResourcesXml())
-      {
-          try
-          {
-             executeCommand(COMMAND_ADD_RESOURCES, resource);
-          }
-          catch (Throwable e)
-          {
-            throw new RuntimeException("Could not deploy sun-reosurces file: " + resource, e);
-          }
-     }
+        try {
+            glassfish = glassfishRuntime.newGlassFish(serverProps);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not setup GlassFish Embedded Runtime", e);
+        }
 
+        if (cleanup) {
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    deleteRecursive(new File(System.getProperty(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY)));
+                }
+            });
+        }
+    }
 
-   }
-
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#stop()
-    */
-   public void stop() throws LifecycleException
-   {
-      try
-      {
-         unbindCommandRunner();
-         glassfish.stop();
-      } 
-      catch (Exception e) 
-      {
-         throw new LifecycleException("Could not stop GlassFish Embedded", e);
-      }
-   }
-
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#deploy(org.jboss.shrinkwrap.api.Archive)
-    */
-   public ProtocolMetaData deploy(Archive<?> archive) throws DeploymentException
-   {
-      String deploymentName = createDeploymentName(archive.getName());
-      try
-      {
-         URL deploymentUrl = ShrinkWrapUtil.toURL(archive);
-         
-         glassfish.getDeployer().deploy(deploymentUrl.toURI(), "--name", deploymentName);
-      }
-      catch (Exception e) 
-      {
-         throw new DeploymentException("Could not deploy " + archive.getName(), e);
-      }
-      
-      try
-      {
-         HTTPContext httpContext = new HTTPContext(ADDRESS,bindHttpPort); 
-         
-         findServlets(httpContext, resolveWebArchiveNames(archive));
-         
-         return new ProtocolMetaData()
-               .addContext(httpContext);
-      }
-      catch (GlassFishException e) 
-      {
-         throw new DeploymentException("Could not probe GlassFish embedded for environment", e);
-      }
-   }
-   
-   /**
-    * @param archive
-    * @return
-    */
-   private String[] resolveWebArchiveNames(Archive<?> archive)
-   {
-      if(archive instanceof WebArchive)
-      {
-         return new String[] {createDeploymentName(archive.getName())}; 
-      }
-      else if(archive instanceof EnterpriseArchive)
-      {
-         Map<ArchivePath, Node> webArchives = archive.getContent(Filters.include(".*\\.war"));
-         List<String> deploymentNames = new ArrayList<String>();
-         for(ArchivePath path : webArchives.keySet())
-         {
-            deploymentNames.add(createDeploymentName(path.get()));
-         }
-         return deploymentNames.toArray(new String[0]);         
-      }
-      return new String[0];
-   }
-
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#undeploy(org.jboss.shrinkwrap.api.Archive)
-    */
-   public void undeploy(Archive<?> archive) throws DeploymentException
-   {
-      try
-      {
-         glassfish.getDeployer().undeploy(createDeploymentName(archive.getName()));
-      }
-      catch (Exception e) 
-      {
-         throw new DeploymentException("Could not undeploy " + archive.getName(), e);
-      }
-   }
-
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#deploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
-    */
-   public void deploy(Descriptor descriptor) throws DeploymentException
-   {
-      throw new UnsupportedOperationException("Not implemented");
-   }
-
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#undeploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
-    */
-   public void undeploy(Descriptor descriptor) throws DeploymentException
-   {
-      throw new UnsupportedOperationException("Not implemented");
-   }
-   
-   private String createDeploymentName(String archiveName) 
-   {
-      String correctedName = archiveName;
-      if(correctedName.startsWith("/"))
-      {
-         correctedName = correctedName.substring(1);
-      }
-      if(correctedName.indexOf(".") != -1)
-      {
-         correctedName = correctedName.substring(0, correctedName.lastIndexOf("."));
-      }
-      return correctedName;
-   }
-   
-   public void findServlets(HTTPContext httpContext, String[] webArchiveNames) throws GlassFishException
-   {
-      WebContainer webContainer = glassfish.getService(WebContainer.class);
-      for(String deploymentName : webArchiveNames)
-      {
-         for(VirtualServer server : webContainer.getVirtualServers())
-         {
-            WebModule webModule = null;
-            
-            for(Context serverContext : server.getContexts())
-            {
-               if(serverContext instanceof WebModule)
-               {
-                  if(((WebModule)serverContext).getID().startsWith(deploymentName))
-                  {
-                     webModule = (WebModule)serverContext;
-                  }
-               }
+    /* (non-Javadoc)
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#start()
+     */
+    public void start() throws LifecycleException {
+        try {
+            glassfish.start();
+            if (!shouldSetPort) {
+                readBindingHttpPort();
             }
-            if(webModule == null)
-            {
-               if(server instanceof com.sun.enterprise.web.VirtualServer)
-               {
-                  Container child = ((com.sun.enterprise.web.VirtualServer)server).findChild("/" + deploymentName);
-                  if(child instanceof WebModule)
-                  {
-                     webModule = (WebModule)child;
-                  }
-               }
+            bindCommandRunner();
+        } catch (Exception e) {
+            throw new LifecycleException("Could not start GlassFish Embedded", e);
+        }
+        // Server needs to be started before we can deploy resources
+        for (String resource : configuration.getResourcesXml()) {
+            try {
+                executeCommand(COMMAND_ADD_RESOURCES, resource);
+            } catch (Throwable e) {
+                throw new RuntimeException("Could not deploy sun-reosurces file: " + resource, e);
             }
-            if(webModule != null)
-            {
-               for(Map.Entry<String, ? extends ServletRegistration> servletRegistration : webModule.getServletRegistrations().entrySet())
-               {
-                  httpContext.add(new Servlet(servletRegistration.getKey(), webModule.getContextPath()));
-               }
-            }
-         }
-      }
-   }
-   
-   private String executeCommand(String command, String... parameterList) throws Throwable
-   {
-      CommandRunner runner = glassfish.getCommandRunner();
-      CommandResult result = runner.run(command, parameterList);
+        }
 
-      String output = null;
-      switch(result.getExitStatus())
-      {
-         case FAILURE:
-         case WARNING:
-            throw result.getFailureCause();
-         case SUCCESS:
-            output = result.getOutput();
-            log.info("command " + command + " parameters" + parameterList + " result: " + output);
-            break;
-      }
-      return output;
-   }
-   
-   private void bindCommandRunner() throws NamingException, GlassFishException  {
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#stop()
+     */
+    public void stop() throws LifecycleException {
+        try {
+            unbindCommandRunner();
+            glassfish.stop();
+        } catch (Exception e) {
+            throw new LifecycleException("Could not stop GlassFish Embedded", e);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#deploy(org.jboss.shrinkwrap.api.Archive)
+     */
+    public ProtocolMetaData deploy(Archive<?> archive) throws DeploymentException {
+        String deploymentName = createDeploymentName(archive.getName());
+        try {
+            URL deploymentUrl = ShrinkWrapUtil.toURL(archive);
+
+            glassfish.getDeployer().deploy(deploymentUrl.toURI(), "--name", deploymentName);
+        } catch (Exception e) {
+            throw new DeploymentException("Could not deploy " + archive.getName(), e);
+        }
+
+        try {
+            HTTPContext httpContext = new HTTPContext(ADDRESS, bindHttpPort);
+
+            findServlets(httpContext, resolveWebArchiveNames(archive));
+
+            return new ProtocolMetaData()
+                    .addContext(httpContext);
+        } catch (GlassFishException e) {
+            throw new DeploymentException("Could not probe GlassFish embedded for environment", e);
+        }
+    }
+
+    /**
+     * @param archive
+     * @return
+     */
+    private String[] resolveWebArchiveNames(Archive<?> archive) {
+        if (archive instanceof WebArchive) {
+            return new String[]{createDeploymentName(archive.getName())};
+        } else if (archive instanceof EnterpriseArchive) {
+            Map<ArchivePath, Node> webArchives = archive.getContent(Filters.include(".*\\.war"));
+            List<String> deploymentNames = new ArrayList<String>();
+            for (ArchivePath path : webArchives.keySet()) {
+                deploymentNames.add(createDeploymentName(path.get()));
+            }
+            return deploymentNames.toArray(new String[0]);
+        }
+        return new String[0];
+    }
+
+    /* (non-Javadoc)
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#undeploy(org.jboss.shrinkwrap.api.Archive)
+     */
+    public void undeploy(Archive<?> archive) throws DeploymentException {
+        try {
+            glassfish.getDeployer().undeploy(createDeploymentName(archive.getName()));
+        } catch (Exception e) {
+            throw new DeploymentException("Could not undeploy " + archive.getName(), e);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#deploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
+     */
+    public void deploy(Descriptor descriptor) throws DeploymentException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /* (non-Javadoc)
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#undeploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
+     */
+    public void undeploy(Descriptor descriptor) throws DeploymentException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    private String createDeploymentName(String archiveName) {
+        String correctedName = archiveName;
+        if (correctedName.startsWith("/")) {
+            correctedName = correctedName.substring(1);
+        }
+        if (correctedName.indexOf(".") != -1) {
+            correctedName = correctedName.substring(0, correctedName.lastIndexOf("."));
+        }
+        return correctedName;
+    }
+
+    public void findServlets(HTTPContext httpContext, String[] webArchiveNames) throws GlassFishException {
+        WebContainer webContainer = glassfish.getService(WebContainer.class);
+        for (String deploymentName : webArchiveNames) {
+            for (VirtualServer server : webContainer.getVirtualServers()) {
+                WebModule webModule = null;
+
+                for (Context serverContext : server.getContexts()) {
+                    if (serverContext instanceof WebModule) {
+                        if (((WebModule) serverContext).getID().startsWith(deploymentName)) {
+                            webModule = (WebModule) serverContext;
+                        }
+                    }
+                }
+                if (webModule == null) {
+                    if (server instanceof com.sun.enterprise.web.VirtualServer) {
+                        Container child = ((com.sun.enterprise.web.VirtualServer) server).findChild("/" + deploymentName);
+                        if (child instanceof WebModule) {
+                            webModule = (WebModule) child;
+                        }
+                    }
+                }
+                if (webModule != null) {
+                    for (Map.Entry<String, ? extends ServletRegistration> servletRegistration : webModule.getServletRegistrations().entrySet()) {
+                        httpContext.add(new Servlet(servletRegistration.getKey(), webModule.getContextPath()));
+                    }
+                }
+            }
+        }
+    }
+
+    private String executeCommand(String command, String... parameterList) throws Throwable {
+        CommandRunner runner = glassfish.getCommandRunner();
+        CommandResult result = runner.run(command, parameterList);
+
+        String output = null;
+        switch (result.getExitStatus()) {
+            case FAILURE:
+            case WARNING:
+                throw result.getFailureCause();
+            case SUCCESS:
+                output = result.getOutput();
+                log.info("command " + command + " parameters" + parameterList + " result: " + output);
+                break;
+        }
+        return output;
+    }
+
+    private void bindCommandRunner() throws NamingException, GlassFishException {
         CommandRunner runner = glassfish.getCommandRunner();
         new InitialContext().bind("org.glassfish.embeddable.CommandRunner", runner);
-   }
-   
-   private void unbindCommandRunner() throws NamingException {
-       new InitialContext().unbind("org.glassfish.embeddable.CommandRunner");
-   }
-   
+    }
+
+    private void unbindCommandRunner() throws NamingException {
+        new InitialContext().unbind("org.glassfish.embeddable.CommandRunner");
+    }
+
     private void deleteRecursive(File dir) {
         if (dir == null) {
             throw new IllegalArgumentException("directory cannot be null");
@@ -402,10 +335,10 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
             dir.delete();
         }
     }
-    
+
     /**
      * Populates the bindHttpPort value by reading the GlassFish configuration.
-     * 
+     *
      * @throws LifecycleException When there is failure reading the contents of the GlassFish configuration
      */
     private void readBindingHttpPort() throws LifecycleException {
@@ -471,7 +404,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
     /**
      * Executes the 'get' command and parses the output for multiple values. Use this method if you're not sure of the number of
      * values returned in the command output.
-     * 
+     *
      * @param parameterList The list of parameters to be provided for the execution of the 'get' command.
      * @return The list of values of the attribute returned in the command output.
      * @throws LifecycleException When there is a failure executing the 'get' command
@@ -493,11 +426,11 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
             throw new LifecycleException("Failed to read the HTTP listener configuration.", ex);
         }
     }
-    
+
     /**
      * Executes the 'get' command and parses the output for a single value. Multiple values are not recognized. Use this only if
      * you are sure of a single return value.
-     * 
+     *
      * @param parameterList The list of parameters to be provided for the execution of the 'get' command.
      * @return The value of the attribute returned in the command output.
      * @throws LifecycleException When there is a failure executing the 'get' command

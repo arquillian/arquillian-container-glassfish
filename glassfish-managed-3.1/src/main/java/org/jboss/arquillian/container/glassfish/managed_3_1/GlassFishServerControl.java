@@ -189,6 +189,7 @@ class GlassFishServerControl {
         private final ProcessOutputConsumer consumer;
 
         private final BufferedReader reader;
+
         private ConsoleReader(final Process process, ProcessOutputConsumer consumer) {
             this.reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             this.consumer = consumer;

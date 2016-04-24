@@ -16,10 +16,6 @@
  */
 package org.jboss.arquillian.container.glassfish.remote_3_1;
 
-import static org.junit.Assert.assertNotNull;
-
-import javax.inject.Inject;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ArchivePaths;
@@ -30,43 +26,43 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
+
+import static org.junit.Assert.assertNotNull;
+
 /**
  * A test to serve as a regression test for ARQ-658.
- *
+ * <p>
  * The deployment created by this class, does not have an application.xml file.
  * As a result, the context root is created by GlassFish,
  * instead of being specified by the developer.
  * Such context roots do not begin with a forward slash,
  * and the Arquillian REST client should recognize them.
- *
+ * <p>
  * The class is a converse test for the GlassFishRestDeployEarTest class,
  * which adds an application.xml file with a user-specified context root.
  *
  * @author Vineet Reynolds
  */
 @RunWith(Arquillian.class)
-public class GlassFishDeployWithoutAppXmlTest
-{
-   @Inject
-   private Client client;
+public class GlassFishDeployWithoutAppXmlTest {
+    @Inject
+    private Client client;
 
-   @Deployment
-   public static EnterpriseArchive createTestArchive()
-   {
-      JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar").addClasses(Client.class,GlassFishDeployWithoutAppXmlTest.class)
-            .addAsManifestResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
-      EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear").addAsLibrary(jar);
-      return ear;
-   }
+    @Deployment
+    public static EnterpriseArchive createTestArchive() {
+        JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar").addClasses(Client.class, GlassFishDeployWithoutAppXmlTest.class)
+                .addAsManifestResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
+        EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear").addAsLibrary(jar);
+        return ear;
+    }
 
-   @Test
-   public void testClient()
-   {
-      assertNotNull(client);
-   }
+    @Test
+    public void testClient() {
+        assertNotNull(client);
+    }
 }
 
-class Client
-{
+class Client {
 
 }

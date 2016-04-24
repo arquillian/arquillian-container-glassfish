@@ -16,7 +16,6 @@
  */
 
 /**
- *
  * @author Z.Paulovics
  */
 package org.jboss.arquillian.container.glassfish.clientutils;
@@ -24,126 +23,115 @@ package org.jboss.arquillian.container.glassfish.clientutils;
 import java.net.URI;
 
 public class NodeAddress {
-        /**
-         * HTTP protocol URI prefix
-         */
-        public static final String HTTP_PROTOCOL_PREFIX = "http://";
-    
-        /**
-         * HTTPS protocol URI prefix
-         */
-        public static final String HTTPS_PROTOCOL_PREFIX = "https://";
+    /**
+     * HTTP protocol URI prefix
+     */
+    public static final String HTTP_PROTOCOL_PREFIX = "http://";
 
-	   /**
-	    * name of the server instance
-		*/
-	   private String serverName = GlassFishClient.ADMINSERVER;
-	   
-	   /**
-	    * IP or HOST name of the node
-		*/
-	   private String host = "localhost";
-	   
-		/**
-		 * Port number for http:// calls
-		 */
-		private int httpPort;
-		
-		/**
-		 * Port number for https:// calls
-		 */
-	   private int httpsPort;
-	   
-	   public NodeAddress() {}
-	   
-	   public NodeAddress(String host)
-	   {
-	      this.host = host;
-	   }
+    /**
+     * HTTPS protocol URI prefix
+     */
+    public static final String HTTPS_PROTOCOL_PREFIX = "https://";
 
-	   public NodeAddress(String serverName, String host, int port, int secure_port)
-	   {
-	      this.serverName = serverName;
-		  this.host = host;
-	      this.httpPort = port;
-	      this.httpsPort = secure_port;
-	   }
+    /**
+     * name of the server instance
+     */
+    private String serverName = GlassFishClient.ADMINSERVER;
 
-	   /**
-	    * @return the serverName
-	    */
-	   public String getServerName()
-	   {
-	      return serverName;
-	   }
+    /**
+     * IP or HOST name of the node
+     */
+    private String host = "localhost";
 
-	   /**
-	    * @return none
-	    */
-	   public void setServerName(String serverName)
-	   {
-		   this.serverName = serverName;
-	   }
+    /**
+     * Port number for http:// calls
+     */
+    private int httpPort;
 
-	   /**
-	    * @return the ip
-	    */
-	   public String getHost()
-	   {
-	      return host;
-	   }
+    /**
+     * Port number for https:// calls
+     */
+    private int httpsPort;
 
-	   /**
-	    * @return none
-	    */
-	   public void setHost(String host)
-	   {
-		   this.host = host;
-	   }
+    public NodeAddress() {
+    }
 
-	   /**
-	    * @return the port
-	    */
-	   public int getHttpPort()
-	   {
-	      return httpPort;
-	   }
+    public NodeAddress(String host) {
+        this.host = host;
+    }
 
-	   /**
-	    * @return none
-	    */
-	   public void setHttpPort(int httpPort)
-	   {
-		  this.httpPort = httpPort;
-	   }
+    public NodeAddress(String serverName, String host, int port, int secure_port) {
+        this.serverName = serverName;
+        this.host = host;
+        this.httpPort = port;
+        this.httpsPort = secure_port;
+    }
 
-	   /**
-	    * @return the secure port
-	    */
-	   public int getHttpsPort()
-	   {
-	      return httpsPort;
-	   }
+    /**
+     * @return the serverName
+     */
+    public String getServerName() {
+        return serverName;
+    }
 
-	   /**
-	    * @return none
-	    */
-	   public void setHttpsPort(int secure_port)
-	   {
-		  this.httpsPort = secure_port;
-	   }
+    /**
+     * @return none
+     */
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+    }
 
-	   public URI getURI()
-	   {
-		   return getURI(false);
-	   }
+    /**
+     * @return the ip
+     */
+    public String getHost() {
+        return host;
+    }
 
-	   public URI getURI(boolean secure)
-	   {
-		   return URI.create( getHttpProtocolPrefix(secure) + host + ":" + ((!secure) ? this.httpPort : this.httpsPort) );
-	   }
-	   
-	   public static String getHttpProtocolPrefix(boolean secure) {
-	       return secure ? HTTPS_PROTOCOL_PREFIX : HTTP_PROTOCOL_PREFIX;
-	   }
+    /**
+     * @return none
+     */
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    /**
+     * @return the port
+     */
+    public int getHttpPort() {
+        return httpPort;
+    }
+
+    /**
+     * @return none
+     */
+    public void setHttpPort(int httpPort) {
+        this.httpPort = httpPort;
+    }
+
+    /**
+     * @return the secure port
+     */
+    public int getHttpsPort() {
+        return httpsPort;
+    }
+
+    /**
+     * @return none
+     */
+    public void setHttpsPort(int secure_port) {
+        this.httpsPort = secure_port;
+    }
+
+    public URI getURI() {
+        return getURI(false);
+    }
+
+    public URI getURI(boolean secure) {
+        return URI.create(getHttpProtocolPrefix(secure) + host + ":" + ((!secure) ? this.httpPort : this.httpsPort));
+    }
+
+    public static String getHttpProtocolPrefix(boolean secure) {
+        return secure ? HTTPS_PROTOCOL_PREFIX : HTTP_PROTOCOL_PREFIX;
+    }
 }

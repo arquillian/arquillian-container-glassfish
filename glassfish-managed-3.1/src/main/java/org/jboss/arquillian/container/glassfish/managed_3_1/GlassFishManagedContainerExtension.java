@@ -24,11 +24,9 @@ import org.jboss.arquillian.core.spi.LoadableExtension;
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @version $Revision: $
  */
-public class GlassFishManagedContainerExtension implements LoadableExtension
-{
-   @Override
-   public void register(ExtensionBuilder builder)
-   {
-      builder.service(DeployableContainer.class, GlassFishManagedDeployableContainer.class);
-   }
+public class GlassFishManagedContainerExtension implements LoadableExtension {
+    @Override
+    public void register(ExtensionBuilder builder) {
+        builder.service(DeployableContainer.class, GlassFishManagedDeployableContainer.class);
+    }
 }

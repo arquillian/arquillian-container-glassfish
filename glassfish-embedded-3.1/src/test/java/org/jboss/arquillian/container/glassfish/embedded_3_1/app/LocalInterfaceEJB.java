@@ -21,7 +21,6 @@ package org.jboss.arquillian.container.glassfish.embedded_3_1.app;
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @version $Revision: $
  */
-public interface LocalInterfaceEJB
-{
-   public String getName(); 
+public interface LocalInterfaceEJB {
+    public String getName();
 }

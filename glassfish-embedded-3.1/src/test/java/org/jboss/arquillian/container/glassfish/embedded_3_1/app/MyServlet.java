@@ -16,8 +16,6 @@
  */
 package org.jboss.arquillian.container.glassfish.embedded_3_1.app;
 
-import java.io.IOException;
-
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.IOException;
 
 /**
  * TestServlet
@@ -33,22 +32,22 @@ import javax.sql.DataSource;
  * @version $Revision: $
  */
 @WebServlet(urlPatterns = MyServlet.URL_PATTERN)
-public class MyServlet extends HttpServlet
-{
-   private static final long serialVersionUID = 1L;
+public class MyServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
-   public static final String URL_PATTERN = "/Test";
+    public static final String URL_PATTERN = "/Test";
 
-   public static final String MESSAGE = "hello";
+    public static final String MESSAGE = "hello";
 
-   @Resource(name = "jdbc/arquillian") private DataSource arquillianDS;
-   @Resource(name = "jdbc/arquillian2") private DataSource arquillianDS2;
+    @Resource(name = "jdbc/arquillian")
+    private DataSource arquillianDS;
+    @Resource(name = "jdbc/arquillian2")
+    private DataSource arquillianDS2;
 
-   @Override
-   protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-   {
-      response.getWriter().append(areDatasourcesSet() ? MESSAGE : "#fail");
-   }
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.getWriter().append(areDatasourcesSet() ? MESSAGE : "#fail");
+    }
 
     private boolean areDatasourcesSet() {
         return arquillianDS != null && arquillianDS2 != null;

@@ -16,10 +16,7 @@
  */
 package org.jboss.arquillian.container.glassfish.embedded_3_1.app;
 
-import javax.ejb.EJB;
-
 import junit.framework.Assert;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -28,6 +25,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.ejb.EJB;
+
 /**
  * JBossEmbeddedIntegrationTestCase
  *
@@ -35,29 +34,26 @@ import org.junit.runner.RunWith;
  * @version $Revision: $
  */
 @RunWith(Arquillian.class)
-public class IntegrationWarTestCase
-{
-   @Deployment
-   public static WebArchive createDeployment() throws Exception 
-   {
-      return ShrinkWrap.create(WebArchive.class)
-               .addClasses(
-                     NoInterfaceEJB.class,
-                     NameProvider.class)
-               .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      
-   }
-   
-   @EJB
-   private NoInterfaceEJB bean;
-   
-   @Test
-   public void shouldBeAbleToInjectEJBAsInstanceVariable() throws Exception 
-   {
-      Assert.assertNotNull(
-            "Verify that the Bean has been injected",
-            bean);
-      
-      Assert.assertEquals("Arquillian", bean.getName());
-   }
+public class IntegrationWarTestCase {
+    @Deployment
+    public static WebArchive createDeployment() throws Exception {
+        return ShrinkWrap.create(WebArchive.class)
+                .addClasses(
+                        NoInterfaceEJB.class,
+                        NameProvider.class)
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+
+    }
+
+    @EJB
+    private NoInterfaceEJB bean;
+
+    @Test
+    public void shouldBeAbleToInjectEJBAsInstanceVariable() throws Exception {
+        Assert.assertNotNull(
+                "Verify that the Bean has been injected",
+                bean);
+
+        Assert.assertEquals("Arquillian", bean.getName());
+    }
 }

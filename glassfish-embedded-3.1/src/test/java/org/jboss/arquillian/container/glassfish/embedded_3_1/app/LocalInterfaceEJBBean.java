@@ -27,10 +27,8 @@ import javax.ejb.Stateless;
  */
 @Stateless
 @Local(LocalInterfaceEJB.class)
-public class LocalInterfaceEJBBean implements LocalInterfaceEJB
-{
-   public String getName() 
-   {
-      return new NameProvider().getName();
-   }
+public class LocalInterfaceEJBBean implements LocalInterfaceEJB {
+    public String getName() {
+        return new NameProvider().getName();
+    }
 }
