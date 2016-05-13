@@ -11,6 +11,7 @@
         src/test/resources/glassfish-resources2.xml
       </property>
       <property name="bindHttpPort">7070</property>
+      <property name="bindHttpsPort">7071</property>
     </configuration>
   </container>
 </arquillian>
