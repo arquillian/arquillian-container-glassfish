@@ -147,7 +147,7 @@
       <properties>
         <groupId>fish.payara.distributions</groupId>
         <artifactId>payara</artifactId>
-        <version.glassfish>4.1.1.161.1</version.glassfish>
+        <version.glassfish>4.1.1.162</version.glassfish>
         <glassfish.home>payara41</glassfish.home>
       </properties>
     </profile>
