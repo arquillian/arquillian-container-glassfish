@@ -24,7 +24,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,8 +41,6 @@ class GlassFishServerControl {
             "Derby database. Please take a look at the server logs. You can also switch off 'enableDerby' property in your 'arquillian.xml' if you don't need it. For " +
             "more information please refer to relevant issues for existing workarounds: https://java.net/jira/browse/GLASSFISH-21004 " +
             "https://issues.apache.org/jira/browse/DERBY-6438";
-
-    private static final List<String> NO_ARGS = Collections.emptyList();
 
     private static final Logger logger = Logger.getLogger(GlassFishServerControl.class.getName());
 
@@ -82,7 +79,8 @@ class GlassFishServerControl {
     }
 
     private void stopContainer() throws LifecycleException {
-        executeAdminDomainCommand("Stopping container", "stop-domain", NO_ARGS, createProcessOutputConsumer());
+        final List<String> args = new ArrayList<String>();
+        executeAdminDomainCommand("Stopping container", "stop-domain", args, createProcessOutputConsumer());
     }
 
     private void startDerbyDatabase() throws LifecycleException {
@@ -90,7 +88,8 @@ class GlassFishServerControl {
             return;
         }
         try {
-            executeAdminDomainCommand("Starting database", "start-database", NO_ARGS, createProcessOutputConsumer());
+            final List<String> args = new ArrayList<String>();
+            executeAdminDomainCommand("Starting database", "start-database", args, createProcessOutputConsumer());
         } catch (LifecycleException e) {
             logger.warning(DERBY_MISCONFIGURED_HINT);
             throw e;
@@ -99,7 +98,8 @@ class GlassFishServerControl {
 
     private void stopDerbyDatabase() throws LifecycleException {
         if (config.isEnableDerby()) {
-            executeAdminDomainCommand("Stopping database", "stop-database", NO_ARGS, createProcessOutputConsumer());
+            final List<String> args = new ArrayList<String>();
+            executeAdminDomainCommand("Stopping database", "stop-database", args, createProcessOutputConsumer());
         }
 
     }
