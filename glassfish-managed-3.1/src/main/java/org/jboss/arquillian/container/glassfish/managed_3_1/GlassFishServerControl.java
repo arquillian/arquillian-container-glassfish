@@ -24,7 +24,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +46,7 @@ class GlassFishServerControl {
             +
             "https://issues.apache.org/jira/browse/DERBY-6438";
 
-    private static final List<String> NO_ARGS = Collections.emptyList();
+    private static final List<String> NO_ARGS = new ArrayList<String>();
 
     private static final Logger logger = Logger.getLogger(GlassFishServerControl.class.getName());
 
