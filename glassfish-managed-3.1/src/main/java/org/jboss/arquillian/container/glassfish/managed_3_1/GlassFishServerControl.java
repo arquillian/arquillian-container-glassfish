@@ -42,6 +42,8 @@ class GlassFishServerControl {
             "more information please refer to relevant issues for existing workarounds: https://java.net/jira/browse/GLASSFISH-21004 " +
             "https://issues.apache.org/jira/browse/DERBY-6438";
 
+    private static final List<String> NO_ARGS = new ArrayList();
+
     private static final Logger logger = Logger.getLogger(GlassFishServerControl.class.getName());
 
     private GlassFishManagedContainerConfiguration config;
@@ -79,8 +81,7 @@ class GlassFishServerControl {
     }
 
     private void stopContainer() throws LifecycleException {
-        final List<String> args = new ArrayList<String>();
-        executeAdminDomainCommand("Stopping container", "stop-domain", args, createProcessOutputConsumer());
+        executeAdminDomainCommand("Stopping container", "stop-domain", NO_ARGS, createProcessOutputConsumer());
     }
 
     private void startDerbyDatabase() throws LifecycleException {
@@ -88,8 +89,7 @@ class GlassFishServerControl {
             return;
         }
         try {
-            final List<String> args = new ArrayList<String>();
-            executeAdminDomainCommand("Starting database", "start-database", args, createProcessOutputConsumer());
+            executeAdminDomainCommand("Starting database", "start-database", NO_ARGS, createProcessOutputConsumer());
         } catch (LifecycleException e) {
             logger.warning(DERBY_MISCONFIGURED_HINT);
             throw e;
@@ -98,8 +98,7 @@ class GlassFishServerControl {
 
     private void stopDerbyDatabase() throws LifecycleException {
         if (config.isEnableDerby()) {
-            final List<String> args = new ArrayList<String>();
-            executeAdminDomainCommand("Stopping database", "stop-database", args, createProcessOutputConsumer());
+            executeAdminDomainCommand("Stopping database", "stop-database", NO_ARGS, createProcessOutputConsumer());
         }
 
     }
