@@ -53,19 +53,17 @@ public class GlassFishJSR88RemoteContainerEARTestCase {
 
     /**
      * Deployment for the test
-     *
-     * @return
      */
     @Deployment
     public static Archive<?> getTestArchive() {
         final WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-                .addClasses(GreeterServlet.class);
+            .addClasses(GreeterServlet.class);
         final JavaArchive ejb = ShrinkWrap.create(JavaArchive.class, "test.jar")
-                .addClass(Greeter.class);
+            .addClass(Greeter.class);
         final EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
-                .setApplicationXML("application.xml")
-                .addModule(war)
-                .addModule(ejb);
+            .setApplicationXML("application.xml")
+            .addModule(war)
+            .addModule(ejb);
         log.info(ear.toString(true));
         return ear;
     }
@@ -76,9 +74,9 @@ public class GlassFishJSR88RemoteContainerEARTestCase {
         String body = readAllAndClose(new URL("http://localhost:8080/test" + servletPath).openStream());
 
         Assert.assertEquals(
-                "Verify that the servlet was deployed and returns expected result",
-                "hello",
-                body);
+            "Verify that the servlet was deployed and returns expected result",
+            "hello",
+            body);
     }
 
     private String readAllAndClose(InputStream is) throws Exception {

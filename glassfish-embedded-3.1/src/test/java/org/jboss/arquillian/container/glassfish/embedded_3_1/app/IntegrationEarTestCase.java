@@ -40,16 +40,16 @@ public class IntegrationEarTestCase {
     @Deployment
     public static EnterpriseArchive createDeployment() throws Exception {
         return ShrinkWrap.create(EnterpriseArchive.class)
-                .addAsModule(
-                        ShrinkWrap.create(JavaArchive.class)
-                                .addClasses(
-                                        NoInterfaceEJB.class,
-                                        NameProvider.class)
-                                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"))
-                .addAsModule(
-                        ShrinkWrap.create(WebArchive.class)
-                                .addClass(IntegrationEarTestCase.class)
-                                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml"));
+            .addAsModule(
+                ShrinkWrap.create(JavaArchive.class)
+                    .addClasses(
+                        NoInterfaceEJB.class,
+                        NameProvider.class)
+                    .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"))
+            .addAsModule(
+                ShrinkWrap.create(WebArchive.class)
+                    .addClass(IntegrationEarTestCase.class)
+                    .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml"));
     }
 
     @EJB
@@ -58,8 +58,8 @@ public class IntegrationEarTestCase {
     @Test
     public void shouldBeAbleToInjectEJBAsInstanceVariable() throws Exception {
         Assert.assertNotNull(
-                "Verify that the Bean has been injected",
-                bean);
+            "Verify that the Bean has been injected",
+            bean);
 
         Assert.assertEquals("Arquillian", bean.getName());
     }

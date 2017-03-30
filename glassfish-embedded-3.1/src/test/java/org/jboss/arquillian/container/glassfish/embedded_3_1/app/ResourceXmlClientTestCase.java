@@ -39,8 +39,6 @@ import java.net.URL;
 public class ResourceXmlClientTestCase {
     /**
      * Deployment for the test
-     *
-     * @return
      */
     @Deployment(testable = false)
     public static WebArchive getDeployment() {
@@ -50,12 +48,12 @@ public class ResourceXmlClientTestCase {
     @Test
     public void shouldBeAbleToDeployWebArchive(@ArquillianResource(MyServlet.class) URL baseURL) throws Exception {
         String body = readAllAndClose(
-                new URL(baseURL, "Test").openStream());
+            new URL(baseURL, "Test").openStream());
 
         Assert.assertEquals(
-                "Verify that the servlet was deployed and returns expected result",
-                MyServlet.MESSAGE,
-                body);
+            "Verify that the servlet was deployed and returns expected result",
+            MyServlet.MESSAGE,
+            body);
     }
 
     private String readAllAndClose(InputStream is) throws Exception {

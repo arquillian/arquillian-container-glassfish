@@ -36,8 +36,8 @@ final class ShrinkWrapUtil {
     /**
      * Creates a tmp folder and exports the file. Returns the URL for that file location.
      *
-     * @param archive Archive to export
-     * @return
+     * @param archive
+     *     Archive to export
      */
     public static URL toURL(final Archive<?> archive) {
         // create a random named temp file, then delete and use it as a directory

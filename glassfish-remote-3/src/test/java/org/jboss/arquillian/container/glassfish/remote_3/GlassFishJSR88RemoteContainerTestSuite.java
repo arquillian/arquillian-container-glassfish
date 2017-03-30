@@ -36,28 +36,28 @@ import java.io.File;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-        GlassFishJSR88RemoteContainerWARTestCase.class,
-        GlassFishJSR88RemoteContainerEARTestCase.class})
+    GlassFishJSR88RemoteContainerWARTestCase.class,
+    GlassFishJSR88RemoteContainerEARTestCase.class})
 public class GlassFishJSR88RemoteContainerTestSuite {
     @BeforeClass
     public static void startContainer() throws Exception {
-        Runtime.getRuntime().exec(new String[]{
-                getAsadminCommand(),
-                "start-domain",
-                "tests"}).waitFor();
+        Runtime.getRuntime().exec(new String[] {
+            getAsadminCommand(),
+            "start-domain",
+            "tests"}).waitFor();
     }
 
     @AfterClass
     public static void stopContainer() throws Exception {
-        Runtime.getRuntime().exec(new String[]{
-                getAsadminCommand(),
-                "stop-domain",
-                "tests"}).waitFor();
+        Runtime.getRuntime().exec(new String[] {
+            getAsadminCommand(),
+            "stop-domain",
+            "tests"}).waitFor();
     }
 
     public static String getAsadminCommand() {
         File asadminFile = new File(System.getProperty("glassfish.install.dir") +
-                File.separator + "bin" + File.separator + "asadmin");
+            File.separator + "bin" + File.separator + "asadmin");
         if (!asadminFile.exists() || !asadminFile.isFile()) {
             Assert.fail("Path to asadmin command is invalid: " + asadminFile.getAbsolutePath());
         }

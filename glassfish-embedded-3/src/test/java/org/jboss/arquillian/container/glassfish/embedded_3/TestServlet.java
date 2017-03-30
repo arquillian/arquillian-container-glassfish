@@ -43,7 +43,8 @@ public class TestServlet extends HttpServlet {
     private DataSource arquillianDS;
 
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
         response.getWriter().append(arquillianDS != null ? MESSAGE : "#fail");
     }
 }

@@ -168,8 +168,6 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
                 throw new RuntimeException("Could not deploy sun-reosurces file: " + resource, e);
             }
         }
-
-
     }
 
     /* (non-Javadoc)
@@ -203,7 +201,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
             findServlets(httpContext, resolveWebArchiveNames(archive));
 
             return new ProtocolMetaData()
-                    .addContext(httpContext);
+                .addContext(httpContext);
         } catch (GlassFishException e) {
             throw new DeploymentException("Could not probe GlassFish embedded for environment", e);
         }
@@ -215,7 +213,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
      */
     private String[] resolveWebArchiveNames(Archive<?> archive) {
         if (archive instanceof WebArchive) {
-            return new String[]{createDeploymentName(archive.getName())};
+            return new String[] {createDeploymentName(archive.getName())};
         } else if (archive instanceof EnterpriseArchive) {
             Map<ArchivePath, Node> webArchives = archive.getContent(Filters.include(".*\\.war"));
             List<String> deploymentNames = new ArrayList<String>();
@@ -285,7 +283,8 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
                     }
                 }
                 if (webModule != null) {
-                    for (Map.Entry<String, ? extends ServletRegistration> servletRegistration : webModule.getServletRegistrations().entrySet()) {
+                    for (Map.Entry<String, ? extends ServletRegistration> servletRegistration : webModule.getServletRegistrations()
+                        .entrySet()) {
                         httpContext.add(new Servlet(servletRegistration.getKey(), webModule.getContextPath()));
                     }
                 }
@@ -342,7 +341,8 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
     /**
      * Populates the bindHttpPort value by reading the GlassFish configuration.
      *
-     * @throws LifecycleException When there is failure reading the contents of the GlassFish configuration
+     * @throws LifecycleException
+     *     When there is failure reading the contents of the GlassFish configuration
      */
     private void readBindingHttpPort() throws LifecycleException {
         // Fetch the name of the configuration ref element of the Default Admin Server
@@ -357,7 +357,7 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
             } else {
                 // Fetch the network listeners of the virtual server
                 String networkListenerList = fetchAttribute("configs.config." + config + ".http-service.virtual-server."
-                        + virtualServer + ".network-listeners");
+                    + virtualServer + ".network-listeners");
 
                 // Iterate through the network listeners, resolve the port number of the first one. Ignore the rest.
                 String[] networkListeners = networkListenerList.split(",");
@@ -372,23 +372,22 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
     }
 
     /**
-     * @param config
-     * @param networkListener
      * @throws LifecycleException
      */
     private Integer readNetworkListenerPort(String config, String networkListener) throws LifecycleException {
         boolean enabled = Boolean.parseBoolean(fetchAttribute("configs.config." + config
-                + ".network-config.network-listeners.network-listener." + networkListener + ".enabled"));
+            + ".network-config.network-listeners.network-listener." + networkListener + ".enabled"));
         // Is the listener enabled?
         if (enabled) {
-            String protocol = fetchAttribute("configs.config." + config + ".network-config.network-listeners.network-listener."
+            String protocol =
+                fetchAttribute("configs.config." + config + ".network-config.network-listeners.network-listener."
                     + networkListener + ".protocol");
             boolean securityEnabled = Boolean.parseBoolean(fetchAttribute("configs.config." + config
-                    + ".network-config.protocols.protocol." + protocol + ".security-enabled"));
+                + ".network-config.protocols.protocol." + protocol + ".security-enabled"));
             // Is the protocol secure? If yes, then ignore since Arquillian will not make HTTPS connections (yet) 
             if (!securityEnabled) {
                 String portNum = fetchAttribute("configs.config." + config
-                        + ".network-config.network-listeners.network-listener." + networkListener + ".port");
+                    + ".network-config.network-listeners.network-listener." + networkListener + ".port");
                 Pattern sysProp = Pattern.compile(SYSTEM_PROPERTY_REGEX);
                 Matcher matcher = sysProp.matcher(portNum);
                 if (matcher.matches()) {
@@ -405,12 +404,17 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
     }
 
     /**
-     * Executes the 'get' command and parses the output for multiple values. Use this method if you're not sure of the number of
+     * Executes the 'get' command and parses the output for multiple values. Use this method if you're not sure of the
+     * number of
      * values returned in the command output.
      *
-     * @param parameterList The list of parameters to be provided for the execution of the 'get' command.
+     * @param parameterList
+     *     The list of parameters to be provided for the execution of the 'get' command.
+     *
      * @return The list of values of the attribute returned in the command output.
-     * @throws LifecycleException When there is a failure executing the 'get' command
+     *
+     * @throws LifecycleException
+     *     When there is a failure executing the 'get' command
      */
     private List<String> fetchAttributes(String... parameterList) throws LifecycleException {
         try {
@@ -431,12 +435,17 @@ public class GlassFishContainer implements DeployableContainer<GlassFishConfigur
     }
 
     /**
-     * Executes the 'get' command and parses the output for a single value. Multiple values are not recognized. Use this only if
+     * Executes the 'get' command and parses the output for a single value. Multiple values are not recognized. Use this
+     * only if
      * you are sure of a single return value.
      *
-     * @param parameterList The list of parameters to be provided for the execution of the 'get' command.
+     * @param parameterList
+     *     The list of parameters to be provided for the execution of the 'get' command.
+     *
      * @return The value of the attribute returned in the command output.
-     * @throws LifecycleException When there is a failure executing the 'get' command
+     *
+     * @throws LifecycleException
+     *     When there is a failure executing the 'get' command
      */
     private String fetchAttribute(String... parameterList) throws LifecycleException {
         try {

@@ -57,18 +57,20 @@ public class GlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param bindHttpPort The port number of the http-listener for the embedded GlassFish server.
+     * @param bindHttpPort
+     *     The port number of the http-listener for the embedded GlassFish server.
      */
     public void setBindHttpPort(int bindHttpPort) {
         this.bindHttpPort = bindHttpPort;
     }
 
     public int getBindHttpsPort() {
-      return bindHttpsPort;
+        return bindHttpsPort;
     }
 
     /**
-     * @param bindHttpsPort The port number of the https-listener for the embedded GlassFish server.
+     * @param bindHttpsPort
+     *     The port number of the https-listener for the embedded GlassFish server.
      */
     public void setBindHttpsPort(int bindHttpsPort) {
         this.bindHttpsPort = bindHttpsPort;
@@ -79,8 +81,9 @@ public class GlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param instanceRoot The instance root directory is the parent directory of a GlassFish server instance directory.
-     *                     Embedded GlassFish Server uses the server instance directory for domain configuration files.
+     * @param instanceRoot
+     *     The instance root directory is the parent directory of a GlassFish server instance directory.
+     *     Embedded GlassFish Server uses the server instance directory for domain configuration files.
      */
     public void setInstanceRoot(String instanceRoot) {
         this.instanceRoot = instanceRoot;
@@ -91,8 +94,9 @@ public class GlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param installRoot The location of the GlassFish installation root directory. This directory corresponds to the base
-     *                    directory for an installation of GlassFish Server.
+     * @param installRoot
+     *     The location of the GlassFish installation root directory. This directory corresponds to the base
+     *     directory for an installation of GlassFish Server.
      */
     public void setInstallRoot(String installRoot) {
         this.installRoot = installRoot;
@@ -103,8 +107,9 @@ public class GlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param configurationReadOnly Specifies whether GlassFish should writeback any changes to specified configuration file or
-     *                              config/domain.xml at the specified instance root.
+     * @param configurationReadOnly
+     *     Specifies whether GlassFish should writeback any changes to specified configuration file or
+     *     config/domain.xml at the specified instance root.
      */
     public void setConfigurationReadOnly(boolean configurationReadOnly) {
         this.configurationReadOnly = configurationReadOnly;
@@ -115,8 +120,9 @@ public class GlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param configurationXml Set the location of configuration file i.e. domain.xml using which the GlassFish server should
-     *                         run.
+     * @param configurationXml
+     *     Set the location of configuration file i.e. domain.xml using which the GlassFish server should
+     *     run.
      */
     public void setConfigurationXml(String configurationXml) {
         this.configurationXml = configurationXml;
@@ -127,8 +133,9 @@ public class GlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param cleanup Specifies whether Arquillian should cleanup on shutdown. This recursively deletes files in the
-     *                {@link GlassFishConfiguration#instanceRoot} directory.
+     * @param cleanup
+     *     Specifies whether Arquillian should cleanup on shutdown. This recursively deletes files in the
+     *     {@link GlassFishConfiguration#instanceRoot} directory.
      */
     public void setCleanup(boolean cleanup) {
         this.cleanup = cleanup;
@@ -146,8 +153,9 @@ public class GlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param resourcesXml A comma-separated list of GlassFish resources.xml files containing resources that will be added to
-     *                     the GlassFish instance using the <code>add-resources</code> command.
+     * @param resourcesXml
+     *     A comma-separated list of GlassFish resources.xml files containing resources that will be added to
+     *     the GlassFish instance using the <code>add-resources</code> command.
      */
     public void setResourcesXml(String resourcesXml) {
         this.resourcesXml = resourcesXml;
@@ -164,7 +172,9 @@ public class GlassFishConfiguration implements ContainerConfiguration {
      * @deprecated
      */
     public void setSunResourcesXml(String sunResourcesXml) {
-        Logger.getLogger(getClass().getName()).warning("The sunResourcesXml property deprecated. Please use resourcesXml. See http://docs.oracle.com/cd/E18930_01/html/821-2417/giyhh.html");
+        Logger.getLogger(getClass().getName())
+            .warning(
+                "The sunResourcesXml property deprecated. Please use resourcesXml. See http://docs.oracle.com/cd/E18930_01/html/821-2417/giyhh.html");
         setResourcesXml(sunResourcesXml);
     }
 
@@ -200,8 +210,9 @@ public class GlassFishConfiguration implements ContainerConfiguration {
          * <b>Note:</b> This method is mutating by nature, and will possibly
          * modify the enclosing {@link GlassFishConfiguration} instance.
          *
-         * @throws RuntimeException when an invalid value is specified for a property in the
-         *                          Glassfish configuration.
+         * @throws RuntimeException
+         *     when an invalid value is specified for a property in the
+         *     Glassfish configuration.
          */
         public void processConfig() throws RuntimeException {
             if (installRoot != null) {
@@ -239,7 +250,8 @@ public class GlassFishConfiguration implements ContainerConfiguration {
          * root. In Glassfish 3.1, an installRoot should ideally contain the
          * domains and lib sub-directories.
          *
-         * @param installRoot The location of the installRoot
+         * @param installRoot
+         *     The location of the installRoot
          */
         private void verifyInstallRoot(String installRoot) {
             File installRootPath = new File(installRoot);
@@ -247,7 +259,7 @@ public class GlassFishConfiguration implements ContainerConfiguration {
                 File[] requiredDirs = installRootPath.listFiles(new InstallRootFilter());
                 if (requiredDirs.length != 2) {
                     throw new RuntimeException(
-                            "The Glassfish installRoot directory does not appear to be valid. It does not contain the 'domains' and 'lib' sub-directories.");
+                        "The Glassfish installRoot directory does not appear to be valid. It does not contain the 'domains' and 'lib' sub-directories.");
                 }
             } else {
                 throw new RuntimeException("The installRoot property should be a directory. Instead, it was a file.");
@@ -261,11 +273,13 @@ public class GlassFishConfiguration implements ContainerConfiguration {
          * the domain.xml file, then a warning is to be logged when the
          * {@code ignoreConfigXml} parameter is false.
          *
-         * @param instanceRoot    The location of the Glassfish instanceRoot.
-         * @param ignoreConfigXml Should the presence of a domain.xml file in the config
-         *                        directory be ignored? This is meant to be <code>false</code>
-         *                        when the <code>configurationXml</code> property in
-         *                        <code>arquillian.xml</code> is provided with a value.
+         * @param instanceRoot
+         *     The location of the Glassfish instanceRoot.
+         * @param ignoreConfigXml
+         *     Should the presence of a domain.xml file in the config
+         *     directory be ignored? This is meant to be <code>false</code>
+         *     when the <code>configurationXml</code> property in
+         *     <code>arquillian.xml</code> is provided with a value.
          */
         private void verifyInstanceRoot(String instanceRoot, boolean ignoreConfigXml) {
             File instanceRootPath = new File(instanceRoot);
@@ -273,7 +287,7 @@ public class GlassFishConfiguration implements ContainerConfiguration {
                 File[] requiredDirs = instanceRootPath.listFiles(new InstanceRootFilter(ignoreConfigXml));
                 if (requiredDirs.length != 2) {
                     throw new RuntimeException(
-                            "The Glassfish instanceRoot directory does not appear to be valid. It should contain the 'config' and 'docroot' sub-directories. The 'config' sub-directory must also contain a domain.xml file, if the configurationXml property is ommitted from the arquillian config. Other files specified in domain.xml may also be required for initializing the Glassfish runtime.");
+                        "The Glassfish instanceRoot directory does not appear to be valid. It should contain the 'config' and 'docroot' sub-directories. The 'config' sub-directory must also contain a domain.xml file, if the configurationXml property is ommitted from the arquillian config. Other files specified in domain.xml may also be required for initializing the Glassfish runtime.");
                 }
             } else {
                 throw new RuntimeException("The instanceRoot property should be a directory. Instead, it was a file.");
@@ -285,7 +299,8 @@ public class GlassFishConfiguration implements ContainerConfiguration {
          * convert the file path to a URI, so that this conversion may latter be
          * performed.
          *
-         * @param configurationXml The location of the configurationXml file.
+         * @param configurationXml
+         *     The location of the configurationXml file.
          */
         private void verifyConfigurationXml(String configurationXml) {
             try {
@@ -299,7 +314,7 @@ public class GlassFishConfiguration implements ContainerConfiguration {
                 }
             } catch (IllegalArgumentException argEx) {
                 throw new RuntimeException(
-                        "A valid URI could not be composed from the provided configurationXml property.", argEx);
+                    "A valid URI could not be composed from the provided configurationXml property.", argEx);
             }
         }
 
@@ -307,9 +322,10 @@ public class GlassFishConfiguration implements ContainerConfiguration {
          * Verifies whether the value of the <code>resourcesXml</code> property
          * is a valid file path.
          *
-         * @param resourcesXml The file path to the <code>glassfish-resources.xml</code> file,
-         *                     that is later used in an <code>asadmin add-resources</code>
-         *                     command.
+         * @param resourcesXml
+         *     The file path to the <code>glassfish-resources.xml</code> file,
+         *     that is later used in an <code>asadmin add-resources</code>
+         *     command.
          */
         private void verifyResourcesXml(String resourcesXml) {
             File resourcesXmlPath = new File(resourcesXml);
@@ -322,7 +338,9 @@ public class GlassFishConfiguration implements ContainerConfiguration {
          * Converts a file path to a {@link URI} (usually with a
          * <code>file:</code> scheme).
          *
-         * @param path The filepath to be converted
+         * @param path
+         *     The filepath to be converted
+         *
          * @return A URI representing the file path
          */
         private URI convertFilePathToURI(String path) {
@@ -330,9 +348,7 @@ public class GlassFishConfiguration implements ContainerConfiguration {
             URI filepathURI = filePath.toURI();
             return filepathURI;
         }
-
     }
-
 }
 
 /**
@@ -352,7 +368,6 @@ class InstallRootFilter implements FilenameFilter {
     public boolean accept(File dir, String name) {
         return (name.equals("domains") || name.equals("lib"));
     }
-
 }
 
 /**
@@ -398,12 +413,12 @@ class InstanceRootFilter implements FileFilter {
             } else {
                 List<String> filesInConfigDir = Arrays.asList(pathname.list());
                 if (filesInConfigDir.contains("domain.xml")) {
-                    logger.warning("A domain.xml file was found in the instanceRoot. The file specified in the configurationXml property of arquillian.xml might be ignored by embedded Glassfish.");
+                    logger.warning(
+                        "A domain.xml file was found in the instanceRoot. The file specified in the configurationXml property of arquillian.xml might be ignored by embedded Glassfish.");
                 }
                 return true;
             }
         }
         return false;
     }
-
 }

@@ -56,19 +56,17 @@ public class GlassFishRestDeployEarTest {
 
     /**
      * Deployment for the test
-     *
-     * @return
      */
     @Deployment(testable = false)
     public static Archive<?> getTestArchive() {
         final WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-                .addClasses(GreeterServlet.class);
+            .addClasses(GreeterServlet.class);
         final JavaArchive ejb = ShrinkWrap.create(JavaArchive.class, "test.jar")
-                .addClasses(Greeter.class);
+            .addClasses(Greeter.class);
         final EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
-                .setApplicationXML("application.xml")
-                .addAsModule(war)
-                .addAsModule(ejb);
+            .setApplicationXML("application.xml")
+            .addAsModule(war)
+            .addAsModule(ejb);
         log.info(ear.toString(true));
         return ear;
     }

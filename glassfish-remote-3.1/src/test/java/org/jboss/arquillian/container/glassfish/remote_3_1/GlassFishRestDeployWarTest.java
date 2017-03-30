@@ -52,8 +52,8 @@ public class GlassFishRestDeployWarTest {
     @Deployment
     public static WebArchive getTestArchive() {
         final WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-                .addClasses(GreeterServlet.class, Greeter.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addClasses(GreeterServlet.class, Greeter.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         log.info(war.toString(true));
         return war;
     }
@@ -69,5 +69,4 @@ public class GlassFishRestDeployWarTest {
 
         assertThat(result, equalTo("Hello"));
     }
-
 }

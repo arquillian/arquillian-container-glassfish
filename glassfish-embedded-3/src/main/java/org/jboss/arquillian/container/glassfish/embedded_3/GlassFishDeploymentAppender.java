@@ -36,17 +36,16 @@ public class GlassFishDeploymentAppender implements AuxiliaryArchiveAppender {
 
     public Archive<?> createAuxiliaryArchive() {
         JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "arquillian-glassfish-testenrichers.jar")
-                .addPackages(
-                        true,
-                        EJBInjectionEnricher.class.getPackage(),
-                        ResourceInjectionEnricher.class.getPackage(),
-                        CDIInjectionEnricher.class.getPackage())
-                .addServiceProvider(
-                        TestEnricher.class,
-                        CDIInjectionEnricher.class,
-                        EJBInjectionEnricher.class,
-                        ResourceInjectionEnricher.class);
+            .addPackages(
+                true,
+                EJBInjectionEnricher.class.getPackage(),
+                ResourceInjectionEnricher.class.getPackage(),
+                CDIInjectionEnricher.class.getPackage())
+            .addServiceProvider(
+                TestEnricher.class,
+                CDIInjectionEnricher.class,
+                EJBInjectionEnricher.class,
+                ResourceInjectionEnricher.class);
         return archive;
     }
-
 }

@@ -16,7 +16,6 @@
  */
 package org.jboss.arquillian.container.glassfish.managed_3_1;
 
-
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -43,7 +42,8 @@ import java.util.logging.Logger;
 @WebServlet(urlPatterns = "/Greeter")
 public class GreeterServletWithDerby extends HttpServlet {
 
-    private static final String GET_LOG_ARCHIVE_MODE_QUERY = "VALUES SYSCS_UTIL.SYSCS_GET_DATABASE_PROPERTY('derby.storage.logArchiveMode')";
+    private static final String GET_LOG_ARCHIVE_MODE_QUERY =
+        "VALUES SYSCS_UTIL.SYSCS_GET_DATABASE_PROPERTY('derby.storage.logArchiveMode')";
 
     private static final long serialVersionUID = 8249673615048070666L;
 

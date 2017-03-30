@@ -42,8 +42,6 @@ import static org.jboss.arquillian.api.RunModeType.AS_CLIENT;
 public class GlassFishEmbeddedContainerTestCase {
     /**
      * Deployment for the test
-     *
-     * @return
      */
     @Deployment
     public static WebArchive getDeployment() {
@@ -53,12 +51,12 @@ public class GlassFishEmbeddedContainerTestCase {
     @Test
     public void shouldBeAbleToDeployWebArchive() throws Exception {
         String body = readAllAndClose(
-                new URL("http://localhost:7070/test" + TestServlet.URL_PATTERN).openStream());
+            new URL("http://localhost:7070/test" + TestServlet.URL_PATTERN).openStream());
 
         Assert.assertEquals(
-                "Verify that the servlet was deployed and returns expected result",
-                TestServlet.MESSAGE,
-                body);
+            "Verify that the servlet was deployed and returns expected result",
+            TestServlet.MESSAGE,
+            body);
     }
 
     private String readAllAndClose(InputStream is) throws Exception {

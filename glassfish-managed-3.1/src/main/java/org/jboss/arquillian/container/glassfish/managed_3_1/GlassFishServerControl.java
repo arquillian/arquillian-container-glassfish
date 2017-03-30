@@ -38,9 +38,13 @@ import static java.lang.Runtime.getRuntime;
  */
 class GlassFishServerControl {
 
-    private static final String DERBY_MISCONFIGURED_HINT = "It seems that the Glassfish version you are running might have a problem starting embedded " +
-            "Derby database. Please take a look at the server logs. You can also switch off 'enableDerby' property in your 'arquillian.xml' if you don't need it. For " +
-            "more information please refer to relevant issues for existing workarounds: https://java.net/jira/browse/GLASSFISH-21004 " +
+    private static final String DERBY_MISCONFIGURED_HINT =
+        "It seems that the Glassfish version you are running might have a problem starting embedded "
+            +
+            "Derby database. Please take a look at the server logs. You can also switch off 'enableDerby' property in your 'arquillian.xml' if you don't need it. For "
+            +
+            "more information please refer to relevant issues for existing workarounds: https://java.net/jira/browse/GLASSFISH-21004 "
+            +
             "https://issues.apache.org/jira/browse/DERBY-6438";
 
     private static final List<String> NO_ARGS = Collections.emptyList();
@@ -67,7 +71,6 @@ class GlassFishServerControl {
             args.add("--debug");
         }
         executeAdminDomainCommand("Starting container", "start-domain", args, createProcessOutputConsumer());
-
     }
 
     void stop() throws LifecycleException {
@@ -101,7 +104,6 @@ class GlassFishServerControl {
         if (config.isEnableDerby()) {
             executeAdminDomainCommand("Stopping database", "stop-database", NO_ARGS, createProcessOutputConsumer());
         }
-
     }
 
     private void removeShutdownHook() {
@@ -126,7 +128,8 @@ class GlassFishServerControl {
         getRuntime().addShutdownHook(shutdownHook);
     }
 
-    private void executeAdminDomainCommand(String description, String adminCmd, List<String> args, ProcessOutputConsumer consumer) throws LifecycleException {
+    private void executeAdminDomainCommand(String description, String adminCmd, List<String> args,
+        ProcessOutputConsumer consumer) throws LifecycleException {
         if (config.getDomain() != null) {
             args.add(config.getDomain());
         }
@@ -134,7 +137,8 @@ class GlassFishServerControl {
         executeAdminCommand(description, adminCmd, args, consumer);
     }
 
-    private void executeAdminCommand(String description, String command, List<String> args, ProcessOutputConsumer consumer) throws LifecycleException {
+    private void executeAdminCommand(String description, String command, List<String> args,
+        ProcessOutputConsumer consumer) throws LifecycleException {
         final List<String> cmd = buildCommand(command, args);
 
         if (config.isOutputToConsole()) {
@@ -215,7 +219,6 @@ class GlassFishServerControl {
                 }
             }
         }
-
     }
 
     private interface ProcessOutputConsumer {

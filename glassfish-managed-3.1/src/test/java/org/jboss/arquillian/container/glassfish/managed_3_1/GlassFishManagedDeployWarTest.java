@@ -36,8 +36,7 @@ public class GlassFishManagedDeployWarTest extends GlassFishManagedDeploymentTes
     @Deployment(testable = false)
     public static WebArchive getTestArchive() {
         return ShrinkWrap.create(WebArchive.class, "test.war")
-                .addClasses(GreeterServlet.class, Greeter.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addClasses(GreeterServlet.class, Greeter.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
-
 }

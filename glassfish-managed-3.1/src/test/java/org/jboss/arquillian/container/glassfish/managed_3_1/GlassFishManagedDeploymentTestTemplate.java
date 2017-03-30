@@ -19,7 +19,8 @@ public abstract class GlassFishManagedDeploymentTestTemplate {
 
     @Test
     public void shouldBeAbleToDeployEnterpriseArchive() throws Exception {
-        final String servletPath = greeterImplementationBasedOnDerbyEnabled().getAnnotation(WebServlet.class).urlPatterns()[0];
+        final String servletPath =
+            greeterImplementationBasedOnDerbyEnabled().getAnnotation(WebServlet.class).urlPatterns()[0];
 
         final URLConnection response = new URL(deploymentUrl.toString() + servletPath.substring(1)).openConnection();
 
@@ -35,5 +36,4 @@ public abstract class GlassFishManagedDeploymentTestTemplate {
         }
         return GreeterServlet.class;
     }
-
 }

@@ -37,7 +37,9 @@ import java.util.logging.Logger;
  * This class encapsulates the operations involving the GlassFishClient class.
  * Extracted from the GlassFish 3.1 remote container.
  *
- * @param <C> A class of type {@link CommonGlassFishConfiguration}
+ * @param <C>
+ *     A class of type {@link CommonGlassFishConfiguration}
+ *
  * @author Vineet Reynolds
  */
 public class CommonGlassFishManager<C extends CommonGlassFishConfiguration> {
@@ -113,7 +115,6 @@ public class CommonGlassFishManager<C extends CommonGlassFishConfiguration> {
                 throw new DeploymentException("Could not undeploy " + archive.getName(), e);
             }
         }
-
     }
 
     public boolean isDASRunning() {
@@ -154,5 +155,4 @@ public class CommonGlassFishManager<C extends CommonGlassFishConfiguration> {
             deployform.field("type", this.configuration.getType(), MediaType.TEXT_PLAIN_TYPE);
         }
     }
-
 }

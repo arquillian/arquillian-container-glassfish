@@ -81,5 +81,4 @@ public class GlassFishRestDeployableContainer implements DeployableContainer<Gla
     public void undeploy(Descriptor descriptor) throws DeploymentException {
         throw new UnsupportedOperationException("Not implemented");
     }
-
 }

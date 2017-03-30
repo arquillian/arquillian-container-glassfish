@@ -45,7 +45,8 @@ public class MyServlet extends HttpServlet {
     private DataSource arquillianDS2;
 
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
         response.getWriter().append(areDatasourcesSet() ? MESSAGE : "#fail");
     }
 

@@ -81,13 +81,13 @@ public class GlassFishEmbeddedContainer implements DeployableContainer<GlassFish
         final Server.Builder serverBuilder = new Server.Builder("arquillian-" + System.currentTimeMillis());
 
         final EmbeddedFileSystem.Builder embeddedFsBuilder = new EmbeddedFileSystem.Builder()
-                .instanceRoot(new File(configuration.getInstanceRoot()))
-                .autoDelete(configuration.isAutoDelete());
+            .instanceRoot(new File(configuration.getInstanceRoot()))
+            .autoDelete(configuration.isAutoDelete());
         if (configuration.getDomainXml() != null) {
             File domainXmlFile = new File(configuration.getDomainXml());
             if (!domainXmlFile.exists() || !domainXmlFile.isFile()) {
                 throw new RuntimeException("File specified in domainXml configuration property does not exist: " +
-                        domainXmlFile.getAbsolutePath());
+                    domainXmlFile.getAbsolutePath());
             }
             embeddedFsBuilder.configurationFile(domainXmlFile);
         }
@@ -100,7 +100,7 @@ public class GlassFishEmbeddedContainer implements DeployableContainer<GlassFish
             File resourcesXmlFile = new File(configuration.getSunResourcesXml());
             if (!resourcesXmlFile.exists() || !resourcesXmlFile.isFile()) {
                 throw new RuntimeException("File specified in sunResourcesXml configuration property does not exist: " +
-                        resourcesXmlFile.getAbsolutePath());
+                    resourcesXmlFile.getAbsolutePath());
             }
             try {
                 // GlassFish's resources XML parser is hardcoded to look for the DTD in this location
@@ -162,15 +162,15 @@ public class GlassFishEmbeddedContainer implements DeployableContainer<GlassFish
         params.name = createDeploymentName(archive.getName());
         try {
             server.getDeployer().deploy(
-                    archive.as(ShrinkwrapReadableArchive.class),
-                    params);
+                archive.as(ShrinkwrapReadableArchive.class),
+                params);
         } catch (Exception e) {
             throw new DeploymentException("Could not deploy " + archive.getName(), e);
         }
         // TODO: Dynamically lookup contexts
         return new ProtocolMetaData()
-                .addContext(
-                        new HTTPContext("localhost", configuration.getBindHttpPort(), "/test"));
+            .addContext(
+                new HTTPContext("localhost", configuration.getBindHttpPort(), "/test"));
     }
 
     public void undeploy(final Archive<?> archive) throws DeploymentException {
@@ -205,7 +205,6 @@ public class GlassFishEmbeddedContainer implements DeployableContainer<GlassFish
             int i = 1;
             for (MessagePart part : report.getTopMessagePart().getChildren()) {
                 log.info(command + " command result (" + i++ + "): " + part.getMessage());
-
             }
         }
     }
@@ -213,7 +212,8 @@ public class GlassFishEmbeddedContainer implements DeployableContainer<GlassFish
     /*
      * GlassFish is hard-coded to look in this location for it's DTDs, but does not copy them them selves.
      */
-    private void copyResourceDTDsToFileSystem(File instanceRoot, String dtdClassLoaderlocation, String dtdName) throws IOException, FileNotFoundException {
+    private void copyResourceDTDsToFileSystem(File instanceRoot, String dtdClassLoaderlocation, String dtdName)
+        throws IOException, FileNotFoundException {
         ClassLoader loader = getClass().getClassLoader();
         URL dtdResource = loader.getResource(dtdClassLoaderlocation + dtdName);
         if (dtdResource != null) {
@@ -222,8 +222,8 @@ public class GlassFishEmbeddedContainer implements DeployableContainer<GlassFish
                 resourcesDtd.getParentFile().mkdirs();
 
                 copyWithClose(
-                        dtdResource.openStream(),
-                        new FileOutputStream(resourcesDtd));
+                    dtdResource.openStream(),
+                    new FileOutputStream(resourcesDtd));
             }
         }
     }

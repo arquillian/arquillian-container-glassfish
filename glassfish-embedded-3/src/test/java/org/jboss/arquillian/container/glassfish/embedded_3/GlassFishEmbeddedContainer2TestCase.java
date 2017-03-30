@@ -16,7 +16,6 @@
  */
 package org.jboss.arquillian.container.glassfish.embedded_3;
 
-
 /**
  * Identical to GlassFishEmbeddedContainerTestCase, we only want to see that two deployments to the
  * server works as well as one. e.g. Verify server clean up.

@@ -49,7 +49,8 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     }
 
     /**
-     * @param glassFishHome The local GlassFish installation directory
+     * @param glassFishHome
+     *     The local GlassFish installation directory
      */
     public void setGlassFishHome(String glassFishHome) {
         this.glassFishHome = glassFishHome;
@@ -60,7 +61,8 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     }
 
     /**
-     * @param domain The GlassFish domain to use or the default domain if not specified
+     * @param domain
+     *     The GlassFish domain to use or the default domain if not specified
      */
     public void setDomain(String domain) {
         this.domain = domain;
@@ -71,7 +73,8 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     }
 
     /**
-     * @param outputToConsole Show the output of the admin commands on the console. By default enabled
+     * @param outputToConsole
+     *     Show the output of the admin commands on the console. By default enabled
      */
     public void setOutputToConsole(boolean outputToConsole) {
         this.outputToConsole = outputToConsole;
@@ -82,7 +85,8 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     }
 
     /**
-     * @param debug Flag to start the server in debug mode using standard GlassFish debug port
+     * @param debug
+     *     Flag to start the server in debug mode using standard GlassFish debug port
      */
     public void setDebug(boolean debug) {
         this.debug = debug;
@@ -97,7 +101,8 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     }
 
     /**
-     * @param allowConnectingToRunningServer Allow Arquillian to use an already running GlassFish instance.
+     * @param allowConnectingToRunningServer
+     *     Allow Arquillian to use an already running GlassFish instance.
      */
     public void setAllowConnectingToRunningServer(boolean allowConnectingToRunningServer) {
         this.allowConnectingToRunningServer = allowConnectingToRunningServer;
@@ -108,7 +113,8 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
     }
 
     /**
-     * @param enableDerby Flag to start/stop the registered derby server using standard Derby port
+     * @param enableDerby
+     *     Flag to start/stop the registered derby server using standard Derby port
      */
     public void setEnableDerby(boolean enableDerby) {
         this.enableDerby = enableDerby;
@@ -124,15 +130,19 @@ public class GlassFishManagedContainerConfiguration extends CommonGlassFishConfi
      * properties are set and have correct values
      */
     public void validate() throws ConfigurationException {
-        Validate.notNull(getGlassFishHome(), "The property glassFishHome must be specified or the GLASSFISH_HOME environment variable must be set");
-        Validate.configurationDirectoryExists(getGlassFishHome() + "/glassfish", getGlassFishHome() + " is not a valid GlassFish installation");
+        Validate.notNull(getGlassFishHome(),
+            "The property glassFishHome must be specified or the GLASSFISH_HOME environment variable must be set");
+        Validate.configurationDirectoryExists(getGlassFishHome() + "/glassfish",
+            getGlassFishHome() + " is not a valid GlassFish installation");
 
         if (!getAdminCliJar().isFile()) {
-            throw new IllegalArgumentException("Could not locate admin-cli.jar module in GlassFish installation: " + getGlassFishHome());
+            throw new IllegalArgumentException(
+                "Could not locate admin-cli.jar module in GlassFish installation: " + getGlassFishHome());
         }
 
         if (getDomain() != null) {
-            Validate.configurationDirectoryExists(getGlassFishHome() + "/glassfish/domains/" + getDomain(), "Invalid domain: " + getDomain());
+            Validate.configurationDirectoryExists(getGlassFishHome() + "/glassfish/domains/" + getDomain(),
+                "Invalid domain: " + getDomain());
         }
 
         super.validate();

@@ -36,7 +36,7 @@ public class CDIJarTestCase {
     @Deployment
     public static JavaArchive deploy() {
         return ShrinkWrap.create(JavaArchive.class, "foo.jar").addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
-                .addClasses(SimpleBean.class, CDIJarTestCase.class);
+            .addClasses(SimpleBean.class, CDIJarTestCase.class);
     }
 
     @Test

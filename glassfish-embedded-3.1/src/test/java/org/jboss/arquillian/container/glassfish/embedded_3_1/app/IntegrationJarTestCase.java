@@ -37,10 +37,9 @@ public class IntegrationJarTestCase {
     @Deployment
     public static JavaArchive createDeployment() throws Exception {
         return ShrinkWrap.create(JavaArchive.class)
-                .addClasses(
-                        LocalInterfaceEJB.class,
-                        LocalInterfaceEJBBean.class);
-
+            .addClasses(
+                LocalInterfaceEJB.class,
+                LocalInterfaceEJBBean.class);
     }
 
     @EJB
@@ -49,8 +48,8 @@ public class IntegrationJarTestCase {
     @Test
     public void shouldBeAbleToInjectEJBAsInstanceVariable() throws Exception {
         Assert.assertNotNull(
-                "Verify that the Bean has been injected",
-                bean);
+            "Verify that the Bean has been injected",
+            bean);
 
         Assert.assertEquals("Arquillian", bean.getName());
     }

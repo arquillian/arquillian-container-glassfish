@@ -119,5 +119,4 @@ public class GlassfishConfigurationTest {
         config.setResourcesXml(resourcesXml);
         config.validate();
     }
-
 }

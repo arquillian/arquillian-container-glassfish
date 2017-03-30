@@ -36,7 +36,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class GlassFishClientService implements GlassFishClient {
 
     private static final String WEBMODULE = "WebModule";
@@ -68,9 +67,9 @@ public class GlassFishClientService implements GlassFishClient {
         this.target = configuration.getTarget();
 
         final StringBuilder adminUrlBuilder = new StringBuilder()
-                .append(NodeAddress.getHttpProtocolPrefix(this.configuration.isAdminHttps()))
-                .append(this.configuration.getAdminHost()).append(":")
-                .append(this.configuration.getAdminPort());
+            .append(NodeAddress.getHttpProtocolPrefix(this.configuration.isAdminHttps()))
+            .append(this.configuration.getAdminHost()).append(":")
+            .append(this.configuration.getAdminPort());
         DASUrl = adminUrlBuilder.toString();
         adminUrlBuilder.append("/management/domain");
         this.adminBaseUrl = adminUrlBuilder.toString();
@@ -81,13 +80,12 @@ public class GlassFishClientService implements GlassFishClient {
 
     /**
      * Start-up the server
+     * <p>
+     * -   Get the node addresses list associated with the target
+     * -   Pull the server instances status form mgm API
+     * -   In case of cluster tries to fund an instance which has
+     * RUNNING status
      *
-     *  -   Get the node addresses list associated with the target
-     *  -   Pull the server instances status form mgm API
-     *  -   In case of cluster tries to fund an instance which has
-     *		RUNNING status
-     *
-     * @param none
      * @return none
      */
     public void startUp() throws GlassFishClientException {
@@ -100,7 +98,7 @@ public class GlassFishClientService implements GlassFishClient {
             standaloneServers = getServersList();
         } catch (ClientHandlerException ch) {
             message = "Could not connect to DAS on: " + getDASUrl() + " | "
-                    + ch.getCause().getMessage();
+                + ch.getCause().getMessage();
             throw new GlassFishClientException(message);
         }
 
@@ -108,12 +106,10 @@ public class GlassFishClientService implements GlassFishClient {
 
             // The "target" is the Admin Server Instance
             serverInstance = new AdminServer();
-
         } else if (standaloneServers.containsKey(getTarget())) {
 
             // The "target" is an Standalone Server Instance
             serverInstance = new StandaloneServer();
-
         } else {
 
             // The "target" shall be clustered instance(s)
@@ -123,7 +119,6 @@ public class GlassFishClientService implements GlassFishClient {
 
                 // Now we have found the cluster specified by the Target attribute
                 serverInstance = new ClusterServer();
-
             } else {
                 // The "target" attribute can be a domain or misspelled, but neither can be accepted
                 message = "The target property: " + getTarget() + " is not a valid target";
@@ -178,10 +173,10 @@ public class GlassFishClientService implements GlassFishClient {
 
     /**
      * Filtering on the status of the instances
-     *  -	If the standalone server instance status is RUNNING, returns the nodeAddress,
-     *  	but throws an exception otherwise.
-     *  -	In case of cluster, returns the first RUNNING instance from the list,
-     *  	but throws an exception if can not find any.
+     * -	If the standalone server instance status is RUNNING, returns the nodeAddress,
+     * but throws an exception otherwise.
+     * -	In case of cluster, returns the first RUNNING instance from the list,
+     * but throws an exception if can not find any.
      *
      * @param nodeAddressList
      * @return nodeAddress - if any has RUNNING status
@@ -207,7 +202,7 @@ public class GlassFishClientService implements GlassFishClient {
         String message;
         if (nodeAddressList.size() == 1) {
             message = "The " + nodeAddressList.get(0).getServerName() + " server-instance status is: "
-                    + instanceStatus;
+                + instanceStatus;
             throw new GlassFishClientException(message);
         } else {
             message = "Could not fund any instance with RUNNING status in cluster: " + getTarget();
@@ -220,7 +215,7 @@ public class GlassFishClientService implements GlassFishClient {
      * to a target server or a cluster of GlassFish 3.1
      *
      * @param name        - name of the appliacation
-     * 		  form		- a form of MediaType.MULTIPART_FORM_DATA_TYPE
+     * form		- a form of MediaType.MULTIPART_FORM_DATA_TYPE
      * @return subComponents - a map of SubComponents of the application
      */
     // the REST resource path template to retrieve the list of server instances
@@ -231,7 +226,7 @@ public class GlassFishClientService implements GlassFishClient {
         String listSubComponents;
         if (majorVersion >= 4) {
             listSubComponents = "/applications/application/{application}/list-sub-components";
-//            listSubComponents = "/applications/application/{application}/list-sub-components?type=servlets";
+            //            listSubComponents = "/applications/application/{application}/list-sub-components?type=servlets";
         } else {
             listSubComponents = "/applications/application/list-sub-components?id={application}";
         }
@@ -264,7 +259,6 @@ public class GlassFishClientService implements GlassFishClient {
                     // Override the application contextRoot by the webmodul's contextRoot
                     contextRoot = resolveWebModuleContextRoot(componentName, children);
                     resolveWebModuleSubComponents(name, componentName, contextRoot, httpContext);
-
                 } else if (SERVLET.equals(subComponent.getValue())) {
 
                     httpContext.add(new Servlet(componentName, contextRoot));
@@ -278,8 +272,10 @@ public class GlassFishClientService implements GlassFishClient {
     /**
      * Undeploy the component
      *
-     * @param name    - application name
-     * 		  form 	- form that include the target & operation fields
+     * @param name
+     *     - application name
+     *     form 	- form that include the target & operation fields
+     *
      * @return resultMap
      */
     public Map doUndeploy(String name, FormDataMultiPart form) {
@@ -331,7 +327,9 @@ public class GlassFishClientService implements GlassFishClient {
     /**
      * Get the contextroot associated with the application
      *
-     * @param name            - application name
+     * @param name
+     *     - application name
+     *
      * @return contextRoot attribute of the application
      */
     private String getApplicationContextRoot(String name) {
@@ -342,7 +340,6 @@ public class GlassFishClientService implements GlassFishClient {
         String contextRoot = ((Object) applicationAttributes.get("contextRoot")).toString();
         return contextRoot;
     }
-
 
     private String resolveWebModuleContextRoot(String componentName, List<Map> modules) {
         String contextRoot = null;
@@ -357,7 +354,7 @@ public class GlassFishClientService implements GlassFishClient {
                     String[] moduleInfoElements = moduleInfo.split(":");
                     contextRoot = moduleInfoElements[2];
                     contextRoot = contextRoot.indexOf("/") > -1 ? contextRoot.substring(contextRoot.indexOf("/"))
-                            : contextRoot;
+                        : contextRoot;
                 }
             } else {
                 throw new GlassFishClientException("Cuold not resolve the web-module contextRoot");
@@ -369,17 +366,23 @@ public class GlassFishClientService implements GlassFishClient {
     /**
      * Lookup the servlets of WebModule & putt them to the httpContext associated with the application
      *
-     * @param name            - application name
-     * @param module        - webmodule name
-     * @param context        - contextRoot of the web-module
-     * @param httpContext    - httpContext to be updated
+     * @param name
+     *     - application name
+     * @param module
+     *     - webmodule name
+     * @param context
+     *     - contextRoot of the web-module
+     * @param httpContext
+     *     - httpContext to be updated
      */
     private void resolveWebModuleSubComponents(String name, String module, String context, HTTPContext httpContext) {
         String webmoduleResource = "";
         if (majorVersion >= 4) {
-            webmoduleResource = "/applications/application/{application}/list-sub-components?appname={application}&id={module}&type=servlets";
+            webmoduleResource =
+                "/applications/application/{application}/list-sub-components?appname={application}&id={module}&type=servlets";
         } else {
-            webmoduleResource = "/applications/application/list-sub-components?appname={application}&id={module}&type=servlets";
+            webmoduleResource =
+                "/applications/application/list-sub-components?appname={application}&id={module}&type=servlets";
         }
         // Fetch the list of SubComponents of the application
         String applicationPath = webmoduleResource.replace("{application}", name);
@@ -415,9 +418,9 @@ public class GlassFishClientService implements GlassFishClient {
      *
      * @param name of the server
      * @return serverAttributes map
-     * 	nodeRef:		- reference to the node object
-     * 	configRef:		- reference to the server's configuration object
-     *  ...
+     * nodeRef:		- reference to the node object
+     * configRef:		- reference to the server's configuration object
+     * ...
      */
     // the REST resource path template for server attributes object
     private static final String SERVER_RESOURCE = "/servers/server/{server}";
@@ -431,9 +434,9 @@ public class GlassFishClientService implements GlassFishClient {
      * Get the clusterAttributes map of a cluster
      *
      * @param name of the cluster
-     * @return serverAttributes map  
-     *  configRef:      - reference to the cluster's configuration object
-     *  ...
+     * @return serverAttributes map
+     * configRef:      - reference to the cluster's configuration object
+     * ...
      */
     // the REST resource path template for cluster attributes object
     private static final String CLUSTER_RESOURCE = "/clusters/cluster/{cluster}";
@@ -479,16 +482,17 @@ public class GlassFishClientService implements GlassFishClient {
      * Get the port number defined as a system property in a configuration.
      *
      * @param attributes
-     *            The attributes which references the configuration (server or
-     *            cluster configuration)
+     *     The attributes which references the configuration (server or
+     *     cluster configuration)
      * @param propertyName
-     *            The name of the system property to resolve
+     *     The name of the system property to resolve
+     *
      * @return The port number stored in the system property
      */
     private int getSystemProperty(Map<String, String> attributes, String propertyName) {
         String propertyPath = SYSTEM_PROPERTY.replace("{config}", attributes.get("configRef"));
         Map<String, String> listener = getClientUtil().getAttributes(
-                propertyPath.replace("{system-property}", propertyName));
+            propertyPath.replace("{system-property}", propertyName));
         return Integer.parseInt(listener.get("value"));
     }
 
@@ -499,30 +503,31 @@ public class GlassFishClientService implements GlassFishClient {
      * overridden at the level of the server instance.
      *
      * @param server
-     *            The name of the server instance
+     *     The name of the server instance
      * @param propertyName
-     *            The name of the system property to resolve
+     *     The name of the system property to resolve
      * @param defaultValue
-     *            The default port number to be used, in case the system
-     *            property is not overridden
+     *     The default port number to be used, in case the system
+     *     property is not overridden
+     *
      * @return The port number stored in the system property
      */
     private int getServerSystemProperty(String server, String propertyName, int defaultValue) {
         String listenerpath = SERVER_PROPERTY.replace("{server}", server);
         Map<String, String> listener = getClientUtil().getAttributes(
-                listenerpath.replace("{system-property}", propertyName));
+            listenerpath.replace("{system-property}", propertyName));
 
         return (listener.get("value") != null) ? Integer.parseInt(listener.get("value")) : defaultValue;
     }
 
     /**
      * Get the http/https port number of the server instance
-     *
+     * <p>
      * The attribute is optional, It is generated by the Glassfish server
      * if we have more then one server instance on the same node.
      *
      * @param server name
-     * 		  secure: false - http port number, true - https port number
+     * secure: false - http port number, true - https port number
      * @return http/https port number. If the attribute is not defined, gives back the default port
      */
     // the REST resource path template for the Servers instance http-listener object
@@ -533,12 +538,13 @@ public class GlassFishClientService implements GlassFishClient {
         String httpListener = (!secure) ? "HTTP_LISTENER_PORT" : "HTTP_SSL_LISTENER_PORT";
 
         Map<String, String> listener = getClientUtil().getAttributes(
-                listenerpath.replace("{http-listener}", httpListener));
+            listenerpath.replace("{http-listener}", httpListener));
 
         return (listener.get("value") != null) ? Integer.parseInt(listener.get("value")) : default_port;
     }
 
-    private static final String VIRTUAL_SERVERS = "/configs/config/{config}/http-service/list-virtual-servers?target={target}";
+    private static final String VIRTUAL_SERVERS =
+        "/configs/config/{config}/http-service/list-virtual-servers?target={target}";
 
     /**
      * Obtains the list of virtual servers associated with the deployment
@@ -546,14 +552,15 @@ public class GlassFishClientService implements GlassFishClient {
      * can target this virtual server.
      *
      * @param attributes
-     *            The attributes which references the configuration (server or
-     *            cluster configuration)
+     *     The attributes which references the configuration (server or
+     *     cluster configuration)
+     *
      * @return A list of virtual server names that have been found in the
-     *         server/cluster configuration
+     * server/cluster configuration
      */
     private List<String> getVirtualServers(Map<String, String> attributes) {
         String virtualServerPath = VIRTUAL_SERVERS.replace("{config}", attributes.get("configRef")).replace("{target}",
-                attributes.get("name"));
+            attributes.get("name"));
         Map virtualServersResponse = getClientUtil().GETRequest(virtualServerPath);
         List<Map> virtualServers = (List<Map>) virtualServersResponse.get("children");
         List<String> virtualServerNames = new ArrayList<String>();
@@ -573,19 +580,20 @@ public class GlassFishClientService implements GlassFishClient {
      * provided virtual servers.
      *
      * @param attributes
-     *            The attributes which references the configuration (server or
-     *            cluster configuration)
+     *     The attributes which references the configuration (server or
+     *     cluster configuration)
      * @param virtualServers
-     *            The {@link List} of all virtual servers whose the listeners
-     *            must be retrieved
+     *     The {@link List} of all virtual servers whose the listeners
+     *     must be retrieved
+     *
      * @return The list of all listener names associated with the provided list
-     *         of virtual servers
+     * of virtual servers
      */
     private List<String> getNetworkListeners(Map<String, String> attributes, List<String> virtualServers) {
         List<String> networkListeners = new ArrayList<String>();
         for (String virtualServer : virtualServers) {
             String virtualServerPath = VIRTUAL_SERVER.replace("{config}", attributes.get("configRef")).replace(
-                    "{virtualServer}", virtualServer);
+                "{virtualServer}", virtualServer);
             Map<String, String> virtualServerAttributes = getClientUtil().getAttributes(virtualServerPath);
             String listenerList = virtualServerAttributes.get("networkListeners");
             String[] listeners = listenerList.split(",");
@@ -596,28 +604,30 @@ public class GlassFishClientService implements GlassFishClient {
         return networkListeners;
     }
 
-    private static final String LISTENER = "/configs/config/{config}/network-config/network-listeners/network-listener/{listener}";
+    private static final String LISTENER =
+        "/configs/config/{config}/network-config/network-listeners/network-listener/{listener}";
 
     /**
      * Obtains the value of a HTTP/HTTPS network listener, as stored in the
      * GlassFish configuration.
      *
      * @param attributes
-     *            The attributes which references the configuration (server or
-     *            cluster configuration)
+     *     The attributes which references the configuration (server or
+     *     cluster configuration)
      * @param networkListeners
-     *            The {@link List} of network listeners among which one will be
-     *            chosen
+     *     The {@link List} of network listeners among which one will be
+     *     chosen
      * @param secure
-     *            Should a listener with a secure protocol be chosen?
+     *     Should a listener with a secure protocol be chosen?
+     *
      * @return The value of the port number stored in the chosen listener
-     *         configuration. This may be parseable as a number, but not
-     *         necessarily so. Sometimes a system property might be returned.
+     * configuration. This may be parseable as a number, but not
+     * necessarily so. Sometimes a system property might be returned.
      */
     private String getActiveHttpPort(Map<String, String> attributes, List<String> networkListeners, boolean secure) {
         for (String networkListener : networkListeners) {
             String listenerPath = LISTENER.replace("{config}", attributes.get("configRef")).replace("{listener}",
-                    networkListener);
+                networkListener);
             Map<String, String> listenerAttributes = getClientUtil().getAttributes(listenerPath);
             boolean enabled = Boolean.parseBoolean(listenerAttributes.get("enabled"));
             if (!enabled) {
@@ -642,15 +652,16 @@ public class GlassFishClientService implements GlassFishClient {
      * protocol or not.
      *
      * @param attributes
-     *            The attributes which references the configuration (server or
-     *            cluster configuration)
+     *     The attributes which references the configuration (server or
+     *     cluster configuration)
      * @param protocolName
-     *            The name of the protocol
+     *     The name of the protocol
+     *
      * @return A boolean value indicating whether a protocol is secure or not
      */
     private boolean isSecureProtocol(Map<String, String> attributes, String protocolName) {
         String protocolPath = PROTOCOL.replace("{config}", attributes.get("configRef")).replace("{protocol}",
-                protocolName);
+            protocolName);
         Map<String, String> protocolAttributes = getClientUtil().getAttributes(protocolPath);
         boolean isSecure = Boolean.parseBoolean(protocolAttributes.get("securityEnabled"));
         return isSecure;
@@ -666,15 +677,16 @@ public class GlassFishClientService implements GlassFishClient {
      * system property is then read from the GlassFish configuration.
      *
      * @param attributes
-     *            The attributes which references the configuration (server or
-     *            cluster configuration)
+     *     The attributes which references the configuration (server or
+     *     cluster configuration)
      * @param serverName
-     *            The name of the server instance
+     *     The name of the server instance
      * @param portNum
-     *            The port number or a system property that stores the port
-     *            number
+     *     The port number or a system property that stores the port
+     *     number
+     *
      * @return The port number as stored in the network listener configuration
-     *         or in the system property
+     * or in the system property
      */
     private int getPortValue(Map<String, String> attributes, String serverName, String portNum) {
         int portValue = -1;
@@ -711,7 +723,6 @@ public class GlassFishClientService implements GlassFishClient {
     /**
      * Get the URL of the DAS server
      *
-     * @param none
      * @return URL
      */
     private String getDASUrl() {
@@ -721,13 +732,15 @@ public class GlassFishClientService implements GlassFishClient {
     /**
      * The GoF Strategy pattern is used to implement specific algorithm
      * by server type (Admin, Standalone or Clustered server)
-     *
+     * <p>
      * The attribute is optional, It is generated by the Glassfish server
      * if we have more then one server instance on the same node or
      * explicitly defined by the create command parameter.
      *
-     * @param server name
-     * 		  secure: false - http port number, true - https port number
+     * @param server
+     *     name
+     *     secure: false - http port number, true - https port number
+     *
      * @return http/https port number. If the attribute is not defined, gives back the default port
      */
     abstract class ServerStartegy {
@@ -761,11 +774,9 @@ public class GlassFishClientService implements GlassFishClient {
         /**
          * Get the the node address list associated with the target
          *
-         * @param none
          * @return list of node address objects
          */
         protected abstract List<NodeAddress> getNodeAddressList();
-
     }
 
     class AdminServer extends ServerStartegy {
@@ -821,7 +832,6 @@ public class GlassFishClientService implements GlassFishClient {
         public StandaloneServer() {
             super();
         }
-
 
         @Override
         public List<NodeAddress> getNodeAddressList() {
@@ -906,5 +916,4 @@ public class GlassFishClientService implements GlassFishClient {
             return getNodes();
         }
     }
-
 }

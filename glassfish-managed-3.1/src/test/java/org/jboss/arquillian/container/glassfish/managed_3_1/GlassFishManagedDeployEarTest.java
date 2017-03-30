@@ -38,13 +38,12 @@ public class GlassFishManagedDeployEarTest extends GlassFishManagedDeploymentTes
     @Deployment(testable = false)
     public static Archive<?> getTestArchive() {
         final WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-                .addClasses(greeterImplementationBasedOnDerbyEnabled());
+            .addClasses(greeterImplementationBasedOnDerbyEnabled());
         final JavaArchive ejb = ShrinkWrap.create(JavaArchive.class, "test.jar")
-                .addClasses(Greeter.class);
+            .addClasses(Greeter.class);
         return ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
-                .setApplicationXML("application.xml")
-                .addAsModule(war)
-                .addAsModule(ejb);
+            .setApplicationXML("application.xml")
+            .addAsModule(war)
+            .addAsModule(ejb);
     }
-
 }

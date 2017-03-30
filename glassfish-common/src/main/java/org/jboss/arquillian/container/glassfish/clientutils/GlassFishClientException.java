@@ -31,7 +31,9 @@ public class GlassFishClientException extends RuntimeException {
 
     /**
      * Construct a new instance with the supplied message
-     * @param message the message
+     *
+     * @param message
+     *     the message
      */
     public GlassFishClientException(String message) {
         super(message);
@@ -39,8 +41,11 @@ public class GlassFishClientException extends RuntimeException {
 
     /**
      * Construct a new instance with the supplied message and cause
-     * @param message the message
-     * @param cause the Throwable that caused the exception to be thrown
+     *
+     * @param message
+     *     the message
+     * @param cause
+     *     the Throwable that caused the exception to be thrown
      */
     public GlassFishClientException(String message, Throwable cause) {
         super(message, cause);
@@ -48,10 +53,11 @@ public class GlassFishClientException extends RuntimeException {
 
     /**
      * Construct a new instance with the supplied cause
-     * @param cause the Throwable that caused the exception to be thrown
+     *
+     * @param cause
+     *     the Throwable that caused the exception to be thrown
      */
     public GlassFishClientException(Throwable cause) {
         super(cause);
     }
-
 }

@@ -37,7 +37,8 @@ public class GreeterServlet extends HttpServlet {
     private Greeter greeter;
 
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
         response.getWriter().append(greeter.greet());
     }
 }

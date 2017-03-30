@@ -38,11 +38,10 @@ public class IntegrationWarTestCase {
     @Deployment
     public static WebArchive createDeployment() throws Exception {
         return ShrinkWrap.create(WebArchive.class)
-                .addClasses(
-                        NoInterfaceEJB.class,
-                        NameProvider.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-
+            .addClasses(
+                NoInterfaceEJB.class,
+                NameProvider.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @EJB
@@ -51,8 +50,8 @@ public class IntegrationWarTestCase {
     @Test
     public void shouldBeAbleToInjectEJBAsInstanceVariable() throws Exception {
         Assert.assertNotNull(
-                "Verify that the Bean has been injected",
-                bean);
+            "Verify that the Bean has been injected",
+            bean);
 
         Assert.assertEquals("Arquillian", bean.getName());
     }

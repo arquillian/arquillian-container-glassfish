@@ -51,8 +51,9 @@ public class GlassFishDeployWithoutAppXmlTest {
 
     @Deployment
     public static EnterpriseArchive createTestArchive() {
-        JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar").addClasses(Client.class, GlassFishDeployWithoutAppXmlTest.class)
-                .addAsManifestResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
+        JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar")
+            .addClasses(Client.class, GlassFishDeployWithoutAppXmlTest.class)
+            .addAsManifestResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
         EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear").addAsLibrary(jar);
         return ear;
     }

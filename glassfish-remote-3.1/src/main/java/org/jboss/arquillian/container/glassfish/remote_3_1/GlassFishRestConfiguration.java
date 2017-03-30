@@ -24,8 +24,7 @@ import org.jboss.arquillian.container.glassfish.CommonGlassFishConfiguration;
 public class GlassFishRestConfiguration extends CommonGlassFishConfiguration {
 
     /**
-     * @deprecated
-     * Http port for application urls.
+     * @deprecated Http port for application urls.
      * Used to build the URL for the REST request.
      */
     private int remoteServerHttpPort = 8080;
@@ -64,5 +63,4 @@ public class GlassFishRestConfiguration extends CommonGlassFishConfiguration {
     public void setRemoteServerHttpPort(int remoteServerHttpPort) {
         this.remoteServerHttpPort = remoteServerHttpPort;
     }
-
 }

@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class GlassFishClientUtil {
 
     /**
@@ -117,7 +116,7 @@ public class GlassFishClientUtil {
 
     public Map POSTMultiPartRequest(String additionalResourceUrl, FormDataMultiPart form) {
         ClientResponse response = prepareClient(additionalResourceUrl).type(MediaType.MULTIPART_FORM_DATA_TYPE)
-                .post(ClientResponse.class, form);
+            .post(ClientResponse.class, form);
         Map responseMap = getResponseMap(response);
 
         return responseMap;
@@ -126,18 +125,22 @@ public class GlassFishClientUtil {
     /**
      * Basic REST call preparation, with the additional resource url appended
      *
-     * @param additionalResourceUrl url portion past the base to use
+     * @param additionalResourceUrl
+     *     url portion past the base to use
+     *
      * @return the resource builder to execute
      */
     private WebResource.Builder prepareClient(String additionalResourceUrl) {
         final Client client = Client.create();
         if (configuration.isAuthorisation()) {
             client.addFilter(new HTTPBasicAuthFilter(
-                    configuration.getAdminUser(),
-                    configuration.getAdminPassword()));
+                configuration.getAdminUser(),
+                configuration.getAdminPassword()));
         }
         client.addFilter(new CsrfProtectionFilter());
-        return client.resource(this.adminBaseUrl + additionalResourceUrl).accept(MediaType.APPLICATION_XML_TYPE).header("X-GlassFish-3", "ignore");
+        return client.resource(this.adminBaseUrl + additionalResourceUrl)
+            .accept(MediaType.APPLICATION_XML_TYPE)
+            .header("X-GlassFish-3", "ignore");
     }
 
     private Map getResponseMap(ClientResponse response) throws ContainerException {
@@ -150,7 +153,7 @@ public class GlassFishClientUtil {
             responseMap = xmlToMap(xmlDoc);
 
             message = "exit_code: " + responseMap.get("exit_code")
-                    + ", message: " + responseMap.get("message");
+                + ", message: " + responseMap.get("message");
         }
 
         ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
@@ -166,7 +169,6 @@ public class GlassFishClientUtil {
                 // Response is not a warning nor success - it's surely a failure.
                 throw new GlassFishClientException(message);
             }
-
         } else if (status.getReasonPhrase() == "Not Found") {
             // the REST resource can not be found (for optional resources it can be O.K.)
             message += " [status: " + status.getFamily() + " reason: " + status.getReasonPhrase() + "]";
@@ -183,7 +185,9 @@ public class GlassFishClientUtil {
     /**
      * Marshalling a Glassfish Mng API response XML document to a java Map object
      *
-     * @param XML document
+     * @param XML
+     *     document
+     *
      * @return map containing the XML doc representation in java map format
      */
     public Map xmlToMap(String document) {
@@ -249,14 +253,12 @@ public class GlassFishClientUtil {
                 } else {
                     elementName = stream.getLocalName();
                 }
-
             } else if (currentEvent == XMLStreamConstants.END_ELEMENT) {
 
                 if ("map".equals(stream.getLocalName())) {
                     endMapFlag = true;
                 }
                 elementName = null;
-
             } else {
 
                 String document = stream.getText();
@@ -273,7 +275,6 @@ public class GlassFishClientUtil {
                     elementName = null;
                 }
             } // end if
-
         } // end while
         return entry;
     }
@@ -293,14 +294,12 @@ public class GlassFishClientUtil {
                 } else {
                     elementName = stream.getLocalName();
                 }
-
             } else if (currentEvent == XMLStreamConstants.END_ELEMENT) {
 
                 if ("list".equals(stream.getLocalName())) {
                     endListFlag = true;
                 }
                 elementName = null;
-
             } else {
 
                 String document = stream.getText();
@@ -317,9 +316,7 @@ public class GlassFishClientUtil {
                     elementName = null;
                 }
             } // end if
-
         } // end while
         return list;
     }
-
 }

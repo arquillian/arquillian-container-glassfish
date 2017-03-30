@@ -33,9 +33,8 @@ public class AsAdminCommandTestCase {
     @Deployment
     public static WebArchive createDeployment() throws Exception {
         return ShrinkWrap.create(WebArchive.class).addClasses(
-                NoInterfaceEJB.class,
-                NameProvider.class).addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-
+            NoInterfaceEJB.class,
+            NameProvider.class).addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Resource(mappedName = "org.glassfish.embeddable.CommandRunner")
@@ -44,44 +43,41 @@ public class AsAdminCommandTestCase {
     @Test
     public void shouldBeAbleToIssueAsAdminCommand() throws Exception {
         Assert.assertNotNull(
-                "Verify that the asadmin CommandRunner resource is available",
-                commandRunner);
+            "Verify that the asadmin CommandRunner resource is available",
+            commandRunner);
 
         CommandResult result = commandRunner.run(
-                "create-jdbc-connection-pool",
-                "--datasourceclassname=org.apache.derby.jdbc.EmbeddedXADataSource",
-                "--restype=javax.sql.XADataSource",
-                "--property=portNumber=1527:password=APP:user=APP"
-                        + ":serverName=localhost:databaseName=my_database"
-                        + ":connectionAttributes=create\\=true",
-                "my_derby_pool");
+            "create-jdbc-connection-pool",
+            "--datasourceclassname=org.apache.derby.jdbc.EmbeddedXADataSource",
+            "--restype=javax.sql.XADataSource",
+            "--property=portNumber=1527:password=APP:user=APP"
+                + ":serverName=localhost:databaseName=my_database"
+                + ":connectionAttributes=create\\=true",
+            "my_derby_pool");
 
         Assert.assertEquals("Verify 'create-jdbc-connection-pool' asadmin command",
-                ExitStatus.SUCCESS,
-                result.getExitStatus());
-
+            ExitStatus.SUCCESS,
+            result.getExitStatus());
 
         result = commandRunner.run(
-                "create-jdbc-resource",
-                "--connectionpoolid",
-                "my_derby_pool",
-                "jdbc/my_database");
+            "create-jdbc-resource",
+            "--connectionpoolid",
+            "my_derby_pool",
+            "jdbc/my_database");
 
         Assert.assertEquals("Verify 'create-jdbc-resource' asadmin command",
-                ExitStatus.SUCCESS,
-                result.getExitStatus());
-
+            ExitStatus.SUCCESS,
+            result.getExitStatus());
 
         result = commandRunner.run("ping-connection-pool", "my_derby_pool");
 
         Assert.assertEquals("Verify asadmin command 'ping-connection-pool'",
-                ExitStatus.SUCCESS,
-                result.getExitStatus());
+            ExitStatus.SUCCESS,
+            result.getExitStatus());
 
         Context ctx = new InitialContext();
         DataSource myDatabase = (DataSource) ctx.lookup("jdbc/my_database");
 
         Assert.assertNotNull(myDatabase);
-
     }
 }

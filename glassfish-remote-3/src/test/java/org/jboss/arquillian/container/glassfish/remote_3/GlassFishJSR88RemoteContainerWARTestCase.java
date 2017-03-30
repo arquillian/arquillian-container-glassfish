@@ -51,13 +51,11 @@ public class GlassFishJSR88RemoteContainerWARTestCase {
 
     /**
      * Deployment for the test
-     *
-     * @return
      */
     @Deployment
     public static Archive<?> getTestArchive() {
         final WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-                .addClasses(GreeterServlet.class, Greeter.class);
+            .addClasses(GreeterServlet.class, Greeter.class);
         log.info(war.toString(true));
         return war;
     }
@@ -68,9 +66,9 @@ public class GlassFishJSR88RemoteContainerWARTestCase {
         String body = readAllAndClose(new URL("http://localhost:8080/test" + servletPath).openStream());
 
         Assert.assertEquals(
-                "Verify that the servlet was deployed and returns expected result",
-                "hello",
-                body);
+            "Verify that the servlet was deployed and returns expected result",
+            "hello",
+            body);
     }
 
     private String readAllAndClose(InputStream is) throws Exception {

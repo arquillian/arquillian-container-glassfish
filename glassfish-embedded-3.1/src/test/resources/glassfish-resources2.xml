@@ -3,5 +3,5 @@
     "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
 <resources>
   <jdbc-resource pool-name="ArquillianEmbeddedDerbyPool"
-                 jndi-name="jdbc/arquillian2"/>
+      jndi-name="jdbc/arquillian2"/>
 </resources>

@@ -58,7 +58,8 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param adminHost Glassfish Admin Server (DAS) host address. Used to build the URL for the REST request.
+     * @param adminHost
+     *     Glassfish Admin Server (DAS) host address. Used to build the URL for the REST request.
      */
     public void setAdminHost(String adminHost) {
         this.adminHost = adminHost;
@@ -69,7 +70,8 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param adminPort Glassfish Admin Console port. Used to build the URL for the REST request.
+     * @param adminPort
+     *     Glassfish Admin Console port. Used to build the URL for the REST request.
      */
     public void setAdminPort(int adminPort) {
         this.adminPort = adminPort;
@@ -80,8 +82,9 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param adminHttps Flag indicating the administration url uses a secure connection. Used to build the URL for the REST
-     *                   request.
+     * @param adminHttps
+     *     Flag indicating the administration url uses a secure connection. Used to build the URL for the REST
+     *     request.
      */
     public void setAdminHttps(boolean adminHttps) {
         this.adminHttps = adminHttps;
@@ -92,7 +95,8 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param authorisation Flag indicating the remote server requires an admin user and password.
+     * @param authorisation
+     *     Flag indicating the remote server requires an admin user and password.
      */
     public void setAuthorisation(boolean authorisation) {
         this.authorisation = authorisation;
@@ -103,7 +107,8 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param adminUser Authorised admin user in the remote glassfish admin realm
+     * @param adminUser
+     *     Authorised admin user in the remote glassfish admin realm
      */
     public void setAdminUser(String adminUser) {
         this.setAuthorisation(true);
@@ -115,7 +120,8 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param adminPassword Authorised admin user password
+     * @param adminPassword
+     *     Authorised admin user password
      */
     public void setAdminPassword(String adminPassword) {
         this.adminPassword = adminPassword;
@@ -126,22 +132,23 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param target Specifies the target to which you are  deploying.
-     *               <p>
-     *               Valid values are:
-     *               server
-     *               Deploys the component to the default Admin Server instance.
-     *               This is the default value.
-     *               instance_name
-     *               Deploys the component to  a  particular  stand-alone
-     *               sever instance.
-     *               cluster_name
-     *               Deploys the component to every  server  instance  in
-     *               the cluster. (Though Arquillion use only one instance
-     *               to run the test case.)
-     *               <p>
-     *               The domain name as a target is not a reasonable deployment
-     *               senarion in case of testing.
+     * @param target
+     *     Specifies the target to which you are  deploying.
+     *     <p>
+     *     Valid values are:
+     *     server
+     *     Deploys the component to the default Admin Server instance.
+     *     This is the default value.
+     *     instance_name
+     *     Deploys the component to  a  particular  stand-alone
+     *     sever instance.
+     *     cluster_name
+     *     Deploys the component to every  server  instance  in
+     *     the cluster. (Though Arquillion use only one instance
+     *     to run the test case.)
+     *     <p>
+     *     The domain name as a target is not a reasonable deployment
+     *     senarion in case of testing.
      */
     public void setTarget(String target) {
         this.target = target;
@@ -152,12 +159,13 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param library A comma-separated list of library JAR files. Specify the
-     *                library  JAR  files by their relative or absolute paths.
-     *                Specify relative paths relative to domain-dir/lib/applibs.
-     *                <p>
-     *                The libraries are made available to the application in
-     *                the order specified.
+     * @param library
+     *     A comma-separated list of library JAR files. Specify the
+     *     library  JAR  files by their relative or absolute paths.
+     *     Specify relative paths relative to domain-dir/lib/applibs.
+     *     <p>
+     *     The libraries are made available to the application in
+     *     the order specified.
      */
     public void setLibraries(String library) {
         this.libraries = library;
@@ -168,10 +176,11 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param properties Optional keyword-value  pairs  that  specify  additional
-     *                   properties  for the deployment. The available properties
-     *                   are determined by the implementation  of  the  component
-     *                   that  is  being deployed or redeployed.
+     * @param properties
+     *     Optional keyword-value  pairs  that  specify  additional
+     *     properties  for the deployment. The available properties
+     *     are determined by the implementation  of  the  component
+     *     that  is  being deployed or redeployed.
      */
     public void setProperties(String properties) {
         this.properties = properties;
@@ -182,12 +191,13 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
     }
 
     /**
-     * @param type The packaging archive type of the component that is
-     *             being deployed. Only possible values is: osgi
-     *             <p>
-     *             The component is packaged as an OSGi Alliance bundle.
-     *             The type option is optional. If the component is packaged
-     *             as a regular archive, omit this option.
+     * @param type
+     *     The packaging archive type of the component that is
+     *     being deployed. Only possible values is: osgi
+     *     <p>
+     *     The component is packaged as an OSGi Alliance bundle.
+     *     The type option is optional. If the component is packaged
+     *     as a regular archive, omit this option.
      */
     public void setType(String type) {
         this.type = type;
@@ -203,5 +213,4 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
             Validate.notNull(getAdminPassword(), "adminPassword must be specified to use authorisation");
         }
     }
-
 }
