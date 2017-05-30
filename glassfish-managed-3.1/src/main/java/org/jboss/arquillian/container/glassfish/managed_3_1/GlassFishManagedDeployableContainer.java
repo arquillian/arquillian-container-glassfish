@@ -71,6 +71,14 @@ public class GlassFishManagedDeployableContainer implements DeployableContainer<
             }
         } else {
             serverControl.start();
+	    int i = 0;
+            while ( i < 5 && ! glassFishManager.isDASRunning()) {
+                try {
+                    Thread.sleep( 1000 );
+                } catch ( InterruptedException ignore ) {
+                }
+                i++;
+            } 
             glassFishManager.start();
         }
     }
