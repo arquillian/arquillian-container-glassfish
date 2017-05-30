@@ -49,6 +49,10 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
 
     private String type = null;
 
+    private int waitTimeMs = 100;
+
+    private int retries = 5;
+
     public CommonGlassFishConfiguration() {
         super();
     }
@@ -201,6 +205,30 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
      */
     public void setType(String type) {
         this.type = type;
+    }
+
+    public int getWaitTimeMs() {
+        return waitTimeMs;
+    }
+
+    /**
+     * @param waitTimeMs
+     *     Wait for next retries.
+     */
+    public void setWaitTimeMs(int waitTimeMs) {
+        this.waitTimeMs = waitTimeMs;
+    }
+
+    public int getRetries() {
+        return retries;
+    }
+
+    /**
+     * @param retries
+     *     Number of times need to poll.
+     */
+    public void setRetries(int retries) {
+        this.retries = retries;
     }
 
     /**

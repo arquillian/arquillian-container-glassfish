@@ -54,6 +54,7 @@ public class GlassFishManagedDeployableContainer implements DeployableContainer<
     }
 
     public void start() throws LifecycleException {
+
         if (glassFishManager.isDASRunning()) {
             if (configuration.isAllowConnectingToRunningServer()) {
                 // If we are allowed to connect to a running server,
@@ -71,6 +72,14 @@ public class GlassFishManagedDeployableContainer implements DeployableContainer<
             }
         } else {
             serverControl.start();
+            int i = 0;
+            while (i < configuration.getRetries() && !glassFishManager.isDASRunning()) {
+                try {
+                    Thread.sleep(configuration.getWaitTimeMs());
+                } catch (InterruptedException ignore) {
+                }
+                i++;
+            }
             glassFishManager.start();
         }
     }
