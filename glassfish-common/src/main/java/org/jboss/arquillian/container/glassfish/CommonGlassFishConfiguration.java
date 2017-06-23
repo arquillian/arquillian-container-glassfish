@@ -214,7 +214,7 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
 	}
 	/**
     	 * @param waitTime
-     	 *     Wait for container to start.
+     	 *     Wait for next polling.
      	 */
 	public void setWaitTime(int waitTime) {
 		this.waitTime = waitTime;
