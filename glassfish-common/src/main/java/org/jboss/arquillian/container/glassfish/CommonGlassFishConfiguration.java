@@ -48,6 +48,10 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
     private String properties = null;
 
     private String type = null;
+    
+    private int waitTime = 100;
+
+    private int polling = 5;
 
     public CommonGlassFishConfiguration() {
         super();
@@ -203,7 +207,31 @@ public class CommonGlassFishConfiguration implements ContainerConfiguration {
         this.type = type;
     }
 
-    /**
+   
+
+	public int getWaitTime() {
+		return waitTime;
+	}
+	/**
+    	 * @param waitTime
+     	 *     Wait for container to start.
+     	 */
+	public void setWaitTime(int waitTime) {
+		this.waitTime = waitTime;
+	}
+
+	public int getPolling() {
+		return polling;
+	}
+	/**
+    	 * @param polling
+     	 *     Number of times need to poll.
+     	 */
+	public void setPolling(int polling) {
+		this.polling = polling;
+	}
+
+	/**
      * Validates if current configuration is valid, that is if all required
      * properties are set and have correct values
      */
