@@ -2,7 +2,7 @@ language: java
 
 matrix:
   include:
-    - jdk: oraclejdk7
+    - jdk: openjdk7
       env: CONTAINER=3.x
     - jdk: oraclejdk8
       env: CONTAINER=4.x
