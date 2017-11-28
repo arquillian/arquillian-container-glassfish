@@ -1,10 +1,5 @@
 language: java
 
-env:
-  - CONTAINER=3.x
-  - CONTAINER=4.x
-  - CONTAINER=payara-4
-
 matrix:
   include:
     - jdk: oraclejdk7
