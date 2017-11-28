@@ -1,0 +1,26 @@
+language: java
+
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+
+env:
+  - CONTAINER=3.x
+  - CONTAINER=4.x
+  - CONTAINER=payara-4
+
+matrix:
+  include:
+    - jdk: oraclejdk7
+      env: CONTAINER=3.x
+    - jdk: oraclejdk8
+      env: CONTAINER=4.x
+    - jdk: oraclejdk8
+      env: CONTAINER=payara-4
+
+cache:
+  directories:
+    - $HOME/.m2
+
+script:
+- ./mvnw clean verify -P$CONTAINER
