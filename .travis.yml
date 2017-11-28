@@ -1,0 +1,19 @@
+language: java
+
+matrix:
+  include:
+    - jdk: openjdk7
+      env: CONTAINER=3.x
+    - jdk: oraclejdk8
+      env: CONTAINER=4.x
+    - jdk: oraclejdk8
+      env: CONTAINER=payara-4
+
+cache:
+  directories:
+    - $HOME/.m2
+
+install: true
+
+script:
+- ./mvnw clean install -P$CONTAINER
