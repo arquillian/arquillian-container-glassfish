@@ -13,5 +13,7 @@ cache:
   directories:
     - $HOME/.m2
 
+install: true
+
 script:
-- ./mvnw clean verify -P$CONTAINER
+- ./mvnw clean install -P$CONTAINER
