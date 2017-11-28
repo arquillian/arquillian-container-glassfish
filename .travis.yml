@@ -7,6 +7,8 @@ matrix:
     - jdk: oraclejdk8
       env: CONTAINER=4.x
     - jdk: oraclejdk8
+      env: CONTAINER=5.x
+    - jdk: oraclejdk8
       env: CONTAINER=payara-4
 
 cache:
