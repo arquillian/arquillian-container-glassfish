@@ -30,7 +30,7 @@
   <!-- Properties -->
   <properties>
 
-    <version.arquillian_core>1.1.15.Final</version.arquillian_core>
+    <version.arquillian_core>1.4.1.Final</version.arquillian_core>
     <version.jersey>1.10</version.jersey>
     <version.jboss.javaee-6_api>1.0.0.Final</version.jboss.javaee-6_api>
 
