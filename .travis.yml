@@ -15,6 +15,9 @@ cache:
   directories:
     - $HOME/.m2
 
+before_install:
+  - sed -i.bak -e 's|http://repo.maven.apache.org/maven2|https://repo.maven.apache.org/maven2|g' $HOME/.m2/settings.xml
+
 install: true
 
 script:
