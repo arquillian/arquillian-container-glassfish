@@ -105,7 +105,7 @@
         <dependency>
           <groupId>fish.payara.extras</groupId>
           <artifactId>payara-embedded-all</artifactId>
-          <version>4.1.1.161</version>
+          <version>5.2021.1</version>
           <scope>provided</scope>
         </dependency>
       </dependencies>
