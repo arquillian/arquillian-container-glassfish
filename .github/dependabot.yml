@@ -1,0 +1,16 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "11:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: fish.payara.extras:payara-embedded-all
+    versions:
+    - 5.2020.7
+    - 5.2021.1
+  - dependency-name: org.jboss:jboss-parent
+    versions:
+    - "37"
